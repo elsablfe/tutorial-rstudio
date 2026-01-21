@@ -11,7 +11,7 @@ project:
 
 Les dades amb les que treballarem, segurament ja ho heu fet.
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(tidyverse) 
 library(here) 
 library(readxl) 

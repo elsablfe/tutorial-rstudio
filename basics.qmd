@@ -1,9 +1,6 @@
 ---
 title: "Basics"
-format: 
-  html:
-    toc: TRUE
-    toc-depth: 3
+format: html
 editor: visual
 project:
   type: website
