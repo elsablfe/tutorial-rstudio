@@ -4,8 +4,15 @@ project:
 
 website:
   title: "Rstudio Scripts"
+  navbar:
+    left:
+    - href: index.qmd
+      text: Inici
+    - href: tutorial.qmd
+      text: Tutorial
 
 format:
   html:
     toc: true
     toc-depth: 3
+

@@ -9,6 +9,12 @@ editor: visual
 project:
   type: website
   output-dir: docs
+website:
+  title: "Rstudio Scripts"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Inici
 ---
 
 # Rstudio basics
@@ -1236,3 +1242,5 @@ data_HM <- data_log2 %>%
 
 mat_data <- data.matrix(data_HM) #fem una matriu
 ```
+
+Espero que us hagi servit!
