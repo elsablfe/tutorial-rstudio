@@ -1,0 +1,11 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Rstudio Scripts"
+
+format:
+  html:
+    toc: true
+    toc-depth: 3

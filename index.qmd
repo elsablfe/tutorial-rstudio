@@ -1,0 +1,9 @@
+---
+title: "Inici"
+
+project:
+  type: website
+  output-dir: docs
+---
+
+Benvinguts a la meva web!
