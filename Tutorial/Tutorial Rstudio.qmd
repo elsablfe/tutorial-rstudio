@@ -534,7 +534,7 @@ Al tenir activat `na.rm=TRUE` s'eliminen els NA del que estàs calculant.
 Per a saber millor el perquè i què fa cada test, recomano consultar el llibre <https://learningstatisticswithr.com/book/>. Si ho voleu com algo rutinari, aquí teniu la taula del protocol que va fer la Mariona Camps al 2016 per al SPSS.
 
 | Nº grups | Factors fixos (variables independents) | Segueix la normalitat? | Segueix la homogeneitat de variàncies? | Son dades aparellades? | Test |
-|:--:|:--:|:--:|:--:|:--:|:--:|
+|:----------:|:----------:|:----------:|:----------:|:----------:|:----------:|
 | 2 | 1 | Si | Si/No | Si/No | T-test |
 |  |  | No | No | Si | Wilcoxon |
 |  |  |  |  | No | U Mann Whitney |
@@ -610,7 +610,7 @@ shapiro_by_group <- longdata %>%
       p_value < 0.001       ~ "***",
       p_value < 0.01        ~ "**",
       p_value < 0.05        ~ "*",
-      p.value < 0.1  ~ "·",
+      p_value < 0.1  ~ "·",
       TRUE                  ~ "ns"
     )) # A R la significació es veu més neta
 
@@ -702,7 +702,7 @@ results_ttest <- longdata %>%
       t_res$p.value < 0.001       ~ "***",
       t_res$p.value < 0.01        ~ "**",
       t_res$p.value < 0.05        ~ "*",
-      p.value < 0.1  ~ "·",
+      t_res$p.value < 0.1  ~ "·",
       TRUE                  ~ "ns"), #no cal, per visualitzar-ho millor
     conf_low = t_res$conf.int[1],
     conf_high = t_res$conf.int[2]
