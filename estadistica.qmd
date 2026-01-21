@@ -1,0 +1,516 @@
+---
+title: "Estadística"
+format: html
+editor: visual
+project:
+  type: website
+  output-dir: docs
+---
+
+# Estadística descriptiva
+
+Les dades amb les que treballarem, segurament ja ho heu fet.
+
+```{r}
+library(tidyverse) 
+library(here) 
+library(readxl) 
+library(janitor) 
+library(skimr) 
+library(broom) 
+library(rstatix) 
+
+raw_data <- read_excel(here("Basic", "data", "PCR.xlsx"),  sheet = "relative")
+
+data <- raw_data %>% 
+  mutate(across(c(group, sex, rat, generation), as.factor)) 
+
+longdata <- data %>% 
+  pivot_longer(cols="gene_1":"gene_4", names_to="gene", values_to = "value" ) %>% 
+  mutate(
+      group = factor(group, 
+                          levels = c("REF", "P", "G", "S", "PGS")), 
+      generation = factor(generation, 
+                          levels = c( "M", "Cd1", "Cd21", "CA")),
+      gene = factor(gene,
+                    levels = c("gene_1", "gene_2", "gene_3", "gene_4"))
+                    )
+```
+
+La majoria de l'estadística descriptiva ja la mirem amb l'excel, però per comprovar que tot ho estem fent igual, podem demanar una taula amb la mitjana, la sd, l'error, la n i els límits.
+
+```{r}
+total_results <- longdata %>%   #longdata!,wide data també es podria, no recomano
+	group_by(generation, group, gene) %>% #que ho faci tot dins de la mateixa                                               generació i mateix grup i per cada gen
+	summarise(
+		across(
+		   where(is.numeric),
+		  list(
+		    n = ~sum(!is.na(.x)),
+		    mean = ~mean(.x, na.rm = TRUE), 
+		    sd = ~sd(.x, na.rm = TRUE),
+        error = ~sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))),
+	      upper = ~mean(.x, na.rm = TRUE) + 2 * sd(.x, na.rm = TRUE),
+	      lower = ~mean(.x, na.rm = TRUE) - 2 * sd(.x, na.rm = TRUE)
+		  ),
+		  .names = "{.col}_{.fn}"
+	   )) %>%
+		  as.data.frame() #ensenyar-ho com a dataframe
+
+View(total_results)
+head(total_results)
+
+```
+
+Al tenir activat `na.rm=TRUE` s'eliminen els NA del que estàs calculant.
+
+# Inferència estadística
+
+Per a saber millor el perquè i què fa cada test, recomano consultar el llibre <https://learningstatisticswithr.com/book/>. Si ho voleu com algo rutinari, aquí teniu la taula del protocol que va fer la Mariona Camps al 2016 per al SPSS.
+
+| Nº grups | Factors fixos (variables independents) | Segueix la normalitat? | Segueix la homogeneitat de variàncies? | Son dades aparellades? | Test |
+|:--:|:--:|:--:|:--:|:--:|:--:|
+| 2 | 1 | Si | Si/No | Si/No | T-test |
+|  |  | No | No | Si | Wilcoxon |
+|  |  |  |  | No | U Mann Whitney |
+| 1 (mesures repetides) | 1 | No | No | Si | Friedman |
+| \>2 | 1 | Si | Si |  | Anova one-way (Posthoc -Bonferroni) |
+|  |  |  | No |  | Anova one-way (Posthoc -Dunnet T3 (SPSS); Games-Howell (R) |
+|  |  | No | No |  | Kruskal Wallis (Posthoc Dunn -Bonferroni correction) |
+|  | 2 | Si | Si | Si | Anova two-way mesures repetides |
+|  |  | No | No | Si | ? |
+|  |  | Si | Si | No | Anova two-way |
+|  |  | No | No | No | Art ANOVA |
+
+Sigui com sigui sempre hem de començar mirant la normalitat i homogenitat de variàncies de les dades.
+
+Abans de començar a fer gràfics canviarem el "default theme" a classic.
+
+```{r}
+theme_set(theme_classic())
+```
+
+També, al demanar-li View(), el separador decimal és en punt, però jo sempre treballo amb l'excel amb comes, per tant per poder-ho copiar directament:
+
+```{r,eval=FALSE}
+copy <- results_test%>%
+  mutate(across(where(is.numeric), ~ ifelse(
+    is.na(.),
+    "",
+    format(., decimal.mark = ",", scientific = FALSE))))
+View(copy)
+```
+
+## Normalitat
+
+En el cas que la el número de grups diferents sigui de n\<50 s'ha de fer **Shapiro-Wilk**. En el cas que la n\>50, Kolmogorov-Smirnov, el qual no explicaré ja que no l'hem de fer pràcticament mai.
+
+Per a la normalitat primer es comprova amb un **QQplot**, de manera visual
+
+```{r, warning=FALSE}
+QQplot <- longdata %>% 
+  group_by(generation, group, gene) %>% #com separaras a l'anàlisi posterior
+  ggplot(aes(sample = value)) +
+  stat_qq() +
+  stat_qq_line() +
+  facet_grid(generation + group ~ gene, scales = "free") +
+  theme_minimal() +
+  labs(title = "QQ plots of value by generation, group and gene",
+       y = "Sample Quantiles",
+       x = "Theoretical Quantiles")
+
+QQplot
+```
+
+En el cas de voler només una generació canviar el `group_by(generation)` per `filter(generation == "CA")`.
+
+Com que no som experts en estadística, nosaltres també farem el test de Shapiro-Wilk per a que ens digui si són normals (p\>0.05) o no són normals (p\<0.05)
+
+```{r}
+shapiro_by_group <- longdata %>%
+  group_by(generation, group, gene) %>%
+  summarise(
+    # SPSS-style df = size of the sample used
+    df = sum(!is.na(value)),
+    
+    # Shapiro–Wilk test (only runs if df ≥ 3, same as SPSS)
+    W = if(df >= 3) shapiro.test(value)$statistic else NA_real_,
+    p_value = if(df >= 3) shapiro.test(value)$p.value else NA_real_,
+    
+    .groups = "drop"
+  )%>%
+  mutate(                  #per afegir columna de * significació, es pot treure
+    signif = case_when(
+      is.na(p_value)        ~ "ns",
+      p_value < 0.001       ~ "***",
+      p_value < 0.01        ~ "**",
+      p_value < 0.05        ~ "*",
+      p_value < 0.1  ~ "·",
+      TRUE                  ~ "ns"
+    )) # A R la significació es veu més neta
+
+shapiro_by_group
+```
+
+-   En aquest cas el gen_1 i gen_2 en alguns grups i algunes generacions no segueixen la normalitat, llavors en el nostre cas decidiriem que aplicariem tests de no normal en tots els casos, però es podria discutir a veure quin aplicar.
+
+## Homogeneïtat de les variàncies
+
+Test **Levene** per a que ens digui si les variàncies són homogènies (p\>0.05) o no són homogènies (p\<0.05). Es fa per tots els grups en general, no cal separar grups. En el cas de SPSS es feia amb l'Anova, a R el codi seria:
+
+```{r,  warning=FALSE, message=FALSE}
+library(car)
+levene_long <- longdata %>%
+  group_by(generation, gene) %>%
+  group_modify(~ {
+    
+    # eliminem NA
+    d <- .x[!is.na(.x$value) & !is.na(.x$group), ]
+    
+    # --- Levene clàssics ---
+    lev_mean   <- leveneTest(value ~ group, d, center = mean)
+    lev_median <- leveneTest(value ~ group, d, center = median)
+
+    tibble(
+      method = c("Based on Mean","Based on Median"),
+      F = c(lev_mean[1, "F value"],lev_median[1, "F value"]),
+      df1 = c(lev_mean[1, "Df"],lev_median[1, "Df"]     ),
+      df2 = c(lev_mean[2, "Df"],lev_median[2, "Df"]),
+      p.value = c(lev_mean[1, "Pr(>F)"],lev_median[1, "Pr(>F)"]))
+  }) %>%
+  ungroup() %>%
+  mutate(                  #per afegir columna de * significació, es pot treure
+    signif = case_when(
+      is.na(p.value)        ~ "ns",
+      p.value < 0.001       ~ "***",
+      p.value < 0.01        ~ "**",
+      p.value < 0.05        ~ "*",
+      p.value < 0.1  ~ "·",
+      TRUE                  ~ "ns"
+    )) # A R la significació es veu més neta
+
+levene_long
+```
+
+-   En aquest cas el gen_1 i gen_2 en alguns grups i algunes generacions les variàncies no son homogenies, llavors en el nostre cas decidiriem que aplicariem tests de no homogènies en tots els casos, però es podria discutir a veure quin aplicar.
+
+Aquí també tenim una diferència respecte a SPSS, ja que levene no permet NA, llavors en el format wide elimina tota la observació. Al treballar en long només eliminem la observació del gen concret per tant mantenim més dades per als altres gens. Si es vol comprovar o fer, previ al test LEVENE fer:
+
+```{r, eval=FALSE}
+longdata2 <- data %>% 
+  na.omit() %>% 
+  pivot_longer(cols="gene_1":"gene_4", names_to="gene", values_to = "value" ) %>% 
+  mutate(
+      group = factor(group, 
+                          levels = c("REF", "P", "G", "S", "PGS")), 
+      generation = factor(generation, 
+                          levels = c( "M", "Cd1", "Cd21", "CA")),
+      gene = factor(gene,
+                    levels = c("gene_1", "gene_2", "gene_3", "gene_4")))
+```
+
+A part SPSS ho feia centrat en la mitjana, mediana (amb R ho fem) i "trimmed mean" i "median and with adjusted df". Aquestes últimes no les calculem, però no ho crec necessari ja que normalment els resultats son o tots no significatius o tots significatius.
+
+## Independent samples T-test
+
+Per a comparacions de mitjanes on hi ha dos grups i les mostres son normals: **T-test de mostres independents**
+
+```{r}
+results_ttest <- longdata %>%
+  filter(generation == "CA") %>% #només aquesta té dos grups
+  group_by(generation, gene) %>%
+  summarise(
+    # fer t-test i guardar el resultat
+    t_res = list(t.test(value ~ group, var.equal = T, alternative = "two.sided", conf.level=0.95)), #canviar a F si equal variances not assumed ; paired = F, es separen les variables amb ,
+    .groups = "drop"
+  ) %>%
+  rowwise() %>%
+  mutate(
+    t = t_res$statistic,
+    df = t_res$parameter,
+    mean_diff = diff(t_res$estimate),  # Mean difference (group1 - group2)
+    std_error = abs(mean_diff) / abs(t),  # Std. Error Difference
+    p_one_sided = t_res$p.value / 2,
+    p_two_sided = t_res$p.value,
+    sig = case_when(
+      is.na(t_res$p.value)        ~ "ns",
+      t_res$p.value < 0.001       ~ "***",
+      t_res$p.value < 0.01        ~ "**",
+      t_res$p.value < 0.05        ~ "*",
+      t_res$p.value < 0.1  ~ "·",
+      TRUE                  ~ "ns"), #no cal, per visualitzar-ho millor
+    conf_low = t_res$conf.int[1],
+    conf_high = t_res$conf.int[2]
+  ) %>%
+  select(generation, gene, t, df, p_one_sided, p_two_sided, sig, mean_diff, std_error, conf_low, conf_high)
+
+results_ttest
+```
+
+-   En el cas que la homogeneïtat de variàncies no es compleixi, modificar `var.equal = F`.
+
+-   En el cas de dades aparellades afegir `paired = T` i eliminar `var.equal`
+
+-   En el cas que tenir vectors canvia la formula `t.test(value, group)`. No acostuma a ser el nostre cas, vigilar!!
+
+## One-way ANOVA
+
+Quan tenim més de dos grups i les dades són normals i homogènies fem el **One-way ANOVA**, amb el post-hoc ajustat per **Bonferroni**.
+
+Aquest codi només mostra el resultat
+
+```{r}
+longdata %>% 
+  filter(generation %in% c("M", "Cd1", "Cd21")) %>%
+  mutate(gene_name = gene) %>%
+  group_by(gene) %>%
+  group_walk(~ {
+    cat("\n====================\n")
+    cat("GENE:", unique(.x$gene_name), "\n")
+    cat("Generation:", unique(.x$generation), "\n")
+    print(summary(aov(value ~ group, data = .x)))
+  })
+```
+
+Aquest altre crea una taula per copiar a l'excel
+
+```{r, warning=FALSE, message=FALSE}
+library(rstatix)
+
+results_anova <- longdata %>%
+  filter(generation %in% c("M", "Cd1", "Cd21")) %>% #seleccionar aquelles que sigui                                                         el test correcte
+  group_by(generation, gene) %>%
+  group_map(~ {
+    model <- aov(value ~ group, data = .x)
+    # taula tidy del model
+    tidy_model <- tidy(model)%>% 
+      mutate(gene = .y$gene) %>% 
+      mutate(generation = .y$generation)
+    # fila TOTAL
+    total_row <- tibble(
+      term = "Total",
+      df = sum(tidy_model$df, na.rm = TRUE),
+      sumsq = sum(tidy_model$sumsq, na.rm = TRUE),
+      meansq = NA_real_,
+      statistic = NA_real_,
+      p.value = NA_real_,
+      gene = .y$gene
+    )
+    bind_rows(tidy_model, total_row) 
+  }) %>%
+  bind_rows() %>%
+  select(generation, gene, everything())   %>%
+  mutate(
+    signif = case_when(
+      is.na(p.value)  ~ "ns",
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      p.value < 0.1  ~ "·",
+      TRUE            ~ "ns"))
+
+results_anova
+```
+
+Si fem cada gen per separat el codi és molt més senzill, però tenim més feina manual
+
+```{r}
+dades_anova <- longdata %>% 
+  filter(generation == "M", gene == "gene_1")
+anova <- aov(value ~ group,dades_anova)
+class(anova)
+summary(anova)
+```
+
+### Post-hoc ajustat per Bonferroni
+
+En el cas que doni diferències significatives, passem a fer el post-hoc.
+
+-   Al fer emmeans: Aquest codi agafa cada model ANOVA, calcula les mitjanes ajustades, fa totes les comparacions parell a parell amb Bonferroni, i retorna estimacions + intervals de confiança + p-valors.
+
+```{r}
+library(emmeans)
+
+posthoc_results <- longdata %>% 
+  filter(generation %in% c("M", "Cd1", "Cd21")) %>%
+  group_by(generation, gene) %>%
+  nest() %>%
+  mutate(
+    aov_model = map(data, ~ aov(value ~ group, data = .x)),
+    posthoc = map(
+      aov_model,
+      ~ emmeans(.x, ~ group) %>%
+        contrast("pairwise", adjust = "bonferroni") %>%
+        summary(level = 0.95,infer = c(TRUE, TRUE)) %>%   # IC + p-value
+        as.data.frame())) %>%
+  select(generation, gene, posthoc) %>%
+  unnest(posthoc) %>%
+  mutate(
+    signif = case_when(
+      is.na(p.value)  ~ "ns",
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      p.value < 0.1  ~ "·",
+      TRUE            ~ "ns"))   
+
+posthoc_results
+```
+
+Si ho fèssim per cada gen alhora ho podriem fer amb aquestes fòrmules:
+
+```{r, eval=FALSE}
+pairwise.t.test( x = dades_anova$value,   # outcome variable
+                 g = dades_anova$group_name,        # grouping variable
+                 p.adjust.method = "none"    # which correction to use?
+)
+
+#o
+library(lsr)
+posthocPairwiseT( x = results_anova, p.adjust.method = "bonferroni" )
+
+```
+
+### Post-hoc Games-Howell
+
+En el cas de dades normals però no homogènies, amb l'SPSS faríem Dunnet T3. En R no existeix així que es fa el Games-Howell.
+
+```{r}
+library(rstatix)
+posthoc_gameshowell <- longdata %>%
+  filter(generation == "M") %>%
+  group_by(gene) %>%
+  games_howell_test(value ~ group)
+
+posthoc_gameshowell
+```
+
+## U-Mann Whitney
+
+Quan tenim dos grups i les dades no són ni normals ni homogènies fem el test de **U-Mann Whitney**.
+
+```{r}
+results_umw <- longdata %>%
+  filter(generation == "CA") %>%
+  group_by(gene) %>%
+  wilcox_test(value ~ group) #el que dona R per defecte
+
+results_umw
+```
+
+## Kruskall-Wallis
+
+Quan tenim més de dos grups i les dades no són ni normals ni homogènies fem el test de **Kruskall-Wallis**.
+
+Només l'imprimeix
+
+```{r}
+longdata %>% 
+  filter(generation == "M") %>%
+  mutate(gene_name = gene) %>% 
+  group_by(gene) %>%
+  group_walk(~ {
+    cat("\n====================\n")
+    cat("GENE:", unique(.x$gene_name), "\n")
+    print(kruskal.test(value ~ group, data = .x))
+  })
+```
+
+Per a copiar-lo a l'excel.
+
+```{r}
+results_kruskal <- longdata %>%
+  filter(generation %in% c("M", "Cd1", "Cd21")) %>%
+  group_by(generation, gene) %>%
+  group_map(~ {
+    # Kruskal–Wallis test
+    model <- kruskal.test(value ~ group, data = .x)
+    # tidy del test
+    tidy_model <- tidy(model) %>%
+      mutate(
+        generation = .y$generation,
+        gene = .y$gene,
+        df = parameter 
+      ) %>%
+      select(generation, gene,df,statistic,p.value)
+  }) %>%
+  bind_rows() %>% 
+  mutate(
+    signif = case_when(
+      is.na(p.value)  ~ "ns",
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      p.value < 0.1  ~ "·",
+      TRUE            ~ "ns"))
+
+results_kruskal
+```
+
+Si son significatius, fem el post-hoc Dunn.
+
+### Post-hoc Dunn amb correcció de Bonferroni
+
+Quan les dades no siguin ni normals ni homogènies, es fa el test post-hoc de Dunn amb la correcció de Bonferroni.
+
+```{r}
+posthoc_dunn <- longdata %>%
+  filter(generation == "M") %>%
+  mutate(gene_name = gene) %>%
+  group_by(gene_name) %>%
+  dunn_test(
+    value ~ group,
+    p.adjust.method = "bonferroni")
+
+posthoc_dunn
+```
+
+## Art ANOVA
+
+Quan tenim més de dos grups, les dades no són ni normals ni homogènies i hi ha dues variables independents, és fa **Art ANOVA**. És molt poc comú necessitar aquest test.
+
+Aquest test l'ha fet amb R la Sofía, com que no s'acostuma a necessitar no l'he generalitzat, però us adjunto l'script per si us interessa.
+
+2 factors
+
+```{r, eval=FALSE}
+
+```
+
+3 factors
+
+```{r, eval=FALSE}
+
+```
+
+# Correlacions
+
+Per a correlacionar diferents variables. El default és Pearson, normalment es fa servir **Spearman**. Matriu de correlacions
+
+```{r}
+cor_data <- data %>% 
+  select(where(is.numeric))
+skim(cor_data)
+cor(cor_data, method = "spearman", use="pairwise.complete.obs" )
+```
+
+`use="pairwise.complete.obs"` d'aquesta manera només elimina NA quan fa aquella comparació, no en la resta)
+
+Per a correlacionar-ne dues del teu interés:
+
+```{r}
+cor(x=cor_data$gene_1, y=cor_data$gene_2, method = "spearman", use="pairwise.complete.obs")
+```
+
+Per fer la matriu de scatter-plots
+
+```{r}
+pairs( x = cor_data )
+```
+
+Per triar quines vols observar
+
+```{r}
+pairs( formula = ~ gene_1 + gene_2,
+       data = cor_data)
+```

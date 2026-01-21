@@ -1,6 +1,5 @@
 ---
-title: "Rstudio Scripts"
-author: "Elsa B.F."
+title: "Basics"
 format: 
   html:
     toc: TRUE
@@ -9,46 +8,9 @@ editor: visual
 project:
   type: website
   output-dir: docs
-website:
-  title: "Rstudio Scripts"
-  navbar:
-    left:
-      - href: index.qmd
-        text: Inici
 ---
 
-# Rstudio basics
-
-Bon dia i benvinguts al codi més interessant per a nosaltres en Rstudio. He creat aquesta web per compartir els meus coneixements adquirits al respecte i per anar-la actualitzant a mesura que n'apregui més. M'agradaria comentar que no s'ha fet desde la perfecció lingüística, sinó desde la rapidesa. Espero que no m'ho tingueu en compte.
-
-Tant de bo us sigui útil, Elsa.
-
-## Recomanacions inicials
-
-Si sou com jo i vau aprendre R abans de que existís la intel·ligència artificial, probablement ho recordareu amb por, però això ja no és així.
-
-Per començar recomano sempre tenir una idea de què necessites i vols fer. Seguidament buscar a internet alguna persona que ho expliqui, ja sigui una web o un video i seguir les seves instruccions. Finalment, anar provant el codi amb les teves dades i quan trobis algun error, o vulguis canviar alguna característica, explicar-li a alguna intel·ligència artificial que tens, on vols arribar i quins problemes t'estàs trobant.
-
-No recomano (de moment) anar directament a la intel·ligència artificial.
-
-Us deixo algunes webs que a mi em van anar bé quan vaig tornar aprendre de veritat a treballar amb Rstudio:
-
--   Cursos de Rstudio: <https://education.rstudio.com/learn/beginner/>
-
--   Basics: <https://rladiessydney.org/courses/01-basicbasics-0>
-
--   Estadística: <https://learningstatisticswithr.com/book/>
-
-I alguns que encara no he mirat però poden ser interessants
-
--   R for data science: <https://r4ds.hadley.nz/>
--   Ggplot: <https://ggplot2-book.org/>
--   Graph cookbook: <https://r-graphics.org/index.html>
--   Data visualization: <https://socviz.co/>
-
-## Bàsics
-
-### Instal·lació
+## Instal·lació
 
 Per començar ens haurem de descarregar:
 
@@ -58,7 +20,7 @@ Per començar ens haurem de descarregar:
 
 Un cop ho tingueu instal·lat ja podem començar.
 
-### Zona de treball
+## Zona de treball
 
 Tenim dues maneres de treballar, creant un projecte o agafant una carpeta qualsevol i treballant en un directori de treball.
 
@@ -88,7 +50,7 @@ En aquest cas pots crear diferents carpetes a dins del projecte directament desd
 
 En el cas que feu análisis en més d'un dataset, recomano crear carpetes per a cada un, per exemple "PCR" i dins d'aquesta les tres que acabo de dir.
 
-### Script
+## Script
 
 L'script son les instruccions que aniràs escrivint. Alguns trucs que he anat descobrint són...
 
@@ -122,7 +84,7 @@ Això també fa que aparegui una pestanyeta a l'esquerra del títol i permetrà 
 
 ![](images/Captura%20de%20pantalla%202026-01-16%20134038.png){width="194"}
 
-### Instal·lar i carregar paquets
+## Instal·lar i carregar paquets
 
 R té funcions bàsiques, però per fer-te la vida més fàcil molta gent ha creat funcions que et pots descarregar en paquets. El primer cop que l'utilitzis has d'instal·lar-lo i carregar-lo i els següents només carregar-lo.
 
@@ -143,7 +105,7 @@ library(broom) #poder fer servir funcions com tidy
 library(rstatix) #funcions d'estadística
 ```
 
-### Importar dades
+## Importar dades
 
 Amb la zona de treball preparada i els paquets instal·lats i carregats ja podem començar a treballar, i el primer serà importar les dades.
 
@@ -172,7 +134,7 @@ skim(raw_data) #obtenir estadístics descriptius i característiques de les vari
 
 Si tot està correcte ja podem començar amb el que vulguem.
 
-### Descarregar dades i figures
+## Descarregar dades i figures
 
 Abans de passar a l'anàlisi de dades us indico com descarregar-vos arxius que hagueu generat:
 
@@ -191,7 +153,7 @@ ggsave(here("output","nom fitxer.png"), width = 12, height = 3, dpi = 300)
 #pots canviar la mida i la resolució (dpi)
 ```
 
-### Altres bàsics
+## Altres bàsics
 
 Finalment, escriuré funcions molt bàsiques que segurament ja conegueu però per tenir-les recollides.
 
@@ -237,7 +199,7 @@ Canviar o afegir columnes amb operacions `mutate`
 
 ... entre moltes d'altres que ja aniré explicant.
 
-### Programació en R
+## Programació en R
 
 Realment R és un llenguatge de programació, per tant es poden fer altres coses molt interessants com loops. Aquí ja no entraré però si estàs interessat que sàpiques que existeixen i a vegades el ChatGPT en crea, per tant que els sàpigues interpretar si t'apareixen.
 
@@ -273,7 +235,7 @@ FNAME <- function ( ARG1, ARG2, ETC ) { #funcions
 }
 ```
 
-# Anàlisi de dades
+Anàlisi de dades
 
 Perfecte, doncs ara que ja sabem què és un script i com carregar dades començarem a tractar-les.
 
@@ -339,9 +301,9 @@ Com veiem, ens ha fet un resum general de les dades i variables, totes com a con
 
 Anem a teure'ls-hi suc.
 
-## Transformar el dataset
+# Transformar el dataset
 
-### Tidyverse
+## Tidyverse
 
 Per tal de fer-nos la vida més fàcil, altre gent que treballa amb R ha creat el paquet `tidyverse` el qual, com ja he dit, conté els paquets més importants per a transformar dades i graficar-les. També hi ha gent molt generosa que ha fet CheatSheets dels paquets més útils, que us recomano imprimir i tenir sempre a mà: <https://posit.co/resources/cheatsheets/>
 
@@ -358,7 +320,7 @@ Primer s'indica el dataframe i després comeces a fer accions. Per tant dins d'a
 
 Per altra banda pots fer certes accions a partir de condicions que es troben en un altre dataset (ja ho veurem més endavant).
 
-### Crear nous dataset
+## Crear nous dataset
 
 El següent pas un cop hem importat el dataset és determinar quin tipus de variable és cada una, i a mi m'agrada crear un nou dataset amb les modificacions i deixar el `raw_data` intacte per si en algun moment necessitem alguna dada o fem modificacions irreversibles sense voler no haver de tornar a importar.
 
@@ -374,7 +336,7 @@ Si tenim noms molt complicats, podem afegir abans`clean_names()` i posa tots els
 
 Si us hi fixeu ara les variables que eren de categoria `character` per defecte, ara son `factor` i ja es veuen els nivells.
 
-#### Filtrar dades
+### Filtrar dades
 
 Si per exemple volem extreure només les dades de la generació "M" podriem crear un altre dataset de la següent manera:
 
@@ -393,7 +355,7 @@ data %>%
 
 Fixeu-vos que en aquest cas m'ho ensenya directament. Això és degut a que no m'ho està guardant com a dataframe perquè no he posat `nom_dataset <-` davant de les dades. Pot ser útil per comprovar si el teu codi fa el que vols abans de crear el dataframe.
 
-### Wide format vs Long format
+## Wide format vs Long format
 
 Un concepte molt important a l'hora de utilitzar R és el wide dataset vs long dataset.
 
@@ -451,7 +413,7 @@ head(widedata)
 
 -   `values_from="value"` d'on treurà els valors de cada cel·la
 
-#### Problema dels NA
+### Problema dels NA
 
 És molt important saber en quin format tenim les dades ja que R no treballa bé amb els valors que no existeixen (`NA`). Com us he comentat, jo ja he fet un pre-processat de les dades, per tant he eliminat els outliers i aquelles cel·les estan buides. Al fer `skim` veiem a `n_missing` si en les nostres variables tenim alguns `NA` .
 
@@ -478,7 +440,7 @@ widedata %>%
 
 Com podeu veure al treballar amb les dades long els resultats són els mateixos que amb les dates originals i no hem eliminat cap rata sencera. Fixeu-vos també com les dades que hem aconseguit a partir de long estan ordenades com jo volia (li he indicat al crear el dataset) i no com R vol (com en el cas de les originals).
 
-#### Exemple random accions extra
+### Exemple random accions extra
 
 Quan estava re-aprenent-ho tot, em van fer crear un dataset nou amb moltes variables noves i altres canviades, i us ho poso d'exemple perquè sapigueu que aquestes coses es poden fer
 
@@ -505,742 +467,3 @@ cleanbeaches_new <- cleanbeaches %>%
 -   `group_by(site)%>% mutate(buggier_site = beachbugs > mean(beachbugs, na.rm=T))` per començar el que facis ara agrupa-ho per site i llavors afegeix una columna que em digui si la observació és major a la mitjana només del site.
 
     -   Al haver fet `group_by()` el que es calculi a partir d'ara es calculara en els diferents sites, no a tot el dataset. Per evitar-ho despres s'ha de fer `ungroup()`
-
-## Estadística descriptiva
-
-La majoria de l'estadística descriptiva ja la mirem amb l'excel, però per comprovar que tot ho estem fent igual, podem demanar una taula amb la mitjana, la sd, l'error, la n i els límits.
-
-```{r}
-total_results <- longdata %>%   #longdata!,wide data també es podria, no recomano
-	group_by(generation, group, gene) %>% #que ho faci tot dins de la mateixa                                               generació i mateix grup i per cada gen
-	summarise(
-		across(
-		   where(is.numeric),
-		  list(
-		    n = ~sum(!is.na(.x)),
-		    mean = ~mean(.x, na.rm = TRUE), 
-		    sd = ~sd(.x, na.rm = TRUE),
-        error = ~sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))),
-	      upper = ~mean(.x, na.rm = TRUE) + 2 * sd(.x, na.rm = TRUE),
-	      lower = ~mean(.x, na.rm = TRUE) - 2 * sd(.x, na.rm = TRUE)
-		  ),
-		  .names = "{.col}_{.fn}"
-	   )) %>%
-		  as.data.frame() #ensenyar-ho com a dataframe
-
-View(total_results)
-head(total_results)
-
-```
-
-Al tenir activat `na.rm=TRUE` s'eliminen els NA del que estàs calculant.
-
-## Inferència estadística
-
-Per a saber millor el perquè i què fa cada test, recomano consultar el llibre <https://learningstatisticswithr.com/book/>. Si ho voleu com algo rutinari, aquí teniu la taula del protocol que va fer la Mariona Camps al 2016 per al SPSS.
-
-| Nº grups | Factors fixos (variables independents) | Segueix la normalitat? | Segueix la homogeneitat de variàncies? | Son dades aparellades? | Test |
-|:----------:|:----------:|:----------:|:----------:|:----------:|:----------:|
-| 2 | 1 | Si | Si/No | Si/No | T-test |
-|  |  | No | No | Si | Wilcoxon |
-|  |  |  |  | No | U Mann Whitney |
-| 1 (mesures repetides) | 1 | No | No | Si | Friedman |
-| \>2 | 1 | Si | Si |  | Anova one-way (Posthoc -Bonferroni) |
-|  |  |  | No |  | Anova one-way (Posthoc -Dunnet T3 (SPSS); Games-Howell (R) |
-|  |  | No | No |  | Kruskal Wallis (Posthoc Dunn -Bonferroni correction) |
-|  | 2 | Si | Si | Si | Anova two-way mesures repetides |
-|  |  | No | No | Si | ? |
-|  |  | Si | Si | No | Anova two-way |
-|  |  | No | No | No | Art ANOVA |
-
-Sigui com sigui sempre hem de començar mirant la normalitat i homogenitat de variàncies de les dades.
-
-Abans de començar a fer gràfics canviarem el "default theme" a classic.
-
-```{r}
-theme_set(theme_classic())
-```
-
-També, al demanar-li View(), el separador decimal és en punt, però jo sempre treballo amb l'excel amb comes, per tant per poder-ho copiar directament:
-
-```{r,eval=FALSE}
-copy <- results_test%>%
-  mutate(across(where(is.numeric), ~ ifelse(
-    is.na(.),
-    "",
-    format(., decimal.mark = ",", scientific = FALSE))))
-View(copy)
-```
-
-### Normalitat
-
-En el cas que la el número de grups diferents sigui de n\<50 s'ha de fer **Shapiro-Wilk**. En el cas que la n\>50, Kolmogorov-Smirnov, el qual no explicaré ja que no l'hem de fer pràcticament mai.
-
-Per a la normalitat primer es comprova amb un **QQplot**, de manera visual
-
-```{r, warning=FALSE}
-QQplot <- longdata %>% 
-  group_by(generation, group, gene) %>% #com separaras a l'anàlisi posterior
-  ggplot(aes(sample = value)) +
-  stat_qq() +
-  stat_qq_line() +
-  facet_grid(generation + group ~ gene, scales = "free") +
-  theme_minimal() +
-  labs(title = "QQ plots of value by generation, group and gene",
-       y = "Sample Quantiles",
-       x = "Theoretical Quantiles")
-
-QQplot
-```
-
-En el cas de voler només una generació canviar el `group_by(generation)` per `filter(generation == "CA")`.
-
-Com que no som experts en estadística, nosaltres també farem el test de Shapiro-Wilk per a que ens digui si són normals (p\>0.05) o no són normals (p\<0.05)
-
-```{r}
-shapiro_by_group <- longdata %>%
-  group_by(generation, group, gene) %>%
-  summarise(
-    # SPSS-style df = size of the sample used
-    df = sum(!is.na(value)),
-    
-    # Shapiro–Wilk test (only runs if df ≥ 3, same as SPSS)
-    W = if(df >= 3) shapiro.test(value)$statistic else NA_real_,
-    p_value = if(df >= 3) shapiro.test(value)$p.value else NA_real_,
-    
-    .groups = "drop"
-  )%>%
-  mutate(                  #per afegir columna de * significació, es pot treure
-    signif = case_when(
-      is.na(p_value)        ~ "ns",
-      p_value < 0.001       ~ "***",
-      p_value < 0.01        ~ "**",
-      p_value < 0.05        ~ "*",
-      p_value < 0.1  ~ "·",
-      TRUE                  ~ "ns"
-    )) # A R la significació es veu més neta
-
-shapiro_by_group
-```
-
--   En aquest cas el gen_1 i gen_2 en alguns grups i algunes generacions no segueixen la normalitat, llavors en el nostre cas decidiriem que aplicariem tests de no normal en tots els casos, però es podria discutir a veure quin aplicar.
-
-### Homogeneïtat de les variàncies
-
-Test **Levene** per a que ens digui si les variàncies són homogènies (p\>0.05) o no són homogènies (p\<0.05). Es fa per tots els grups en general, no cal separar grups. En el cas de SPSS es feia amb l'Anova, a R el codi seria:
-
-```{r,  warning=FALSE, message=FALSE}
-library(car)
-levene_long <- longdata %>%
-  group_by(generation, gene) %>%
-  group_modify(~ {
-    
-    # eliminem NA
-    d <- .x[!is.na(.x$value) & !is.na(.x$group), ]
-    
-    # --- Levene clàssics ---
-    lev_mean   <- leveneTest(value ~ group, d, center = mean)
-    lev_median <- leveneTest(value ~ group, d, center = median)
-
-    tibble(
-      method = c("Based on Mean","Based on Median"),
-      F = c(lev_mean[1, "F value"],lev_median[1, "F value"]),
-      df1 = c(lev_mean[1, "Df"],lev_median[1, "Df"]     ),
-      df2 = c(lev_mean[2, "Df"],lev_median[2, "Df"]),
-      p.value = c(lev_mean[1, "Pr(>F)"],lev_median[1, "Pr(>F)"]))
-  }) %>%
-  ungroup() %>%
-  mutate(                  #per afegir columna de * significació, es pot treure
-    signif = case_when(
-      is.na(p.value)        ~ "ns",
-      p.value < 0.001       ~ "***",
-      p.value < 0.01        ~ "**",
-      p.value < 0.05        ~ "*",
-      p.value < 0.1  ~ "·",
-      TRUE                  ~ "ns"
-    )) # A R la significació es veu més neta
-
-levene_long
-```
-
--   En aquest cas el gen_1 i gen_2 en alguns grups i algunes generacions les variàncies no son homogenies, llavors en el nostre cas decidiriem que aplicariem tests de no homogènies en tots els casos, però es podria discutir a veure quin aplicar.
-
-Aquí també tenim una diferència respecte a SPSS, ja que levene no permet NA, llavors en el format wide elimina tota la observació. Al treballar en long només eliminem la observació del gen concret per tant mantenim més dades per als altres gens. Si es vol comprovar o fer, previ al test LEVENE fer:
-
-```{r, eval=FALSE}
-longdata2 <- data %>% 
-  na.omit() %>% 
-  pivot_longer(cols="gene_1":"gene_4", names_to="gene", values_to = "value" ) %>% 
-  mutate(
-      group = factor(group, 
-                          levels = c("REF", "P", "G", "S", "PGS")), 
-      generation = factor(generation, 
-                          levels = c( "M", "Cd1", "Cd21", "CA")),
-      gene = factor(gene,
-                    levels = c("gene_1", "gene_2", "gene_3", "gene_4")))
-```
-
-A part SPSS ho feia centrat en la mitjana, mediana (amb R ho fem) i "trimmed mean" i "median and with adjusted df". Aquestes últimes no les calculem, però no ho crec necessari ja que normalment els resultats son o tots no significatius o tots significatius.
-
-### Independent samples T-test
-
-Per a comparacions de mitjanes on hi ha dos grups i les mostres son normals: **T-test de mostres independents**
-
-```{r}
-results_ttest <- longdata %>%
-  filter(generation == "CA") %>% #només aquesta té dos grups
-  group_by(generation, gene) %>%
-  summarise(
-    # fer t-test i guardar el resultat
-    t_res = list(t.test(value ~ group, var.equal = T, alternative = "two.sided", conf.level=0.95)), #canviar a F si equal variances not assumed ; paired = F, es separen les variables amb ,
-    .groups = "drop"
-  ) %>%
-  rowwise() %>%
-  mutate(
-    t = t_res$statistic,
-    df = t_res$parameter,
-    mean_diff = diff(t_res$estimate),  # Mean difference (group1 - group2)
-    std_error = abs(mean_diff) / abs(t),  # Std. Error Difference
-    p_one_sided = t_res$p.value / 2,
-    p_two_sided = t_res$p.value,
-    sig = case_when(
-      is.na(t_res$p.value)        ~ "ns",
-      t_res$p.value < 0.001       ~ "***",
-      t_res$p.value < 0.01        ~ "**",
-      t_res$p.value < 0.05        ~ "*",
-      t_res$p.value < 0.1  ~ "·",
-      TRUE                  ~ "ns"), #no cal, per visualitzar-ho millor
-    conf_low = t_res$conf.int[1],
-    conf_high = t_res$conf.int[2]
-  ) %>%
-  select(generation, gene, t, df, p_one_sided, p_two_sided, sig, mean_diff, std_error, conf_low, conf_high)
-
-results_ttest
-```
-
--   En el cas que la homogeneïtat de variàncies no es compleixi, modificar `var.equal = F`.
-
--   En el cas de dades aparellades afegir `paired = T` i eliminar `var.equal`
-
--   En el cas que tenir vectors canvia la formula `t.test(value, group)`. No acostuma a ser el nostre cas, vigilar!!
-
-### One-way ANOVA
-
-Quan tenim més de dos grups i les dades són normals i homogènies fem el **One-way ANOVA**, amb el post-hoc ajustat per **Bonferroni**.
-
-Aquest codi només mostra el resultat
-
-```{r}
-longdata %>% 
-  filter(generation %in% c("M", "Cd1", "Cd21")) %>%
-  mutate(gene_name = gene) %>%
-  group_by(gene) %>%
-  group_walk(~ {
-    cat("\n====================\n")
-    cat("GENE:", unique(.x$gene_name), "\n")
-    cat("Generation:", unique(.x$generation), "\n")
-    print(summary(aov(value ~ group, data = .x)))
-  })
-```
-
-Aquest altre crea una taula per copiar a l'excel
-
-```{r, warning=FALSE, message=FALSE}
-library(rstatix)
-
-results_anova <- longdata %>%
-  filter(generation %in% c("M", "Cd1", "Cd21")) %>% #seleccionar aquelles que sigui                                                         el test correcte
-  group_by(generation, gene) %>%
-  group_map(~ {
-    model <- aov(value ~ group, data = .x)
-    # taula tidy del model
-    tidy_model <- tidy(model)%>% 
-      mutate(gene = .y$gene) %>% 
-      mutate(generation = .y$generation)
-    # fila TOTAL
-    total_row <- tibble(
-      term = "Total",
-      df = sum(tidy_model$df, na.rm = TRUE),
-      sumsq = sum(tidy_model$sumsq, na.rm = TRUE),
-      meansq = NA_real_,
-      statistic = NA_real_,
-      p.value = NA_real_,
-      gene = .y$gene
-    )
-    bind_rows(tidy_model, total_row) 
-  }) %>%
-  bind_rows() %>%
-  select(generation, gene, everything())   %>%
-  mutate(
-    signif = case_when(
-      is.na(p.value)  ~ "ns",
-      p.value < 0.001 ~ "***",
-      p.value < 0.01  ~ "**",
-      p.value < 0.05  ~ "*",
-      p.value < 0.1  ~ "·",
-      TRUE            ~ "ns"))
-
-results_anova
-```
-
-Si fem cada gen per separat el codi és molt més senzill, però tenim més feina manual
-
-```{r}
-dades_anova <- longdata %>% 
-  filter(generation == "M", gene == "gene_1")
-anova <- aov(value ~ group,dades_anova)
-class(anova)
-summary(anova)
-```
-
-#### Post-hoc ajustat per Bonferroni
-
-En el cas que doni diferències significatives, passem a fer el post-hoc.
-
--   Al fer emmeans: Aquest codi agafa cada model ANOVA, calcula les mitjanes ajustades, fa totes les comparacions parell a parell amb Bonferroni, i retorna estimacions + intervals de confiança + p-valors.
-
-```{r}
-library(emmeans)
-
-posthoc_results <- longdata %>% 
-  filter(generation %in% c("M", "Cd1", "Cd21")) %>%
-  group_by(generation, gene) %>%
-  nest() %>%
-  mutate(
-    aov_model = map(data, ~ aov(value ~ group, data = .x)),
-    posthoc = map(
-      aov_model,
-      ~ emmeans(.x, ~ group) %>%
-        contrast("pairwise", adjust = "bonferroni") %>%
-        summary(level = 0.95,infer = c(TRUE, TRUE)) %>%   # IC + p-value
-        as.data.frame())) %>%
-  select(generation, gene, posthoc) %>%
-  unnest(posthoc) %>%
-  mutate(
-    signif = case_when(
-      is.na(p.value)  ~ "ns",
-      p.value < 0.001 ~ "***",
-      p.value < 0.01  ~ "**",
-      p.value < 0.05  ~ "*",
-      p.value < 0.1  ~ "·",
-      TRUE            ~ "ns"))   
-
-posthoc_results
-```
-
-Si ho fèssim per cada gen alhora ho podriem fer amb aquestes fòrmules:
-
-```{r, eval=FALSE}
-pairwise.t.test( x = dades_anova$value,   # outcome variable
-                 g = dades_anova$group_name,        # grouping variable
-                 p.adjust.method = "none"    # which correction to use?
-)
-
-#o
-library(lsr)
-posthocPairwiseT( x = results_anova, p.adjust.method = "bonferroni" )
-
-```
-
-#### Post-hoc Games-Howell
-
-En el cas de dades normals però no homogènies, amb l'SPSS faríem Dunnet T3. En R no existeix així que es fa el Games-Howell.
-
-```{r}
-library(rstatix)
-posthoc_gameshowell <- longdata %>%
-  filter(generation == "M") %>%
-  group_by(gene) %>%
-  games_howell_test(value ~ group)
-
-posthoc_gameshowell
-```
-
-### U-Mann Whitney
-
-Quan tenim dos grups i les dades no són ni normals ni homogènies fem el test de **U-Mann Whitney**.
-
-```{r}
-results_umw <- longdata %>%
-  filter(generation == "CA") %>%
-  group_by(gene) %>%
-  wilcox_test(value ~ group) #el que dona R per defecte
-
-results_umw
-```
-
-### Kruskall-Wallis
-
-Quan tenim més de dos grups i les dades no són ni normals ni homogènies fem el test de **Kruskall-Wallis**.
-
-Només l'imprimeix
-
-```{r}
-longdata %>% 
-  filter(generation == "M") %>%
-  mutate(gene_name = gene) %>% 
-  group_by(gene) %>%
-  group_walk(~ {
-    cat("\n====================\n")
-    cat("GENE:", unique(.x$gene_name), "\n")
-    print(kruskal.test(value ~ group, data = .x))
-  })
-```
-
-Per a copiar-lo a l'excel.
-
-```{r}
-results_kruskal <- longdata %>%
-  filter(generation %in% c("M", "Cd1", "Cd21")) %>%
-  group_by(generation, gene) %>%
-  group_map(~ {
-    # Kruskal–Wallis test
-    model <- kruskal.test(value ~ group, data = .x)
-    # tidy del test
-    tidy_model <- tidy(model) %>%
-      mutate(
-        generation = .y$generation,
-        gene = .y$gene,
-        df = parameter 
-      ) %>%
-      select(generation, gene,df,statistic,p.value)
-  }) %>%
-  bind_rows() %>% 
-  mutate(
-    signif = case_when(
-      is.na(p.value)  ~ "ns",
-      p.value < 0.001 ~ "***",
-      p.value < 0.01  ~ "**",
-      p.value < 0.05  ~ "*",
-      p.value < 0.1  ~ "·",
-      TRUE            ~ "ns"))
-
-results_kruskal
-```
-
-Si son significatius, fem el post-hoc Dunn.
-
-#### Post-hoc Dunn amb correcció de Bonferroni
-
-Quan les dades no siguin ni normals ni homogènies, es fa el test post-hoc de Dunn amb la correcció de Bonferroni.
-
-```{r}
-posthoc_dunn <- longdata %>%
-  filter(generation == "M") %>%
-  mutate(gene_name = gene) %>%
-  group_by(gene_name) %>%
-  dunn_test(
-    value ~ group,
-    p.adjust.method = "bonferroni")
-
-posthoc_dunn
-```
-
-### Art ANOVA
-
-Quan tenim més de dos grups, les dades no són ni normals ni homogènies i hi ha dues variables independents, és fa **Art ANOVA**. És molt poc comú necessitar aquest test.
-
-Aquest test l'ha fet amb R la Sofía, com que no s'acostuma a necessitar no l'he generalitzat, però us adjunto l'script per si us interessa.
-
-2 factors
-
-```{r, eval=FALSE}
-
-```
-
-3 factors
-
-```{r, eval=FALSE}
-
-```
-
-## Correlacions
-
-Per a correlacionar diferents variables. El default és Pearson, normalment es fa servir **Spearman**. Matriu de correlacions
-
-```{r}
-cor_data <- data %>% 
-  select(where(is.numeric))
-skim(cor_data)
-cor(cor_data, method = "spearman", use="pairwise.complete.obs" )
-```
-
-`use="pairwise.complete.obs"` d'aquesta manera només elimina NA quan fa aquella comparació, no en la resta)
-
-Per a correlacionar-ne dues del teu interés:
-
-```{r}
-cor(x=cor_data$gene_1, y=cor_data$gene_2, method = "spearman", use="pairwise.complete.obs")
-```
-
-Per fer la matriu de scatter-plots
-
-```{r}
-pairs( x = cor_data )
-```
-
-Per triar quines vols observar
-
-```{r}
-pairs( formula = ~ gene_1 + gene_2,
-       data = cor_data)
-```
-
-# Gràfics
-
-Per a fer gràfics R ja et dona opcions per defecte, però per a triar i personalitzar certs aspectes és millor fer-ho amb `ggplot` (inclòs a `tidyverse`). Recomano molt tenir la Cheatsheet de `ggplot2` impresa per anar consultant les ocpions.
-
-## PCR
-
-Per a graficar les dades de PCR, farem un núvol de punts amb línia a la mitjana i barres d'error.
-
-Comencem fent tot el que ja hem explicat
-
-```{r, eval=FALSE}
-#Carregar els paquets bàsics -------
-library(tidyverse)
-library(here)
-library(readxl)
-library(janitor)
-library(skimr)
-
-#Importar dades i preprarar-les-------
-raw_data <- read_excel(here("data", "PCR.xlsx")) 
-
-#crear dataset amb el que treballarem
-data <- raw_data %>% 
-  clean_names() %>%
-  mutate(across(c(group, sex, rat, generation), as.factor)) 
-
-skim(data) 
-
-#creem long data
-longdata <- data %>% 
-  pivot_longer(cols="gene_1":"gene_4", names_to="gene", values_to = "value" ) %>% 
-  mutate(
-      group = factor(group, 
-                          levels = c("REF", "P", "G", "S", "PGS")), 
-      generation = factor(generation, 
-                          levels = c( "M", "Cd1", "Cd21", "CA")),
-      gene = factor(gene,
-                    levels = c("gene_1", "gene_2", "gene_3", "gene_4")))
-```
-
-Seguidament podem fer un gràfic previ per veure com es comporten els gens en general, sense separar per generació.
-
-```{r}
-longdata %>%
-  na.omit() %>% 
-  group_by(generation) %>% 
-  ggplot(aes(x=group, y=value, colour=generation))+ 
-    geom_jitter(position = position_dodge(width = 0.6))+ 
-    scale_x_discrete(limits = c("REF", "P", "G", "S","PGS"))+ 
-    facet_wrap(~gene) 
-```
-
-Com podeu veure abans de fer el gràfic hem preparat les dades en la mateixa pipeline, ometent els NA i agrupant per generacions. Seguidament li hem demanat al gràfic:
-
--   `ggplot(aes(x=group, y=value, colour=generation))+` quin és l'eix de les x, quin és l'eix de les y i que determina el color
-
--   `geom_jitter(position = position_dodge(width = 0.6))+` fer un gràfic de punts amb els valors espaiats
-
--   `scale_x_discrete(limits = c("REF", "P", "G", "S","PGS"))+` l'ordre en que apareixen els grups a l'eix de les x
-
--   `facet_wrap(~gene)` indica que ho separi en mini gràfics, un per cada gen. També podriem fer servir `facet_grid(~)` per a separar-ho de manera més controlada, ho veurem al següent.
-
-Anem a personalitzar-lo més i afegir les barres d'error i mitjana. Abans de res hem de crear un dataset que contingui la mitjana i error estàndard de cada grup per cada gen dins de cada generació.
-
-```{r}
-# Compute summary stats per a afegir al gràfic-------
-summary_data <- longdata %>%
-  na.omit() %>%
-  group_by(generation, gene, group) %>% 
-  summarise(
-    mean = mean(value), #calculem mitjana
-    se = sd(value)/sqrt(n()), #calculem error estàndard
-    .groups = "drop" 
-  )
-
-#canviar estil del gràfic default
-theme_set(theme_classic()) 
-
-#definim els colors que volem per grup
-colors <- c("REF" = "#999999",   # Grey
-            "PGS" = "#1b9e77",   # Green 1
-            "S" = "#66a61e",   # Green 2
-            "G" = "#a6d854",   # Green 3
-            "P" = "#d9f0a3")   # Green 4
-```
-
-Seguidament ja podem fer el gràfic final.
-
-Primer canviem l'ordre en el que apareixeran els gens i el nom del grup de la generació per a que ens surti complet.
-
-```{r}
-#reordenar com sortiran els gens com interessi
-gene_order <- c("gene_1", "gene_2", "gene_3", "gene_4")
-longdata$gene <- factor(longdata$gene, levels = gene_order)
-summary_data$gene <- factor(summary_data$gene, levels = gene_order)
-
-#canvi nom generation
-longdata$generation <- factor(
-  longdata$generation,
-  levels = c("M", "Cd1", "Cd21","CA"),
-  labels = c("Dams","Day-1 offspring", "Day-21 offspring", "Adult offspring"))
-
-summary_data$generation <- factor(
-  summary_data$generation,
-  levels = c("M", "Cd1", "Cd21","CA"),
-  labels = c("Dams","Day-1 offspring", "Day-21 offspring", "Adult offspring" ))
-```
-
-Ja podem fer el gràfic
-
-```{r}
-#GRÀFIC BO TOTALS------
-ggplot <- longdata %>% #dataset a graficar en format "long"
-  na.omit() %>% #no tenir en compte els NA
-  ggplot(aes(x=group, y=value, colour=group))+ 
-  geom_jitter()+ #gràfic punts
-  scale_x_discrete(limits = c("REF", "P", "G", "S","PGS"), 
-                   expand = expansion(add = 1))+ #afegir espai entre grups
-  facet_grid(generation~gene, 
-             labeller = labeller(gene = gene_order))+ #ordre 
-  geom_hline(yintercept = 100, color = "black",linetype = "dotted", linewidth = 0.5)+
-  geom_errorbar(data = summary_data, 
-                aes(x = group, y = mean, ymin = mean - se, ymax = mean + se, width = 0.25))+ #afegir barres d'error
-  geom_errorbar( #afegir línia mitjana
-    data = summary_data,
-    aes(x = group,
-        ymin = mean,
-        ymax = mean,
-        colour = group),
-    width = 0.8,
-    inherit.aes = FALSE,
-    linewidth = 1)+ 
-  scale_colour_manual(values=colors, 
-                      breaks = c("REF", "P", "G", "S", "PGS"))+ 
-  labs(title= "PCR small intestine", 
-       x= "Group", 
-       y= "Relative mRNA levels (%)",
-       colour= "Group")+  
-  theme(plot.title = element_text(hjust = 0.5), 
-        strip.text.x = element_text(size = 12),
-        strip.text.y = element_text(size = 12, hjust = 0.75),
-        strip.background = element_blank(),
-        panel.spacing = unit(0.5, "cm")) #espai entre els mini gràfics
-
-ggplot
-```
-
--   `geom_hline(yintercept = 100, color = "black",linetype = "dotted", size = 0.5)+` Afegim una línia de punts al 100
-
--   `geom_errorbar(data = summary_data, aes(x = group_name, y = mean, ymin = mean - se, ymax = mean + se, width = 0.25))+` Afegim les barres d'error
-
--   `geom_errorbar(data = summary_data, aes( x = group, ymin = mean, ymax = mean, colour = group), width = 0.8, inherit.aes = FALSE, linewidth = 1 )+` Afegim línia a la mitjana (no hi ha manera de fer-ho directe).
-
--   `labs(title= "PCR small intestine", gràfic x= "Group",  eix x y= "Relative mRNA levels (%)", colour= "Group")+` Et permet canviar el nom dels eixos i títol i nom de la llegenda, en aquest cas ens la fa del color però també la podria fer per colour, fill, shape, linetype, size...
-
-Un altre exemple seria triar només una generació, on només canvia el següent
-
-```{r}
-summary_data_d1 <-filter(summary_data, generation == "Day-1 offspring") #filtrem summary_data
-
-longdata %>%
-  na.omit() %>% 
-  filter(generation=="Day-1 offspring") %>% #afegim filtre!!
-  ggplot(aes(x=group, y=value, colour=group))+
-  geom_jitter()+
-  scale_x_discrete(limits = c("REF", "P", "G","PGS"),
-                   expand = expansion(add = 1))+
-  facet_grid(~gene,    #només separem per gen
-             labeller = labeller(gene = gene_order))+
-  geom_hline(yintercept = 100, color = "black",linetype = "dotted", size = 0.5)+ 
-  geom_errorbar(data = summary_data_d1, #canvi dataset
-                aes(x = group, y = mean, ymin = mean - se, ymax = mean + se, width = 0.25))+
-  geom_errorbar(data = summary_data_d1, #canvi dataset
-    aes(x = group,
-      ymin = mean,
-      ymax = mean,
-      colour = group),
-    width = 0.8,
-    inherit.aes = FALSE,
-    linewidth = 1)+ 
-  scale_colour_manual(values=colors,
-                breaks = c("REF", "P", "G", "PGS"))+
-  labs(title= "PCR small intestine Day-1 Offspring", 
-       x= "Group",
-       y= "Relative mRNA levels (%)",
-       colour= "Group")+ 
-  theme(plot.title = element_text(hjust = 0.5), 
-        strip.text.x = element_text(size = 12),
-        strip.background = element_blank(),
-        panel.spacing = unit(0.5, "cm"))
-```
-
-I finalment ho guardem, si veiem que surt algo tallat o massa apretat, podem fer la width o height més gran. Aquesta instrucció ens guardarà l'últim plot.
-
-```{r,eval=FALSE}
-ggsave(here("output","nom fitxer.png"), width = 18, height = 12, dpi = 300) 
-```
-
-Falta veure com afegiriem la significància.
-
-## Heatmap log~2~(FC)
-
-Per a fer un heatmap amb augment o disminució de concentracions respecte al grup REF amb la significància, la qual tenim en una altre taula d'excel.
-
-On ho vaig aprendre: <https://youtu.be/369PHkv1fPg?feature=shared>
-
-En el cas de que tinguem els valors per cada observació, primer haurem de calcular el log~2~(FC) de les dades.
-
-```{r, warning=FALSE, message=FALSE, eval=FALSE}
-
-#Carregar els paquets bàsics -------
-library(tidyverse)
-library(here)
-library(readxl)
-library(janitor)
-library(skimr)
-
-#paquet extra: 
-library(pheatmap)
-
-#Importar dades i preprarar-les-------
-raw_data <- read_excel(here("data", "PCR.xlsx")) 
-
-data <- raw_data %>% 
-  clean_names() %>%
-  mutate(across(c(group, sex, rat, generation), as.factor)) 
-
-skim(data)
-```
-
-Convertim les dades
-
-A partir d'aquí s'ha de revisar
-
-```{r, eval=FALSE}
-data_log2<- data %>% 
-  group_by(group) %>%
-  mutate(across(
-    where(is.numeric),
-    ~ ifelse(is.na(.), mean(., na.rm = TRUE), .)
-  )) %>% 
-  ungroup() %>% 
-  mutate(across(
-      3:last_col(),
-      ~ .x / mean(.x [group == "REF"], na.rm = TRUE)
-    )) %>% #canviem els NA per la mitjana d'aquell metabolit dins del grup
-  mutate(across(3:last_col(), log2)) #aplicar logaritme
-
-data_HM <- data_log2 %>%
-  select(-group) %>%              # 1️⃣ eliminar columna group
-  column_to_rownames("rat") %>%   # 2️⃣ rat → rownames
-  t() %>%                         # 3️⃣ transposar
-  as.data.frame()
-
-mat_data <- data.matrix(data_HM) #fem una matriu
-```
-
-Espero que us hagi servit!

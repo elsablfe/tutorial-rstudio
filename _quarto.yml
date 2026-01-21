@@ -9,7 +9,11 @@ website:
     - href: index.qmd
       text: Inici
     - href: tutorial.qmd
-      text: Tutorial
+      text: Basics
+    - href: estadistica.qmd
+      text: Estadística
+    - href: grafics.qmd
+      text: Gràfics
 
 format:
   html:

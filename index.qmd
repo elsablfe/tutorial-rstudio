@@ -6,4 +6,31 @@ project:
   output-dir: docs
 ---
 
-Benvinguts a la meva web!
+# Rstudio basics
+
+Bon dia i benvinguts al codi més interessant per a nosaltres en Rstudio. He creat aquesta web per compartir els meus coneixements adquirits al respecte i per anar-la actualitzant a mesura que n'apregui més. M'agradaria comentar que no s'ha fet desde la perfecció lingüística, sinó desde la rapidesa. Espero que no m'ho tingueu en compte.
+
+Tant de bo us sigui útil, Elsa.
+
+## Recomanacions inicials
+
+Si sou com jo i vau aprendre R abans de que existís la intel·ligència artificial, probablement ho recordareu amb por, però això ja no és així.
+
+Per començar recomano sempre tenir una idea de què necessites i vols fer. Seguidament buscar a internet alguna persona que ho expliqui, ja sigui una web o un video i seguir les seves instruccions. Finalment, anar provant el codi amb les teves dades i quan trobis algun error, o vulguis canviar alguna característica, explicar-li a alguna intel·ligència artificial que tens, on vols arribar i quins problemes t'estàs trobant.
+
+No recomano (de moment) anar directament a la intel·ligència artificial.
+
+Us deixo algunes webs que a mi em van anar bé quan vaig tornar aprendre de veritat a treballar amb Rstudio:
+
+-   Cursos de Rstudio: <https://education.rstudio.com/learn/beginner/>
+
+-   Basics: <https://rladiessydney.org/courses/01-basicbasics-0>
+
+-   Estadística: <https://learningstatisticswithr.com/book/>
+
+I alguns que encara no he mirat però poden ser interessants
+
+-   R for data science: <https://r4ds.hadley.nz/>
+-   Ggplot: <https://ggplot2-book.org/>
+-   Graph cookbook: <https://r-graphics.org/index.html>
+-   Data visualization: <https://socviz.co/>

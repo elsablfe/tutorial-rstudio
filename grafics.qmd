@@ -1,0 +1,295 @@
+---
+title: "Gràfics"
+format: html
+editor: visual
+project:
+  type: website
+  output-dir: docs
+---
+
+# Gràfics
+
+Les dades amb les que treballarem, segurament ja ho heu fet.
+
+```{r}
+library(tidyverse) 
+library(here) 
+library(readxl) 
+library(janitor) 
+library(skimr) 
+library(broom) 
+library(rstatix) 
+
+raw_data <- read_excel(here("Basic", "data", "PCR.xlsx"),  sheet = "relative")
+
+data <- raw_data %>% 
+  mutate(across(c(group, sex, rat, generation), as.factor)) 
+
+longdata <- data %>% 
+  pivot_longer(cols="gene_1":"gene_4", names_to="gene", values_to = "value" ) %>% 
+  mutate(
+      group = factor(group, 
+                          levels = c("REF", "P", "G", "S", "PGS")), 
+      generation = factor(generation, 
+                          levels = c( "M", "Cd1", "Cd21", "CA")),
+      gene = factor(gene,
+                    levels = c("gene_1", "gene_2", "gene_3", "gene_4"))
+                    )
+```
+
+Per a fer gràfics R ja et dona opcions per defecte, però per a triar i personalitzar certs aspectes és millor fer-ho amb `ggplot` (inclòs a `tidyverse`). Recomano molt tenir la Cheatsheet de `ggplot2` impresa per anar consultant les ocpions.
+
+## PCR
+
+Per a graficar les dades de PCR, farem un núvol de punts amb línia a la mitjana i barres d'error.
+
+Comencem fent tot el que ja hem explicat
+
+```{r, eval=FALSE}
+#Carregar els paquets bàsics -------
+library(tidyverse)
+library(here)
+library(readxl)
+library(janitor)
+library(skimr)
+
+#Importar dades i preprarar-les-------
+raw_data <- read_excel(here("data", "PCR.xlsx")) 
+
+#crear dataset amb el que treballarem
+data <- raw_data %>% 
+  clean_names() %>%
+  mutate(across(c(group, sex, rat, generation), as.factor)) 
+
+skim(data) 
+
+#creem long data
+longdata <- data %>% 
+  pivot_longer(cols="gene_1":"gene_4", names_to="gene", values_to = "value" ) %>% 
+  mutate(
+      group = factor(group, 
+                          levels = c("REF", "P", "G", "S", "PGS")), 
+      generation = factor(generation, 
+                          levels = c( "M", "Cd1", "Cd21", "CA")),
+      gene = factor(gene,
+                    levels = c("gene_1", "gene_2", "gene_3", "gene_4")))
+```
+
+Seguidament podem fer un gràfic previ per veure com es comporten els gens en general, sense separar per generació.
+
+```{r}
+longdata %>%
+  na.omit() %>% 
+  group_by(generation) %>% 
+  ggplot(aes(x=group, y=value, colour=generation))+ 
+    geom_jitter(position = position_dodge(width = 0.6))+ 
+    scale_x_discrete(limits = c("REF", "P", "G", "S","PGS"))+ 
+    facet_wrap(~gene) 
+```
+
+Com podeu veure abans de fer el gràfic hem preparat les dades en la mateixa pipeline, ometent els NA i agrupant per generacions. Seguidament li hem demanat al gràfic:
+
+-   `ggplot(aes(x=group, y=value, colour=generation))+` quin és l'eix de les x, quin és l'eix de les y i que determina el color
+
+-   `geom_jitter(position = position_dodge(width = 0.6))+` fer un gràfic de punts amb els valors espaiats
+
+-   `scale_x_discrete(limits = c("REF", "P", "G", "S","PGS"))+` l'ordre en que apareixen els grups a l'eix de les x
+
+-   `facet_wrap(~gene)` indica que ho separi en mini gràfics, un per cada gen. També podriem fer servir `facet_grid(~)` per a separar-ho de manera més controlada, ho veurem al següent.
+
+Anem a personalitzar-lo més i afegir les barres d'error i mitjana. Abans de res hem de crear un dataset que contingui la mitjana i error estàndard de cada grup per cada gen dins de cada generació.
+
+```{r}
+# Compute summary stats per a afegir al gràfic-------
+summary_data <- longdata %>%
+  na.omit() %>%
+  group_by(generation, gene, group) %>% 
+  summarise(
+    mean = mean(value), #calculem mitjana
+    se = sd(value)/sqrt(n()), #calculem error estàndard
+    .groups = "drop" 
+  )
+
+#canviar estil del gràfic default
+theme_set(theme_classic()) 
+
+#definim els colors que volem per grup
+colors <- c("REF" = "#999999",   # Grey
+            "PGS" = "#1b9e77",   # Green 1
+            "S" = "#66a61e",   # Green 2
+            "G" = "#a6d854",   # Green 3
+            "P" = "#d9f0a3")   # Green 4
+```
+
+Seguidament ja podem fer el gràfic final.
+
+Primer canviem l'ordre en el que apareixeran els gens i el nom del grup de la generació per a que ens surti complet.
+
+```{r}
+#reordenar com sortiran els gens com interessi
+gene_order <- c("gene_1", "gene_2", "gene_3", "gene_4")
+longdata$gene <- factor(longdata$gene, levels = gene_order)
+summary_data$gene <- factor(summary_data$gene, levels = gene_order)
+
+#canvi nom generation
+longdata$generation <- factor(
+  longdata$generation,
+  levels = c("M", "Cd1", "Cd21","CA"),
+  labels = c("Dams","Day-1 offspring", "Day-21 offspring", "Adult offspring"))
+
+summary_data$generation <- factor(
+  summary_data$generation,
+  levels = c("M", "Cd1", "Cd21","CA"),
+  labels = c("Dams","Day-1 offspring", "Day-21 offspring", "Adult offspring" ))
+```
+
+Ja podem fer el gràfic
+
+```{r}
+#GRÀFIC BO TOTALS------
+ggplot <- longdata %>% #dataset a graficar en format "long"
+  na.omit() %>% #no tenir en compte els NA
+  ggplot(aes(x=group, y=value, colour=group))+ 
+  geom_jitter()+ #gràfic punts
+  scale_x_discrete(limits = c("REF", "P", "G", "S","PGS"), 
+                   expand = expansion(add = 1))+ #afegir espai entre grups
+  facet_grid(generation~gene, 
+             labeller = labeller(gene = gene_order))+ #ordre 
+  geom_hline(yintercept = 100, color = "black",linetype = "dotted", linewidth = 0.5)+
+  geom_errorbar(data = summary_data, 
+                aes(x = group, y = mean, ymin = mean - se, ymax = mean + se, width = 0.25))+ #afegir barres d'error
+  geom_errorbar( #afegir línia mitjana
+    data = summary_data,
+    aes(x = group,
+        ymin = mean,
+        ymax = mean,
+        colour = group),
+    width = 0.8,
+    inherit.aes = FALSE,
+    linewidth = 1)+ 
+  scale_colour_manual(values=colors, 
+                      breaks = c("REF", "P", "G", "S", "PGS"))+ 
+  labs(title= "PCR small intestine", 
+       x= "Group", 
+       y= "Relative mRNA levels (%)",
+       colour= "Group")+  
+  theme(plot.title = element_text(hjust = 0.5), 
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12, hjust = 0.75),
+        strip.background = element_blank(),
+        panel.spacing = unit(0.5, "cm")) #espai entre els mini gràfics
+
+ggplot
+```
+
+-   `geom_hline(yintercept = 100, color = "black",linetype = "dotted", size = 0.5)+` Afegim una línia de punts al 100
+
+-   `geom_errorbar(data = summary_data, aes(x = group_name, y = mean, ymin = mean - se, ymax = mean + se, width = 0.25))+` Afegim les barres d'error
+
+-   `geom_errorbar(data = summary_data, aes( x = group, ymin = mean, ymax = mean, colour = group), width = 0.8, inherit.aes = FALSE, linewidth = 1 )+` Afegim línia a la mitjana (no hi ha manera de fer-ho directe).
+
+-   `labs(title= "PCR small intestine", gràfic x= "Group",  eix x y= "Relative mRNA levels (%)", colour= "Group")+` Et permet canviar el nom dels eixos i títol i nom de la llegenda, en aquest cas ens la fa del color però també la podria fer per colour, fill, shape, linetype, size...
+
+Un altre exemple seria triar només una generació, on només canvia el següent
+
+```{r}
+summary_data_d1 <-filter(summary_data, generation == "Day-1 offspring") #filtrem summary_data
+
+longdata %>%
+  na.omit() %>% 
+  filter(generation=="Day-1 offspring") %>% #afegim filtre!!
+  ggplot(aes(x=group, y=value, colour=group))+
+  geom_jitter()+
+  scale_x_discrete(limits = c("REF", "P", "G","PGS"),
+                   expand = expansion(add = 1))+
+  facet_grid(~gene,    #només separem per gen
+             labeller = labeller(gene = gene_order))+
+  geom_hline(yintercept = 100, color = "black",linetype = "dotted", size = 0.5)+ 
+  geom_errorbar(data = summary_data_d1, #canvi dataset
+                aes(x = group, y = mean, ymin = mean - se, ymax = mean + se, width = 0.25))+
+  geom_errorbar(data = summary_data_d1, #canvi dataset
+    aes(x = group,
+      ymin = mean,
+      ymax = mean,
+      colour = group),
+    width = 0.8,
+    inherit.aes = FALSE,
+    linewidth = 1)+ 
+  scale_colour_manual(values=colors,
+                breaks = c("REF", "P", "G", "PGS"))+
+  labs(title= "PCR small intestine Day-1 Offspring", 
+       x= "Group",
+       y= "Relative mRNA levels (%)",
+       colour= "Group")+ 
+  theme(plot.title = element_text(hjust = 0.5), 
+        strip.text.x = element_text(size = 12),
+        strip.background = element_blank(),
+        panel.spacing = unit(0.5, "cm"))
+```
+
+I finalment ho guardem, si veiem que surt algo tallat o massa apretat, podem fer la width o height més gran. Aquesta instrucció ens guardarà l'últim plot.
+
+```{r,eval=FALSE}
+ggsave(here("output","nom fitxer.png"), width = 18, height = 12, dpi = 300) 
+```
+
+Falta veure com afegiriem la significància.
+
+## Heatmap log~2~(FC)
+
+Per a fer un heatmap amb augment o disminució de concentracions respecte al grup REF amb la significància, la qual tenim en una altre taula d'excel.
+
+On ho vaig aprendre: <https://youtu.be/369PHkv1fPg?feature=shared>
+
+En el cas de que tinguem els valors per cada observació, primer haurem de calcular el log~2~(FC) de les dades.
+
+```{r, warning=FALSE, message=FALSE, eval=FALSE}
+
+#Carregar els paquets bàsics -------
+library(tidyverse)
+library(here)
+library(readxl)
+library(janitor)
+library(skimr)
+
+#paquet extra: 
+library(pheatmap)
+
+#Importar dades i preprarar-les-------
+raw_data <- read_excel(here("data", "PCR.xlsx")) 
+
+data <- raw_data %>% 
+  clean_names() %>%
+  mutate(across(c(group, sex, rat, generation), as.factor)) 
+
+skim(data)
+```
+
+Convertim les dades
+
+A partir d'aquí s'ha de revisar
+
+```{r, eval=FALSE}
+data_log2<- data %>% 
+  group_by(group) %>%
+  mutate(across(
+    where(is.numeric),
+    ~ ifelse(is.na(.), mean(., na.rm = TRUE), .)
+  )) %>% 
+  ungroup() %>% 
+  mutate(across(
+      3:last_col(),
+      ~ .x / mean(.x [group == "REF"], na.rm = TRUE)
+    )) %>% #canviem els NA per la mitjana d'aquell metabolit dins del grup
+  mutate(across(3:last_col(), log2)) #aplicar logaritme
+
+data_HM <- data_log2 %>%
+  select(-group) %>%              # 1️⃣ eliminar columna group
+  column_to_rownames("rat") %>%   # 2️⃣ rat → rownames
+  t() %>%                         # 3️⃣ transposar
+  as.data.frame()
+
+mat_data <- data.matrix(data_HM) #fem una matriu
+```
+
+Espero que us hagi servit!
