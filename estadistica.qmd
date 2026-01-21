@@ -154,6 +154,8 @@ shapiro_by_group
 
 -   En aquest cas el gen_1 i gen_2 en alguns grups i algunes generacions no segueixen la normalitat, llavors en el nostre cas decidiriem que aplicariem tests de no normal en tots els casos, però es podria discutir a veure quin aplicar.
 
+Si ho esteu comprovant amb els valors de SPSS, sobretot que sigui amb la opció de "exclude cases pairwise". Amb la opció per defecte no ho fa correctament.
+
 ## Homogeneïtat de les variàncies
 
 Test **Levene** per a que ens digui si les variàncies són homogènies (p\>0.05) o no són homogènies (p\<0.05). Es fa per tots els grups en general, no cal separar grups. En el cas de SPSS es feia amb l'Anova, a R el codi seria:

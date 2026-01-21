@@ -218,13 +218,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Tenim dues maneres de treballar, creant un projecte o agafant una carpeta qualsevol i treballant en un directori de treball.</p>
 <p>La més senzilla és creant un directori de treball (working directory). Allà hem de tenir el nostre document .csv o .xlsx amb les dades. També serà la carpeta on ens guardarà imatges o documents en cas que ho demanem mitjançant codi.</p>
 <p>Es pot indicar de la següent manera:</p>
-<p><img src="images/Captura de pantalla 2026-01-16 105625-01.png" class="img-fluid" width="430"></p>
+<p><img src="images/Captura de pantalla 2026-01-16 105625-01.png" class="img-fluid"></p>
 <p>També es pot indicar mitjançant codi (jo ho prefereixo):</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"C:/pathway que ha de seguir per arribar a la carpeta d'interés"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Per altre banda es pot crear un projecte (millor si ho vols tenir tot més organitzat):</p>
-<p><img src="images/Captura de pantalla 2026-01-16 110310.png" class="img-fluid" width="317"></p>
+<p><img src="images/Captura de pantalla 2026-01-16 110310.png" class="img-fluid"></p>
 <p>En aquest cas pots crear diferents carpetes a dins del projecte directament desde la finestra de “Files” a l’extrem dret inferior. Recomano crear-ne tres mínim anomenats:</p>
 <ul>
 <li><p>“data”: col·locar el fitxer amb les dades</p></li>
@@ -257,7 +257,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="do">#### encara més subtitol ----</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Títol 2 ----</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><img src="images/Captura de pantalla 2026-01-16 134038.png" class="img-fluid" width="194"></p>
+<p><img src="images/Captura de pantalla 2026-01-16 134038.png" class="img-fluid"></p>
 </section>
 <section id="installar-i-carregar-paquets" class="level2">
 <h2 class="anchored" data-anchor-id="installar-i-carregar-paquets">Instal·lar i carregar paquets</h2>
@@ -444,7 +444,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Per a que no hi hagi problemes de filtració de dades li he demanat a ChatGPT que em crei un dataset d’aquestes característiques, així que totes les dades que faré servir i els resultats són inventats.</p>
 <p>Això si, jo ja he fet un pre-processat de les dades amb l’excel en el que he tret els outliers de cada grup (per tant alguna cel·la estarà buida i tindré <code>NA</code>) i els valors que introdueixo són expressió relativa respecte el grup REF de la seva generació, en %. Si no ho teniu fet es podria fer tot dins de l’R però jo per començar no m’he complicat tant.</p>
 <p>L’excel llueix així:</p>
-<p><img src="images/Captura de pantalla 2026-01-16 155245.png" class="img-fluid" width="459"></p>
+<p><img src="images/Captura de pantalla 2026-01-16 155245.png" class="img-fluid"></p>
 <p>Importem les dades i comprovem que estan bé i els grups que existeixen corresponen al que hem indicat:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
@@ -1116,7 +1116,7 @@ L'objecte següent està emmascarat per 'package:stats':
 <section id="wide-format-vs-long-format" class="level2">
 <h2 class="anchored" data-anchor-id="wide-format-vs-long-format">Wide format vs Long format</h2>
 <p>Un concepte molt important a l’hora de utilitzar R és el wide dataset vs long dataset.</p>
-<p><img src="images/Captura de pantalla 2026-01-16 162651.png" class="img-fluid" width="435"></p>
+<p><img src="images/Captura de pantalla 2026-01-16 162651.png" class="img-fluid"></p>
 <p>En aquesta imatge tenim a l’<strong>esquerra</strong> el format <strong>wide</strong>, que és el que estem més acostumats a crear en excel, i a la <strong>dreta</strong> el format <strong>long</strong>, el qual és el que li va millor a R per la majoria de funcions. En el nostre cas li hem donat una taula en format wide ja que tenim una rata a cada fila, i tenim una columna per a cada variable de gen. Per a tenir-ho en format long volem una columna que ens digui de quin gen es tracta aquella observació i una altre columna amb el valor de la observació.</p>
 <p>Es pot fer fàcilment amb la següent formula, i aprofitem per recordar les variables que son factors i indicar l’ordre en que volem que apareguin a posteriori:</p>
 <div class="cell">
