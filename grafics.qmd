@@ -97,7 +97,39 @@ Com podeu veure abans de fer el gràfic hem preparat les dades en la mateixa pip
 
 -   `facet_wrap(~gene)` indica que ho separi en mini gràfics, un per cada gen. També podriem fer servir `facet_grid(~)` per a separar-ho de manera més controlada, ho veurem al següent.
 
-Anem a personalitzar-lo més i afegir les barres d'error i mitjana. Abans de res hem de crear un dataset que contingui la mitjana i error estàndard de cada grup per cada gen dins de cada generació.
+Definim el tema i els colors del grup:
+
+```{r}
+#canviar estil del gràfic default
+theme_set(theme_classic()) 
+
+#definim els colors que volem per grup
+colors <- c("REF" = "#999999",   # Grey
+            "PGS" = "#1b9e77",   # Green 1
+            "S" = "#66a61e",   # Green 2
+            "G" = "#a6d854",   # Green 3
+            "P" = "#d9f0a3")   # Green 4
+```
+
+Anem a personalitzar-lo més i afegir les barres d'error i mitjana. Hi ha dues maneres de fer-ho, la primera és com ho feia inicialment però són més passos innecessaris, tot i que es controla més.
+
+Primer canviem l'ordre en el que apareixeran els gens i el nom del grup de la generació per a que ens surti complet.
+
+```{r}
+#reordenar com sortiran els gens com interessi
+gene_order <- c("gene_1", "gene_2", "gene_3", "gene_4")
+longdata$gene <- factor(longdata$gene, levels = gene_order)
+
+#com volem que surti el nom de la generació
+generation_name <- c(
+      M   = "Dams",
+      Cd1 = "Day-1 offspring",
+      Cd21= "Day-21 offspring",
+      CA  = "Adult offspring"
+    )
+```
+
+1.  Abans de res hem de crear un dataset que contingui la mitjana i error estàndard de cada grup per cada gen dins de cada generació.
 
 ```{r}
 # Compute summary stats per a afegir al gràfic-------
@@ -110,37 +142,7 @@ summary_data <- longdata %>%
     .groups = "drop" 
   )
 
-#canviar estil del gràfic default
-theme_set(theme_classic()) 
-
-#definim els colors que volem per grup
-colors <- c("REF" = "#999999",   # Grey
-            "PGS" = "#1b9e77",   # Green 1
-            "S" = "#66a61e",   # Green 2
-            "G" = "#a6d854",   # Green 3
-            "P" = "#d9f0a3")   # Green 4
-```
-
-Seguidament ja podem fer el gràfic final.
-
-Primer canviem l'ordre en el que apareixeran els gens i el nom del grup de la generació per a que ens surti complet.
-
-```{r}
-#reordenar com sortiran els gens com interessi
-gene_order <- c("gene_1", "gene_2", "gene_3", "gene_4")
-longdata$gene <- factor(longdata$gene, levels = gene_order)
 summary_data$gene <- factor(summary_data$gene, levels = gene_order)
-
-#canvi nom generation
-longdata$generation <- factor(
-  longdata$generation,
-  levels = c("M", "Cd1", "Cd21","CA"),
-  labels = c("Dams","Day-1 offspring", "Day-21 offspring", "Adult offspring"))
-
-summary_data$generation <- factor(
-  summary_data$generation,
-  levels = c("M", "Cd1", "Cd21","CA"),
-  labels = c("Dams","Day-1 offspring", "Day-21 offspring", "Adult offspring" ))
 ```
 
 Ja podem fer el gràfic
@@ -154,7 +156,7 @@ ggplot <- longdata %>% #dataset a graficar en format "long"
   scale_x_discrete(limits = c("REF", "P", "G", "S","PGS"), 
                    expand = expansion(add = 1))+ #afegir espai entre grups
   facet_grid(generation~gene, 
-             labeller = labeller(gene = gene_order))+ #ordre 
+             labeller = labeller(gene = gene_order, generation = generation_name))+ #ordre 
   geom_hline(yintercept = 100, color = "black",linetype = "dotted", linewidth = 0.5)+
   geom_errorbar(data = summary_data, 
                 aes(x = group, y = mean, ymin = mean - se, ymax = mean + se, width = 0.25))+ #afegir barres d'error
@@ -186,18 +188,45 @@ ggplot
 
 -   `geom_errorbar(data = summary_data, aes(x = group_name, y = mean, ymin = mean - se, ymax = mean + se, width = 0.25))+` Afegim les barres d'error
 
--   `geom_errorbar(data = summary_data, aes( x = group, ymin = mean, ymax = mean, colour = group), width = 0.8, inherit.aes = FALSE, linewidth = 1 )+` Afegim línia a la mitjana (no hi ha manera de fer-ho directe).
+-   `geom_errorbar(data = summary_data, aes( x = group, ymin = mean, ymax = mean, colour = group), width = 0.8, inherit.aes = FALSE, linewidth = 1 )+` Afegim línia a la mitjana.
 
 -   `labs(title= "PCR small intestine", gràfic x= "Group",  eix x y= "Relative mRNA levels (%)", colour= "Group")+` Et permet canviar el nom dels eixos i títol i nom de la llegenda, en aquest cas ens la fa del color però també la podria fer per colour, fill, shape, linetype, size...
+
+2.  Sense necessitat de fer un altre dataset amb les mitjanes, enlloc de `geom_errorbar(data = summary_data` , posem `stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5)`per la barra d'error i `stat_summary(fun = mean, geom = "crossbar", width = 0.75)` per la mitjana. D'aquesta manera ja ho calcula ell i no hem de tenir dos datasets
+
+```{r}
+ggplot <- longdata %>% #dataset a graficar en format "long"
+  na.omit() %>% #no tenir en compte els NA
+  ggplot(aes(x=group, y=value, colour=group))+ 
+  geom_jitter()+ #gràfic punts
+  scale_x_discrete(limits = c("REF", "P", "G", "S","PGS"), 
+                   expand = expansion(add = 1))+ #afegir espai entre grups
+  facet_grid(generation~gene, 
+             labeller = labeller(gene = gene_order, generation = generation_name))+ #ordre 
+  geom_hline(yintercept = 100, color = "black",linetype = "dotted", linewidth = 0.5)+
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  stat_summary(fun = mean, geom = "crossbar", width = 0.75)+
+  scale_colour_manual(values=colors, 
+                      breaks = c("REF", "P", "G", "S", "PGS"))+ 
+  labs(title= "PCR small intestine", 
+       x= "Group", 
+       y= "Relative mRNA levels (%)",
+       colour= "Group")+  
+  theme(plot.title = element_text(hjust = 0.5), 
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12, hjust = 0.75),
+        strip.background = element_blank(),
+        panel.spacing = unit(0.5, "cm")) #espai entre els mini gràfics
+
+ggplot
+```
 
 Un altre exemple seria triar només una generació, on només canvia el següent
 
 ```{r}
-summary_data_d1 <-filter(summary_data, generation == "Day-1 offspring") #filtrem summary_data
-
 longdata %>%
   na.omit() %>% 
-  filter(generation=="Day-1 offspring") %>% #afegim filtre!!
+  filter(generation=="Cd1") %>% #afegim filtre!!
   ggplot(aes(x=group, y=value, colour=group))+
   geom_jitter()+
   scale_x_discrete(limits = c("REF", "P", "G","PGS"),
@@ -205,16 +234,8 @@ longdata %>%
   facet_grid(~gene,    #només separem per gen
              labeller = labeller(gene = gene_order))+
   geom_hline(yintercept = 100, color = "black",linetype = "dotted", size = 0.5)+ 
-  geom_errorbar(data = summary_data_d1, #canvi dataset
-                aes(x = group, y = mean, ymin = mean - se, ymax = mean + se, width = 0.25))+
-  geom_errorbar(data = summary_data_d1, #canvi dataset
-    aes(x = group,
-      ymin = mean,
-      ymax = mean,
-      colour = group),
-    width = 0.8,
-    inherit.aes = FALSE,
-    linewidth = 1)+ 
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  stat_summary(fun = mean, geom = "crossbar", width = 0.75)+
   scale_colour_manual(values=colors,
                 breaks = c("REF", "P", "G", "PGS"))+
   labs(title= "PCR small intestine Day-1 Offspring", 
@@ -233,7 +254,114 @@ I finalment ho guardem, si veiem que surt algo tallat o massa apretat, podem fer
 ggsave(here("output","nom fitxer.png"), width = 18, height = 12, dpi = 300) 
 ```
 
-Falta veure com afegiriem la significància.
+### Afegir significància
+
+En el cas de les meves dades no hi havia diferència entre grups així que vaig fer un gràfic amb el ΔCt (Ct(gene) - Ct(Gusb)) pr generacions. Ara ho farem tot amb un nou dataset, en el qual ja hauriem comprovat la normalitat i homogeneïtat (no ho compleix), i tindriem un kruskal-wallis tot significatiu. Per tant només indicaré el post-hoc, el gràfic, i com introduïr la significància.
+
+```{r}
+raw_data <- read_excel(here("Basic", "data", "PCR_ct.xlsx"))
+
+data <- raw_data %>% 
+  mutate(across(c(group, sex, rat, generation), as.factor)) 
+
+longdata <- data %>% 
+  pivot_longer(cols="gene_1":"gene_4", names_to="gene", values_to = "value" ) %>% 
+  mutate(
+      group = factor(group, 
+                          levels = c("REF", "P", "G", "S", "PGS")), 
+      generation = factor(generation, 
+                          levels = c( "M", "Cd1", "Cd21", "CA")),
+      gene = factor(gene,
+                    levels = c("gene_1", "gene_2", "gene_3", "gene_4"))
+                    )
+```
+
+Fem el post-hoc Dunn. Important que el nom de les columnes sigui igual al del dataset del gràfic (per exemple: gene).
+
+```{r}
+posthoc_dunn <- longdata %>%
+  group_by(gene) %>%
+  dunn_test(
+    value ~ generation,
+    p.adjust.method = "bonferroni")%>%
+  add_significance("p.adj")
+
+posthoc_dunn
+```
+
+Fem el gràfic
+
+```{r}
+generation_name <- c(M="Dams", Cd1= "Day-1 offspring", Cd21="Day-21 offspring", CA="Adult offspring")
+
+ggplot <- longdata %>%
+  na.omit() %>%
+  ggplot(aes(x=generation, y=value, colour=generation))+ 
+  geom_jitter(alpha = 0.5)+  #alpha mig transparent
+  scale_x_discrete(limits = c("M", "Cd1", "Cd21", "CA"), #ordre dels eixos
+                   expand = expansion(add = 1),
+                   labels=c("D", "d1O", "d21O", "AO"))+ #com apareixeran
+  facet_grid(~gene , 
+             labeller = labeller(gene = gene_order))+
+  geom_hline(yintercept = 0, color = "black",linetype = "dotted", linewidth = 0.5)+
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.25) +
+  stat_summary(fun = mean, geom = "crossbar", width = 0.75)+
+  scale_colour_manual(values=c("#7B3FBF", "#87CEEB", "#4169E1", "#000080" ),
+                      breaks = c("M", "Cd1", "Cd21", "CA"),
+                      labels= generation_name)+ 
+  labs(title= "PCR small intestine",
+       x= "Generation", 
+       y= "ΔCt (Ct(gene) - Ct(Gusb))", 
+       colour= "Generation")+ 
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.text.x = element_text(angle = 30, hjust = 1),
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12, hjust = 0.75), #intentar arreglar el hjust per posar l'etiqueta al 100
+        strip.background = element_blank(),
+        panel.spacing = unit(0.5, "cm")) #espai entre els mini gràfics
+
+ggplot
+```
+
+Preparem els resultats del post-hoc perquè apareguin al gràfic.
+
+```{r}
+gen_levels <- c("M", "Cd1", "Cd21", "CA")
+
+posthoc_graph <- posthoc_dunn %>% 
+  add_xy_position (x= "generation") %>% 
+  filter(p.adj < 0.05) %>%
+  mutate(
+    x1 = match(group1, gen_levels),
+    x2 = match(group2, gen_levels),
+    bracket_length = abs(x2 - x1)) %>% 
+  group_by(gene) %>%
+  arrange(bracket_length) %>%
+  mutate(
+    y.position = min(y.position, na.rm = TRUE) +
+      seq(1, by = 1, length.out = n())) %>%
+  ungroup()
+```
+
+-   `add_xy_position (x= "generation")` afegiex la posició x i y on ha de sortir
+
+-   `filter(p.adj < 0.05)` que només apareguin les significatives
+
+-   `mutate( x1 = match(group1, gen_levels), x2 = match(group2, gen_levels), bracket_length = abs(x2 - x1))` això ens permet seterminar quins seràn més llargs o més curts per a col·locar-los en ordre ascendent després amb l'`arrange(bracket_length)` i quedi més maco
+
+-   `mutate( y.position = min(y.position, na.rm = TRUE) + seq(1, by = 1, length.out = n()))` modifiquem de manera manual per a que quedin consecutius al gràfic
+
+Afegin la significació al gràfic que ja haviem creat.
+
+```{r}
+library(ggpubr)
+ggplot + 
+  stat_pvalue_manual(
+  posthoc_graph,
+  tip.length = 0.01,
+  bracket.nudge.y = -1,   # pujar/baixar tots els brackets
+  hide.ns = TRUE)
+```
 
 ## Heatmap log~2~(FC)
 

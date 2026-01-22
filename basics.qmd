@@ -25,7 +25,7 @@ La més senzilla és creant un directori de treball (working directory). Allà h
 
 Es pot indicar de la següent manera:
 
-![](images/Captura de pantalla 2026-01-16 105625-01.png)
+![](images/Captura%20de%20pantalla%202026-01-16%20105625-01.png)
 
 També es pot indicar mitjançant codi (jo ho prefereixo):
 
@@ -35,7 +35,7 @@ setwd("C:/pathway que ha de seguir per arribar a la carpeta d'interés")
 
 Per altre banda es pot crear un projecte (millor si ho vols tenir tot més organitzat):
 
-![](images/Captura de pantalla 2026-01-16 110310.png)
+![](images/Captura%20de%20pantalla%202026-01-16%20110310.png)
 
 En aquest cas pots crear diferents carpetes a dins del projecte directament desde la finestra de "Files" a l'extrem dret inferior. Recomano crear-ne tres mínim anomenats:
 
@@ -79,7 +79,7 @@ Això també fa que aparegui una pestanyeta a l'esquerra del títol i permetrà 
 #Títol 2 ----
 ```
 
-![](images/Captura de pantalla 2026-01-16 134038.png)
+![](images/Captura%20de%20pantalla%202026-01-16%20134038.png)
 
 ## Instal·lar i carregar paquets
 
@@ -140,7 +140,7 @@ Abans de passar a l'anàlisi de dades us indico com descarregar-vos arxius que h
 ```{r, eval=FALSE}
 library(writexl)
 write_xlsx(nom_dataframe, "nom fitxer.xlsx")  #amb working directory
-write_xlsx(nom_dataframe, here("data", "nom fitxer.csv"))   #amb projecte
+write_xlsx(nom_dataframe, here("pre-carpeta","data", "nom fitxer.xlsx"))   #amb projecte
 ```
 
 -   Figures amb `ggplot` (paquet inclós dins de tidyverse )
@@ -281,7 +281,7 @@ Això si, jo ja he fet un pre-processat de les dades amb l'excel en el que he tr
 
 L'excel llueix així:
 
-![](images/Captura de pantalla 2026-01-16 155245.png)
+![](images/Captura%20de%20pantalla%202026-01-16%20155245.png)
 
 Importem les dades i comprovem que estan bé i els grups que existeixen corresponen al que hem indicat:
 
@@ -356,7 +356,7 @@ Fixeu-vos que en aquest cas m'ho ensenya directament. Això és degut a que no m
 
 Un concepte molt important a l'hora de utilitzar R és el wide dataset vs long dataset.
 
-![](images/Captura de pantalla 2026-01-16 162651.png)
+![](images/Captura%20de%20pantalla%202026-01-16%20162651.png)
 
 En aquesta imatge tenim a l'**esquerra** el format **wide**, que és el que estem més acostumats a crear en excel, i a la **dreta** el format **long**, el qual és el que li va millor a R per la majoria de funcions. En el nostre cas li hem donat una taula en format wide ja que tenim una rata a cada fila, i tenim una columna per a cada variable de gen. Per a tenir-ho en format long volem una columna que ens digui de quin gen es tracta aquella observació i una altre columna amb el valor de la observació.
 

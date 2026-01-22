@@ -101,6 +101,13 @@ copy <- results_test%>%
 View(copy)
 ```
 
+A vegades no funciona, potser és més còmode crear un excel amb el nom "copy" i enganxar-ho directament.
+
+```{r, eval=FALSE}
+library(writexlitexl)
+write_xlsx(results, here("pre-carpeta", "data", "copy.xlsx"))
+```
+
 ## Normalitat
 
 En el cas que la el número de grups diferents sigui de n\<50 s'ha de fer **Shapiro-Wilk**. En el cas que la n\>50, Kolmogorov-Smirnov, el qual no explicaré ja que no l'hem de fer pràcticament mai.
@@ -458,8 +465,7 @@ Quan les dades no siguin ni normals ni homogènies, es fa el test post-hoc de Du
 ```{r}
 posthoc_dunn <- longdata %>%
   filter(generation == "M") %>%
-  mutate(gene_name = gene) %>%
-  group_by(gene_name) %>%
+  group_by(gene) %>%
   dunn_test(
     value ~ group,
     p.adjust.method = "bonferroni")

@@ -1,0 +1,12 @@
+---
+title: "Final"
+editor: visual
+---
+
+I fins aquí el que sé de Rstudio!!
+
+Espero que us hagi ajudat a aconseguir el que tenieu en ment!
+
+Una abraçada,
+
+Elsa
