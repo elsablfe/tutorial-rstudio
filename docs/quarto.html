@@ -228,14 +228,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="per-actualitzar-la-web">Per actualitzar la web</h2>
 <p>Elsa això ja és per tu, com actualitzar la web quan t’enviin algo.</p>
 <p>Posar el fitxer .qmd a dins del projecte però no a cap subcarpeta. Afegir les dades al directori que indiqui l’script (i si no està amb el <code>here()</code> afegir-ho i canviar-ho).</p>
-<p>Al fitxer _quart.yml afegir el fitxer i com apareixerà. si ho han posat amb un nom complicat canviar-lo a tot minúscules i sense espais.</p>
+<p>Afegir al yaml del document el següent</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>project<span class="sc">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  type<span class="sc">:</span> website</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">-</span>dir<span class="sc">:</span> docs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Al fitxer _quart.yml afegir el fitxer i com apareixerà. Si ho han posat amb un nom complicat canviar-lo a tot minúscules i sense espais.</p>
 <p><img src="images/Captura de pantalla 2026-01-29 125454.png" class="img-fluid"></p>
 <p>Quan tot estigui correcte i no generi errors, al terminal afegir</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>quarto render</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>git add .</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>git commit <span class="sc">-</span>m <span class="st">"Actualització"</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>git push</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>quarto render</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>git add .</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>git commit <span class="sc">-</span>m <span class="st">"Actualització"</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>git push</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Comprovar al cap d’uns minuts si la web s’ha actualitzat.</p>
 
