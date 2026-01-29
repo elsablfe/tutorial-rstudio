@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Inici – Rstudio Scripts</title>
+<title>Quarto – Rstudio Scripts</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -92,7 +127,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Inici</span></a>
   </li>  
   <li class="nav-item">
@@ -108,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Gràfics</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./quarto.html"> 
+    <a class="nav-link active" href="./quarto.html" aria-current="page"> 
 <span class="menu-text">Quarto</span></a>
   </li>  
   <li class="nav-item">
@@ -131,9 +166,10 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#rstudio-basics" id="toc-rstudio-basics" class="nav-link active" data-scroll-target="#rstudio-basics">Rstudio basics</a>
+  <li><a href="#com-crear-un-document-quarto-per-afegir-a-la-web" id="toc-com-crear-un-document-quarto-per-afegir-a-la-web" class="nav-link active" data-scroll-target="#com-crear-un-document-quarto-per-afegir-a-la-web">Com crear un document Quarto per afegir a la web</a>
   <ul class="collapse">
-  <li><a href="#recomanacions-inicials" id="toc-recomanacions-inicials" class="nav-link" data-scroll-target="#recomanacions-inicials">Recomanacions inicials</a></li>
+  <li><a href="#característiques-del-tipus-de-document" id="toc-característiques-del-tipus-de-document" class="nav-link" data-scroll-target="#característiques-del-tipus-de-document">Característiques del tipus de document</a></li>
+  <li><a href="#per-actualitzar-la-web" id="toc-per-actualitzar-la-web" class="nav-link" data-scroll-target="#per-actualitzar-la-web">Per actualitzar la web</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -143,7 +179,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Inici</h1>
+<h1 class="title">Quarto</h1>
 </div>
 
 
@@ -160,28 +196,48 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="rstudio-basics" class="level1">
-<h1>Rstudio basics</h1>
-<p>Bon dia i benvinguts al codi més interessant per a nosaltres en Rstudio. He creat aquesta web per compartir els meus coneixements adquirits al respecte i per anar-la actualitzant a mesura que n’apregui més. M’agradaria comentar que no s’ha fet desde la perfecció lingüística, sinó desde la rapidesa. Espero que no m’ho tingueu en compte.</p>
-<p>Tant de bo us sigui útil, Elsa.</p>
-<section id="recomanacions-inicials" class="level2">
-<h2 class="anchored" data-anchor-id="recomanacions-inicials">Recomanacions inicials</h2>
-<p>Si sou com jo i vau aprendre R abans de que existís la intel·ligència artificial, probablement ho recordareu amb por, però això ja no és així.</p>
-<p>Per començar recomano sempre tenir una idea de què necessites i vols fer. Seguidament buscar a internet alguna persona que ho expliqui, ja sigui una web o un video i seguir les seves instruccions. Finalment, anar provant el codi amb les teves dades i quan trobis algun error, o vulguis canviar alguna característica, explicar-li a alguna intel·ligència artificial que tens, on vols arribar i quins problemes t’estàs trobant.</p>
-<p>No recomano (de moment) anar directament a la intel·ligència artificial.</p>
-<p>Us deixo algunes webs que a mi em van anar bé quan vaig tornar aprendre de veritat a treballar amb Rstudio:</p>
+<section id="com-crear-un-document-quarto-per-afegir-a-la-web" class="level1">
+<h1>Com crear un document Quarto per afegir a la web</h1>
+<p>Per a crear un document i que jo l’afegeixi a la web heu de crear un document Quarto.</p>
+<p>File -&gt; New File -&gt; Quarto document…</p>
+<p><img src="images/Captura de pantalla 2026-01-29 122719.png" class="img-fluid"></p>
+<p>Afegiu com a títol el nom que voleu que tingui la pestanya a la web, i creeu sense canviar res més.</p>
+<p><img src="images/Captura de pantalla 2026-01-29 122804.png" class="img-fluid" width="334"></p>
+<p>Guardeu el document en format .qmd i ja podeu començar a crear.</p>
+<section id="característiques-del-tipus-de-document" class="level2">
+<h2 class="anchored" data-anchor-id="característiques-del-tipus-de-document">Característiques del tipus de document</h2>
+<p><img src="images/Captura de pantalla 2026-01-29 123318.png" class="img-fluid"></p>
+<p>Com podeu veure la pestanya on normalment surten els scripts ha canviat una mica. Us recomano tenir-ho en mode <em>Visual</em> (enlloc de <em>Source</em>) per a facilitar-vos l’escriptura.</p>
+<p>Seguidament tenim el botó per posar en <strong>Negreta</strong>, <em>Cursiva</em>, o tipus <code>Codi</code> . Seguidament si volem afegir títols, llistes amb punt o numèriques. Després per afegir links o fotografies, altres formats, i el més important: INSERT. Quan vulguem afegir trossos de codi que s’executin (el que fa la web més interessant), serà insertar una <em>executable cell</em> de <em>R</em></p>
+<p><img src="images/Captura de pantalla 2026-01-29 123801.png" class="img-fluid" width="268"></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#posar aquí les parts de l'script que t'interessin.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A vegades però vols crear un codi però que només es mostri en aquest estil, que no s’executi. Dins del <code>{r}</code> inicial pots afegir paràmetres, tants com vulguis:</p>
 <ul>
-<li><p>Cursos de Rstudio: <a href="https://education.rstudio.com/learn/beginner/" class="uri">https://education.rstudio.com/learn/beginner/</a></p></li>
-<li><p>Basics: <a href="https://rladiessydney.org/courses/01-basicbasics-0" class="uri">https://rladiessydney.org/courses/01-basicbasics-0</a></p></li>
-<li><p>Estadística: <a href="https://learningstatisticswithr.com/book/" class="uri">https://learningstatisticswithr.com/book/</a></p></li>
+<li><p><code>{r, eval=FALSE}</code> No s’executarà</p></li>
+<li><p><code>{r, warning=FALSE}</code> No ensenyarà els warnings que et donaria R (per exemple que un paquet està emmascarat per un altre o fet amb una altre versió)</p></li>
+<li><p><code>{r, message=FALSE}</code> No ensenyarà els missatges que mostraria R</p></li>
 </ul>
-<p>I alguns que encara no he mirat però poden ser interessants</p>
-<ul>
-<li>R for data science: <a href="https://r4ds.hadley.nz/" class="uri">https://r4ds.hadley.nz/</a></li>
-<li>Ggplot: <a href="https://ggplot2-book.org/" class="uri">https://ggplot2-book.org/</a></li>
-<li>Graph cookbook: <a href="https://r-graphics.org/index.html" class="uri">https://r-graphics.org/index.html</a></li>
-<li>Data visualization: <a href="https://socviz.co/" class="uri">https://socviz.co/</a></li>
-</ul>
+<p>El fitxer que s’està creant és html, que equival a un fitxer web. Tot i així, quan l’executeu només ho veureu vosaltres, res es penjarà al núvol. Recomano anar-lo executant (<em>Render</em>) cada cop que afegiu una cel·la executable. Si alguna part del codi està malament, no crearà la web, ho pararà. Per tant és molt més fàcil identificar els problemes un a un que no fer tota la web i que després no hi hagi manera d’executar-ho.</p>
+<p>Quan tingueu el fitxer fet me l’haureu d’enviar i jo el penjaré a la web que ja tinc creada. Si vulguèssiu fer la vostra pròpia web si que ja és més complicat.</p>
+<p>També heu de tenir en compte que les dades que pengi seràn públiques, per tant us recomano demanar-li a alguna intel·ligència artificial que us crei un dataset similar al vostre però sintètic, d’aquesta manera no es publicaràn dades sense publicar abans a un article. També me les haureu d’enviar amb el fitxer .qmd</p>
+<p>Si un dia us hi poseu ja veureu que és un moment i després us fareu la vida molt més fàcil quan vulgueu replicar algun assaig amb diferents dades o quan algú us demani un script que ja no enteneu ;)</p>
+</section>
+<section id="per-actualitzar-la-web" class="level2">
+<h2 class="anchored" data-anchor-id="per-actualitzar-la-web">Per actualitzar la web</h2>
+<p>Elsa això ja és per tu, com actualitzar la web quan t’enviin algo.</p>
+<p>Posar el fitxer .qmd a dins del projecte però no a cap subcarpeta. Afegir les dades al directori que indiqui l’script (i si no està amb el <code>here()</code> afegir-ho i canviar-ho).</p>
+<p>Al fitxer _quart.yml afegir el fitxer i com apareixerà. si ho han posat amb un nom complicat canviar-lo a tot minúscules i sense espais.</p>
+<p><img src="images/Captura de pantalla 2026-01-29 125454.png" class="img-fluid"></p>
+<p>Quan tot estigui correcte i no generi errors, al terminal afegir</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>quarto render</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>git add .</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>git commit <span class="sc">-</span>m <span class="st">"Actualització"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>git push</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Comprovar al cap d’uns minuts si la web s’ha actualitzat.</p>
 
 
 </section>
