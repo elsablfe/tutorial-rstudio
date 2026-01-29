@@ -1,9 +1,5 @@
 ---
 title: "Quarto"
-editor: visual
-project:
-  type: website
-  output-dir: docs
 ---
 
 # Com crear un document Quarto per afegir a la web
@@ -55,14 +51,6 @@ Si un dia us hi poseu ja veureu que és un moment i després us fareu la vida mo
 Elsa això ja és per tu, com actualitzar la web quan t'enviin algo.
 
 Posar el fitxer .qmd a dins del projecte però no a cap subcarpeta. Afegir les dades al directori que indiqui l'script (i si no està amb el `here()` afegir-ho i canviar-ho).
-
-Afegir al yaml del document el següent
-
-```{r, eval=FALSE}
-project:
-  type: website
-  output-dir: docs
-```
 
 Al fitxer \_quart.yml afegir el fitxer i com apareixerà. Si ho han posat amb un nom complicat canviar-lo a tot minúscules i sense espais.
 
