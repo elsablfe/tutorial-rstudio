@@ -167,7 +167,7 @@ head(longdata)
 
 Comencem fent l'estadística. En aquest cas ja he comprovat que no son normals per tant fem U-Mann Whitney (CA = 2 grups) i Kruskal-Wallis (M, Cd1, Cd21 \> 2 grups).
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 results_kruskal <- longdata %>%
   filter(generation %in% c("M", "Cd1", "Cd21")) %>%
   group_by(generation, metabolite) %>%
@@ -259,7 +259,7 @@ mat_sig <- sig %>%
   mutate(id = paste(generation, group, sep = "_")) %>% 
   column_to_rownames(var = "id") %>% 
   select(-generation, -group) %>% 
-  t()%>%                         # transposar
+  t()%>%                         
   as.matrix()
 
 head(mat_sig)

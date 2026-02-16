@@ -1,0 +1,4 @@
+---
+title: "Gràfic de punts (PCR)"
+editor: visual
+---
