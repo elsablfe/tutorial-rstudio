@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Heatmap – Rstudio Scripts</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-1d4f84655f446305ac42a8f1abcf7405.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Rstudio Scripts</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Inici</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./basics.html"> 
+<span class="menu-text">Basics</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./estadistica.html"> 
+<span class="menu-text">Estadística</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-gràfics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Gràfics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-gràfics">    
+        <li>
+    <a class="dropdown-item" href="./grafics.html">
+ <span class="dropdown-text">Introducció</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./pcr.html">
+ <span class="dropdown-text">Gràfic de punts (PCR)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./elisa.html">
+ <span class="dropdown-text">Gràfic de barres (ELISA)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./heatmap.html">
+ <span class="dropdown-text">Heatmap</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./extra.html">
+ <span class="dropdown-text">Dumpster</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./quarto.html"> 
+<span class="menu-text">Quarto</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./final.html"> 
+<span class="menu-text">Final</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#heatmap-log2fc-individus" id="toc-heatmap-log2fc-individus" class="nav-link active" data-scroll-target="#heatmap-log2fc-individus">Heatmap log<sub>2</sub>(FC) individus</a>
+  <ul class="collapse">
+  <li><a href="#transformem-les-dades-a-log2fc" id="toc-transformem-les-dades-a-log2fc" class="nav-link" data-scroll-target="#transformem-les-dades-a-log2fc">Transformem les dades a log2(FC)</a></li>
+  <li><a href="#afegim-files-dannotació" id="toc-afegim-files-dannotació" class="nav-link" data-scroll-target="#afegim-files-dannotació">Afegim files d’annotació</a></li>
+  <li><a href="#heatmap" id="toc-heatmap" class="nav-link" data-scroll-target="#heatmap">Heatmap</a></li>
+  </ul></li>
+  <li><a href="#heatmap-log2fc-mitjanes" id="toc-heatmap-log2fc-mitjanes" class="nav-link" data-scroll-target="#heatmap-log2fc-mitjanes">Heatmap log<sub>2</sub>(FC) mitjanes</a>
+  <ul class="collapse">
+  <li><a href="#dataset-estadística" id="toc-dataset-estadística" class="nav-link" data-scroll-target="#dataset-estadística">Dataset estadística</a></li>
+  <li><a href="#dataset-dades" id="toc-dataset-dades" class="nav-link" data-scroll-target="#dataset-dades">Dataset dades</a></li>
+  <li><a href="#heatmap-1" id="toc-heatmap-1" class="nav-link" data-scroll-target="#heatmap-1">Heatmap</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Heatmap</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="heatmap-log2fc-individus" class="level2">
+<h2 class="anchored" data-anchor-id="heatmap-log2fc-individus">Heatmap log<sub>2</sub>(FC) individus</h2>
+<p>Per a fer un heatmap amb augment o disminució de concentracions respecte al grup REF amb la significància, la qual tenim en una altre taula d’excel.</p>
+<p>On ho vaig aprendre: <a href="https://youtu.be/369PHkv1fPg?feature=shared" class="uri">https://youtu.be/369PHkv1fPg?feature=shared</a>. S’utilitza la llibreria <code>pheatmap</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Carregar els paquets bàsics -------</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(skimr)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap) <span class="co">#HEATMAPS</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#Importar dades i preprarar-les-------</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>raw_data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">here</span>(<span class="st">"Basic"</span>, <span class="st">"data"</span>, <span class="st">"metab.xlsx"</span>)) </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span> </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(group, sex, rat, generation), as.factor)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>sex, <span class="sc">-</span>generation)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">data</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">18</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">factor</td>
+<td style="text-align: left;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">18</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 12%">
+<col style="width: 17%">
+<col style="width: 10%">
+<col style="width: 11%">
+<col style="width: 29%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: left;">ordered</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: left;">top_counts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">group</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">PGS: 6, REF: 6, S: 6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rat</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: left;">1: 1, 2: 1, 3: 1, 4: 1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+<th style="text-align: left;">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Glycemia_AUC</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">106.39</td>
+<td style="text-align: right;">10.94</td>
+<td style="text-align: right;">88.20</td>
+<td style="text-align: right;">100.22</td>
+<td style="text-align: right;">104.10</td>
+<td style="text-align: right;">115.47</td>
+<td style="text-align: right;">124.50</td>
+<td style="text-align: left;">▃▇▃▂▅</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Final_body_weight_g</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">47.07</td>
+<td style="text-align: right;">4.41</td>
+<td style="text-align: right;">38.76</td>
+<td style="text-align: right;">44.54</td>
+<td style="text-align: right;">47.84</td>
+<td style="text-align: right;">50.06</td>
+<td style="text-align: right;">55.45</td>
+<td style="text-align: left;">▃▃▂▇▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Body_weight_increase_pct</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">124.22</td>
+<td style="text-align: right;">8.19</td>
+<td style="text-align: right;">109.50</td>
+<td style="text-align: right;">118.85</td>
+<td style="text-align: right;">123.10</td>
+<td style="text-align: right;">125.80</td>
+<td style="text-align: right;">140.30</td>
+<td style="text-align: left;">▁▇▇▁▅</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Food_consumption_g_per_rat</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">12.46</td>
+<td style="text-align: right;">1.02</td>
+<td style="text-align: right;">10.90</td>
+<td style="text-align: right;">11.69</td>
+<td style="text-align: right;">12.29</td>
+<td style="text-align: right;">12.95</td>
+<td style="text-align: right;">14.44</td>
+<td style="text-align: left;">▆▇▇▃▃</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Feed_conversion_efficiency</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.39</td>
+<td style="text-align: right;">0.06</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">0.43</td>
+<td style="text-align: right;">0.48</td>
+<td style="text-align: left;">▁▂▇▇▅</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kcal_consumed_per_rat</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">58.50</td>
+<td style="text-align: right;">4.20</td>
+<td style="text-align: right;">53.00</td>
+<td style="text-align: right;">55.42</td>
+<td style="text-align: right;">57.80</td>
+<td style="text-align: right;">60.27</td>
+<td style="text-align: right;">70.60</td>
+<td style="text-align: left;">▇▇▃▁▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Water_consumption_ml_per_rat</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">18.59</td>
+<td style="text-align: right;">2.22</td>
+<td style="text-align: right;">14.70</td>
+<td style="text-align: right;">16.68</td>
+<td style="text-align: right;">18.35</td>
+<td style="text-align: right;">20.50</td>
+<td style="text-align: right;">22.20</td>
+<td style="text-align: left;">▅▅▇▃▇</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Liver_weight_pct</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4.58</td>
+<td style="text-align: right;">0.46</td>
+<td style="text-align: right;">3.82</td>
+<td style="text-align: right;">4.21</td>
+<td style="text-align: right;">4.64</td>
+<td style="text-align: right;">4.89</td>
+<td style="text-align: right;">5.43</td>
+<td style="text-align: left;">▅▂▇▅▂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Visceral_adipose_tissue_weight_pct</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2.02</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">1.61</td>
+<td style="text-align: right;">1.84</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: right;">2.09</td>
+<td style="text-align: right;">2.67</td>
+<td style="text-align: left;">▅▇▇▁▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fecal_pH</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6.66</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">6.29</td>
+<td style="text-align: right;">6.44</td>
+<td style="text-align: right;">6.60</td>
+<td style="text-align: right;">6.87</td>
+<td style="text-align: right;">7.35</td>
+<td style="text-align: left;">▇▂▂▂▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fecal_water_content_pct</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">56.64</td>
+<td style="text-align: right;">4.14</td>
+<td style="text-align: right;">49.70</td>
+<td style="text-align: right;">53.85</td>
+<td style="text-align: right;">56.15</td>
+<td style="text-align: right;">59.65</td>
+<td style="text-align: right;">65.20</td>
+<td style="text-align: left;">▃▇▅▃▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Plasma_TG</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">95.51</td>
+<td style="text-align: right;">15.30</td>
+<td style="text-align: right;">69.40</td>
+<td style="text-align: right;">83.62</td>
+<td style="text-align: right;">97.45</td>
+<td style="text-align: right;">105.73</td>
+<td style="text-align: right;">121.10</td>
+<td style="text-align: left;">▃▃▇▃▃</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total_cholesterol</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">151.05</td>
+<td style="text-align: right;">16.18</td>
+<td style="text-align: right;">110.00</td>
+<td style="text-align: right;">140.50</td>
+<td style="text-align: right;">154.05</td>
+<td style="text-align: right;">161.60</td>
+<td style="text-align: right;">177.40</td>
+<td style="text-align: left;">▁▂▃▇▃</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HDL_c</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">53.81</td>
+<td style="text-align: right;">7.30</td>
+<td style="text-align: right;">39.20</td>
+<td style="text-align: right;">48.20</td>
+<td style="text-align: right;">53.40</td>
+<td style="text-align: right;">59.17</td>
+<td style="text-align: right;">67.50</td>
+<td style="text-align: left;">▂▅▅▇▂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">LDL_c</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">73.94</td>
+<td style="text-align: right;">13.34</td>
+<td style="text-align: right;">49.90</td>
+<td style="text-align: right;">62.45</td>
+<td style="text-align: right;">75.65</td>
+<td style="text-align: right;">82.28</td>
+<td style="text-align: right;">99.20</td>
+<td style="text-align: left;">▃▅▃▇▁</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Insulin</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">0.65</td>
+<td style="text-align: right;">0.75</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">1.09</td>
+<td style="text-align: right;">1.39</td>
+<td style="text-align: left;">▅▇▁▃▂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HOMA_R</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.57</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">1.38</td>
+<td style="text-align: right;">1.58</td>
+<td style="text-align: right;">1.88</td>
+<td style="text-align: right;">2.08</td>
+<td style="text-align: left;">▁▁▆▅▇</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Irisin</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">43.53</td>
+<td style="text-align: right;">5.18</td>
+<td style="text-align: right;">36.60</td>
+<td style="text-align: right;">39.10</td>
+<td style="text-align: right;">43.55</td>
+<td style="text-align: right;">47.35</td>
+<td style="text-align: right;">54.40</td>
+<td style="text-align: left;">▇▃▅▅▁</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>Com que en aquest cas no ens importa ni el sex ni la generació fem que no estiguin al dataset i no ens la liin les eliminem <code>select(-sex, -generation)</code>.</li>
+</ul>
+<p>S’ha de tenir en compte que a vegades al importar dades de l’excel, sobretot si s’han fet alguns càlculs, pot ser que importis valors <code>0</code> que realment son <code>NA</code>. Si és el cas es pot netejar amb <code>replace(. == 0, NA)</code> .</p>
+<section id="transformem-les-dades-a-log2fc" class="level3">
+<h3 class="anchored" data-anchor-id="transformem-les-dades-a-log2fc">Transformem les dades a log2(FC)</h3>
+<p>En el cas de que tinguem els valors per cada observació, primer haurem de calcular el log<sub>2</sub>(FC) de les dades. En aquest cas cada rata apareixerà al heatmap, però també es podria fer amb les mitjanes, en el meu cas les vaig importar directament a l’excel.</p>
+<p>També s’ha de tenir en compte que si volem fer arbres al heatmap no pot haver-hi cap valor buit, per tant quan no hi hagi observació, es posarà la mitjana del valor dins del grup (això s’ha de parlar i decidir en cada experiment, simplement modificar per que es substitueix).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data_log2<span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">where</span>(is.numeric),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(.), <span class="fu">mean</span>(., <span class="at">na.rm =</span> <span class="cn">TRUE</span>), .)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span>  </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span>  </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="dv">3</span><span class="sc">:</span><span class="fu">last_col</span>(), <span class="co">#canviar depenent de les variables que tingueu</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>      <span class="sc">~</span> .x <span class="sc">/</span> <span class="fu">mean</span>(.x [group <span class="sc">==</span> <span class="st">"REF"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    )) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="dv">3</span><span class="sc">:</span><span class="fu">last_col</span>(), log2)) </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data_log2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 20
+  group rat   Glycemia_AUC Final_body_weight_g Body_weight_increase_pct
+  &lt;fct&gt; &lt;fct&gt;        &lt;dbl&gt;               &lt;dbl&gt;                    &lt;dbl&gt;
+1 REF   1         -0.0588             -0.102                     0.0350
+2 REF   2          0.204               0.00794                   0.0408
+3 REF   3         -0.00743             0.0323                    0.0161
+4 REF   4          0.0140              0.189                    -0.0212
+5 REF   5          0.00835             0.0216                   -0.0482
+6 REF   6         -0.189              -0.176                    -0.0248
+# ℹ 15 more variables: Food_consumption_g_per_rat &lt;dbl&gt;,
+#   Feed_conversion_efficiency &lt;dbl&gt;, Kcal_consumed_per_rat &lt;dbl&gt;,
+#   Water_consumption_ml_per_rat &lt;dbl&gt;, Liver_weight_pct &lt;dbl&gt;,
+#   Visceral_adipose_tissue_weight_pct &lt;dbl&gt;, Fecal_pH &lt;dbl&gt;,
+#   Fecal_water_content_pct &lt;dbl&gt;, Plasma_TG &lt;dbl&gt;, Total_cholesterol &lt;dbl&gt;,
+#   HDL_c &lt;dbl&gt;, LDL_c &lt;dbl&gt;, Insulin &lt;dbl&gt;, HOMA_R &lt;dbl&gt;, Irisin &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<ul>
+<li><p>Agrupem per grup, canviem els NA per la mitjana del metabolit dins del seu grup i desagrupem</p>
+<p><code>group_by(group) %&gt;%  mutate(across( where(is.numeric), ~ ifelse(is.na(.), mean(., na.rm = TRUE), .) )) %&gt;% ungroup() %&gt;%</code></p></li>
+<li><p>Fem el FoldChange (aquell valor dividit entre la mitjana de REF</p>
+<p><code>mutate(across( 3:last_col(), ~ .x / mean(.x [group == "REF"], na.rm = TRUE) )) %&gt;%</code></p></li>
+<li><p>Apliquem el logaritme amb base 2</p>
+<p><code>mutate(across(3:last_col(), log2))</code></p></li>
+</ul>
+<p>En el nostre cas, les dades les hem importat amb les rates a les files i els metabolits a les columnes. En el nostre heatmap ho volem al revés per tant ho transposarem.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data_HM <span class="ot">&lt;-</span> data_log2 <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>group) <span class="sc">%&gt;%</span>              <span class="co"># ️eliminar columna group</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_to_rownames</span>(<span class="st">"rat"</span>) <span class="sc">%&gt;%</span>   <span class="co"># rat → rownames</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">t</span>() <span class="sc">%&gt;%</span>                         <span class="co"># transposar</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data_HM)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                      1            2            3           4
+Glycemia_AUC               -0.058833887  0.204200519 -0.007434734  0.01404499
+Final_body_weight_g        -0.101599789  0.007938497  0.032300694  0.18874196
+Body_weight_increase_pct    0.034994113  0.040842095  0.016119665 -0.02116757
+Food_consumption_g_per_rat -0.006403095  0.082262493 -0.057845890 -0.02213074
+Feed_conversion_efficiency  0.236407904 -0.523128102  0.015193674  0.08754452
+Kcal_consumed_per_rat      -0.010231923  0.124468436 -0.028314282 -0.04926122
+                                      5           6            7            8
+Glycemia_AUC                0.008348263 -0.18858417  0.275894434  0.012622918
+Final_body_weight_g         0.021631977 -0.17630740 -0.120812288  0.168075545
+Body_weight_increase_pct   -0.048226580 -0.02482768  0.026766910  0.174520530
+Food_consumption_g_per_rat  0.049069314 -0.05038366  0.004385701  0.007964111
+Feed_conversion_efficiency  0.011065788  0.06382845  0.396872576  0.288496415
+Kcal_consumed_per_rat       0.020248684 -0.06517346  0.022759903 -0.030916077
+                                     9          10          11         12
+Glycemia_AUC               -0.09363577  0.08612544  0.23745232 0.10226013
+Final_body_weight_g         0.03197856  0.19047493  0.21962128 0.20569307
+Body_weight_increase_pct   -0.13390578  0.04898965 -0.04326886 0.04433954
+Food_consumption_g_per_rat  0.26183599 -0.11248552 -0.14390662 0.11138621
+Feed_conversion_efficiency -0.13223669 -0.05231315  0.07177720 0.23640790
+Kcal_consumed_per_rat      -0.09480969  0.03773611 -0.03613379 0.07934343
+                                     13          14         15         16
+Glycemia_AUC               0.0054914400  0.30871101 0.18791286 0.26399094
+Final_body_weight_g        0.0788892943  0.09007303 0.22498603 0.16396530
+Body_weight_increase_pct   0.0006002476  0.20609061 0.07201799 0.03499411
+Food_consumption_g_per_rat 0.1625857425 -0.06660089 0.18488769 0.07318177
+Feed_conversion_efficiency 0.3188700640  0.32553379 0.24697715 0.23640790
+Kcal_consumed_per_rat      0.0937464965  0.17726985 0.31886613 0.05991290
+                                   17          18
+Glycemia_AUC               0.12481306 -0.13874797
+Final_body_weight_g        0.34031149  0.19364664
+Body_weight_increase_pct   0.15954802  0.22367836
+Food_consumption_g_per_rat 0.07886392  0.24979674
+Feed_conversion_efficiency 0.47087316  0.35839843
+Kcal_consumed_per_rat      0.09613309  0.08175395</code></pre>
+</div>
+</div>
+<p>Ja ho tenim preparat per a fer el heatmap.</p>
+</section>
+<section id="afegim-files-dannotació" class="level3">
+<h3 class="anchored" data-anchor-id="afegim-files-dannotació">Afegim files d’annotació</h3>
+<p>Per a afegir files amb el codi de color del grup i del sexe, primer creem un dataset que contingui només aquestes files.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>annotation_col <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(rat, group, sex) <span class="sc">%&gt;%</span>             <span class="co"># només les columnes necessàries</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_to_rownames</span>(<span class="at">var =</span> <span class="st">"rat"</span>)         <span class="co"># rat → rownames</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Determinem els colors dels grups</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>group_colour <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"REF"</span> <span class="ot">=</span> <span class="st">"#999999"</span>,   <span class="co"># Grey</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>            <span class="st">"PGS"</span> <span class="ot">=</span> <span class="st">"#1b9e77"</span>,   <span class="co"># Green 1</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"S"</span> <span class="ot">=</span> <span class="st">"#66a61e"</span>)   <span class="co"># Green 2</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>sex_colour <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"M"</span> <span class="ot">=</span> <span class="st">"lightblue"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"F"</span> <span class="ot">=</span> <span class="st">"lightpink"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>annotation_colors <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">group =</span> group_colour, <span class="at">sex=</span>sex_colour)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="heatmap" class="level3">
+<h3 class="anchored" data-anchor-id="heatmap">Heatmap</h3>
+<p>I finalment ja podem fer el heatmap, indicant totes les característiques:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>heatmap<span class="ot">&lt;-</span><span class="fu">pheatmap</span>(data_HM,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">color=</span><span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">'red'</span>,<span class="st">'white'</span>,<span class="st">'green'</span>))(<span class="dv">100</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fu">max</span>(<span class="fu">abs</span>(data_HM)),  <span class="fu">max</span>(<span class="fu">abs</span>(data_HM)), <span class="at">length.out =</span> <span class="dv">101</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fontsize_col=</span><span class="dv">8</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fontsize_row =</span> <span class="dv">6</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">show_rownames=</span>T,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cluster_cols =</span> T, <span class="co">#arbre rates</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cluster_rows =</span> F, <span class="co">#arbre metabolits</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                  <span class="at">angle_col =</span> <span class="dv">0</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fontsize_number =</span> <span class="dv">10</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">main =</span> <span class="st">"Heatmap log2(FC)"</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">annotation_col =</span> annotation_col,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">annotation_colors =</span> annotation_colors)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>heatmap</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heatmap_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>L’argument <code>breaks = seq(-max(abs(mat_data)), max(abs(mat_data)), length.out = 101)</code> automatitza que el rang de colors va del valor absolut més alt al més baix (sent el mateix ja que si no el 0 no seria blanc).</p>
+<ul>
+<li>Abans calculava previament els valors i els colocava. <code>min(mat_data, na.rm = TRUE)</code>i <code>max(mat_data, na.rm = TRUE)</code>.</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="heatmap-log2fc-mitjanes" class="level2">
+<h2 class="anchored" data-anchor-id="heatmap-log2fc-mitjanes">Heatmap log<sub>2</sub>(FC) mitjanes</h2>
+<p>Un altre tipus de heatmap interessant (sobretot si tenim molts grups), és fer un heatmap però que ensenyi el valor mitjà de cada grup i el seu augment o disminució respecte al grup referència. D’aquesta manera també podem afegir la significància.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Carregar els paquets bàsics -------</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(skimr)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap) <span class="co">#HEATMAPS</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#Importar dades i preprarar-les-------</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>raw_data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">here</span>(<span class="st">"Basic"</span>, <span class="st">"data"</span>, <span class="st">"metab_all.xlsx"</span>)) </span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span> </span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(group, sex, rat, generation), as.factor))</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">data</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">135</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">22</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">factor</td>
+<td style="text-align: left;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">18</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 11%">
+<col style="width: 16%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: left;">ordered</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: left;">top_counts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">generation</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">Cd2: 50, Cd1: 40, M: 25, CA: 20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">group</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">PGS: 35, REF: 35, G: 25, P: 25</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sex</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">F: 80, M: 55</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rat</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">117</td>
+<td style="text-align: left;">G1.: 2, G3.: 2, G8.: 2, P2.: 2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 8%">
+<col style="width: 11%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+<th style="text-align: left;">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Glycemia_AUC</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1154.00</td>
+<td style="text-align: right;">196.29</td>
+<td style="text-align: right;">691.04</td>
+<td style="text-align: right;">1016.98</td>
+<td style="text-align: right;">1139.28</td>
+<td style="text-align: right;">1290.10</td>
+<td style="text-align: right;">1719.48</td>
+<td style="text-align: left;">▂▆▇▃▁</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Final_body_weight_g</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">638.33</td>
+<td style="text-align: right;">109.59</td>
+<td style="text-align: right;">371.61</td>
+<td style="text-align: right;">560.86</td>
+<td style="text-align: right;">632.30</td>
+<td style="text-align: right;">722.42</td>
+<td style="text-align: right;">956.90</td>
+<td style="text-align: left;">▂▇▇▅▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Body_weight_increase_%</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">49.26</td>
+<td style="text-align: right;">9.99</td>
+<td style="text-align: right;">19.28</td>
+<td style="text-align: right;">42.72</td>
+<td style="text-align: right;">49.80</td>
+<td style="text-align: right;">55.46</td>
+<td style="text-align: right;">70.86</td>
+<td style="text-align: left;">▁▃▇▇▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Food_consumption_g_rat</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">31.44</td>
+<td style="text-align: right;">5.59</td>
+<td style="text-align: right;">19.49</td>
+<td style="text-align: right;">27.15</td>
+<td style="text-align: right;">31.14</td>
+<td style="text-align: right;">36.01</td>
+<td style="text-align: right;">44.97</td>
+<td style="text-align: left;">▃▇▇▆▂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Feed_conversion_efficiency</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.07</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">0.55</td>
+<td style="text-align: left;">▂▆▇▃▁</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kcal_consumed_rat</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">120.21</td>
+<td style="text-align: right;">20.58</td>
+<td style="text-align: right;">70.75</td>
+<td style="text-align: right;">104.94</td>
+<td style="text-align: right;">119.23</td>
+<td style="text-align: right;">134.23</td>
+<td style="text-align: right;">168.38</td>
+<td style="text-align: left;">▂▆▇▆▂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Water_consumption_mL_rat</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">49.91</td>
+<td style="text-align: right;">8.89</td>
+<td style="text-align: right;">30.23</td>
+<td style="text-align: right;">44.08</td>
+<td style="text-align: right;">49.34</td>
+<td style="text-align: right;">56.44</td>
+<td style="text-align: right;">70.07</td>
+<td style="text-align: left;">▃▇▇▇▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Liver_weight_%</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4.97</td>
+<td style="text-align: right;">0.90</td>
+<td style="text-align: right;">2.51</td>
+<td style="text-align: right;">4.25</td>
+<td style="text-align: right;">5.04</td>
+<td style="text-align: right;">5.58</td>
+<td style="text-align: right;">7.37</td>
+<td style="text-align: left;">▁▆▇▅▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Visceral_adipose_tissue_weight_%</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6.33</td>
+<td style="text-align: right;">1.35</td>
+<td style="text-align: right;">3.02</td>
+<td style="text-align: right;">5.46</td>
+<td style="text-align: right;">6.27</td>
+<td style="text-align: right;">7.24</td>
+<td style="text-align: right;">10.07</td>
+<td style="text-align: left;">▂▅▇▅▁</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fecal_pH</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">9.68</td>
+<td style="text-align: right;">1.47</td>
+<td style="text-align: right;">6.44</td>
+<td style="text-align: right;">8.58</td>
+<td style="text-align: right;">9.80</td>
+<td style="text-align: right;">10.73</td>
+<td style="text-align: right;">12.93</td>
+<td style="text-align: left;">▂▇▆▇▂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fecal_water_content_%</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">78.03</td>
+<td style="text-align: right;">13.50</td>
+<td style="text-align: right;">41.05</td>
+<td style="text-align: right;">68.96</td>
+<td style="text-align: right;">77.41</td>
+<td style="text-align: right;">86.47</td>
+<td style="text-align: right;">111.79</td>
+<td style="text-align: left;">▁▅▇▆▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Plasma_TG</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">162.19</td>
+<td style="text-align: right;">35.06</td>
+<td style="text-align: right;">94.06</td>
+<td style="text-align: right;">136.66</td>
+<td style="text-align: right;">159.99</td>
+<td style="text-align: right;">189.24</td>
+<td style="text-align: right;">238.54</td>
+<td style="text-align: left;">▃▇▇▆▃</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total_cholesterol</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">187.31</td>
+<td style="text-align: right;">36.05</td>
+<td style="text-align: right;">109.79</td>
+<td style="text-align: right;">158.99</td>
+<td style="text-align: right;">189.99</td>
+<td style="text-align: right;">211.71</td>
+<td style="text-align: right;">271.39</td>
+<td style="text-align: left;">▃▇▇▅▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HDL_c</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">78.80</td>
+<td style="text-align: right;">16.62</td>
+<td style="text-align: right;">35.87</td>
+<td style="text-align: right;">67.22</td>
+<td style="text-align: right;">78.98</td>
+<td style="text-align: right;">90.26</td>
+<td style="text-align: right;">122.13</td>
+<td style="text-align: left;">▂▅▇▆▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">LDL_c</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">64.87</td>
+<td style="text-align: right;">13.88</td>
+<td style="text-align: right;">27.75</td>
+<td style="text-align: right;">56.46</td>
+<td style="text-align: right;">64.22</td>
+<td style="text-align: right;">72.88</td>
+<td style="text-align: right;">96.13</td>
+<td style="text-align: left;">▁▃▇▅▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Insulin</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.74</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">0.64</td>
+<td style="text-align: right;">1.42</td>
+<td style="text-align: right;">1.74</td>
+<td style="text-align: right;">2.04</td>
+<td style="text-align: right;">2.85</td>
+<td style="text-align: left;">▂▅▇▆▂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HOMA_R</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3.54</td>
+<td style="text-align: right;">0.96</td>
+<td style="text-align: right;">1.14</td>
+<td style="text-align: right;">2.88</td>
+<td style="text-align: right;">3.52</td>
+<td style="text-align: right;">4.24</td>
+<td style="text-align: right;">5.78</td>
+<td style="text-align: left;">▂▆▇▇▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Irisin</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">9.40</td>
+<td style="text-align: right;">1.70</td>
+<td style="text-align: right;">5.03</td>
+<td style="text-align: right;">8.35</td>
+<td style="text-align: right;">9.61</td>
+<td style="text-align: right;">10.48</td>
+<td style="text-align: right;">13.87</td>
+<td style="text-align: left;">▁▅▇▅▁</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#convertim a long</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>longdata <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="st">"Glycemia_AUC"</span><span class="sc">:</span><span class="st">"Irisin"</span>, <span class="at">names_to=</span><span class="st">"metabolite"</span>, <span class="at">values_to =</span> <span class="st">"value"</span> ) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> <span class="fu">factor</span>(group, </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"REF"</span>, <span class="st">"P"</span>, <span class="st">"G"</span>, <span class="st">"S"</span>, <span class="st">"PGS"</span>)), </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">generation =</span> <span class="fu">factor</span>(generation, </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">levels =</span> <span class="fu">c</span>( <span class="st">"M"</span>, <span class="st">"Cd1"</span>, <span class="st">"Cd21"</span>, <span class="st">"CA"</span>)))</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(longdata) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  generation group sex   rat   metabolite                  value
+  &lt;fct&gt;      &lt;fct&gt; &lt;fct&gt; &lt;fct&gt; &lt;chr&gt;                       &lt;dbl&gt;
+1 M          REF   F     R1    Glycemia_AUC               860.  
+2 M          REF   F     R1    Final_body_weight_g        444.  
+3 M          REF   F     R1    Body_weight_increase_%      38.9 
+4 M          REF   F     R1    Food_consumption_g_rat      26.6 
+5 M          REF   F     R1    Feed_conversion_efficiency   0.24
+6 M          REF   F     R1    Kcal_consumed_rat           82.7 </code></pre>
+</div>
+</div>
+<section id="dataset-estadística" class="level3">
+<h3 class="anchored" data-anchor-id="dataset-estadística">Dataset estadística</h3>
+<p>Comencem fent l’estadística. En aquest cas ja he comprovat que no son normals per tant fem U-Mann Whitney (CA = 2 grups) i Kruskal-Wallis (M, Cd1, Cd21 &gt; 2 grups).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>results_kruskal <span class="ot">&lt;-</span> longdata <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(generation <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"M"</span>, <span class="st">"Cd1"</span>, <span class="st">"Cd21"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(generation, metabolite) <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_map</span>(<span class="sc">~</span> {</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Kruskal–Wallis test</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    model <span class="ot">&lt;-</span> <span class="fu">kruskal.test</span>(value <span class="sc">~</span> group, <span class="at">data =</span> .x)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># tidy del test</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    tidy_model <span class="ot">&lt;-</span> <span class="fu">tidy</span>(model) <span class="sc">%&gt;%</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">generation =</span> .y<span class="sc">$</span>generation,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">metabolite =</span> .y<span class="sc">$</span>metabolite,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">df =</span> parameter </span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(generation, metabolite,df,statistic,p.value)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  }) <span class="sc">%&gt;%</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">signif =</span> <span class="fu">case_when</span>(</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(p.value)  <span class="sc">~</span> <span class="st">"ns"</span>,</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.001</span> <span class="sc">~</span> <span class="st">"***"</span>,</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.01</span>  <span class="sc">~</span> <span class="st">"**"</span>,</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.05</span>  <span class="sc">~</span> <span class="st">"*"</span>,</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.1</span>  <span class="sc">~</span> <span class="st">"·"</span>,</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>            <span class="sc">~</span> <span class="st">"ns"</span>))</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>results_kruskal</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 54 × 6
+   generation metabolite                    df statistic  p.value signif
+   &lt;fct&gt;      &lt;chr&gt;                      &lt;int&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt; 
+ 1 M          Body_weight_increase_%         4     10.5  0.0329   *     
+ 2 M          Fecal_pH                       4     21.0  0.000323 ***   
+ 3 M          Fecal_water_content_%          4     12.8  0.0123   *     
+ 4 M          Feed_conversion_efficiency     4      2.46 0.652    ns    
+ 5 M          Final_body_weight_g            4     11.4  0.0226   *     
+ 6 M          Food_consumption_g_rat         4     13.1  0.0107   *     
+ 7 M          Glycemia_AUC                   4      6.89 0.142    ns    
+ 8 M          HDL_c                          4     11.9  0.0178   *     
+ 9 M          HOMA_R                         4      2.47 0.649    ns    
+10 M          Insulin                        4      4.74 0.315    ns    
+# ℹ 44 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rstatix)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>posthoc_dunn <span class="ot">&lt;-</span> longdata <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(generation <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"M"</span>, <span class="st">"Cd1"</span>, <span class="st">"Cd21"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(generation, metabolite) <span class="sc">%&gt;%</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dunn_test</span>(</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    value <span class="sc">~</span> group,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">p.adjust.method =</span> <span class="st">"bonferroni"</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>posthoc_dunn</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 468 × 11
+   generation metabolite  .y.   group1 group2    n1    n2 statistic      p p.adj
+ * &lt;fct&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+ 1 M          Body_weigh… value REF    P          5     5    0.559  0.576  1    
+ 2 M          Body_weigh… value REF    G          5     5   -0.0430 0.966  1    
+ 3 M          Body_weigh… value REF    S          5     5    2.11   0.0353 0.353
+ 4 M          Body_weigh… value REF    PGS        5     5    2.32   0.0203 0.203
+ 5 M          Body_weigh… value P      G          5     5   -0.602  0.547  1    
+ 6 M          Body_weigh… value P      S          5     5    1.55   0.122  1    
+ 7 M          Body_weigh… value P      PGS        5     5    1.76   0.0781 0.781
+ 8 M          Body_weigh… value G      S          5     5    2.15   0.0317 0.317
+ 9 M          Body_weigh… value G      PGS        5     5    2.36   0.0181 0.181
+10 M          Body_weigh… value S      PGS        5     5    0.215  0.830  1    
+# ℹ 458 more rows
+# ℹ 1 more variable: p.adj.signif &lt;chr&gt;</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>results_umw <span class="ot">&lt;-</span> longdata <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(generation <span class="sc">==</span> <span class="st">"CA"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(metabolite) <span class="sc">%&gt;%</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">wilcox_test</span>(value <span class="sc">~</span> group) <span class="co">#el que dona R per defecte</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>results_umw</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 18 × 8
+   metabolite                  .y.   group1 group2    n1    n2 statistic       p
+ * &lt;chr&gt;                       &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+ 1 Body_weight_increase_%      value REF    PGS       10    10       4   1.3 e-4
+ 2 Fecal_pH                    value REF    PGS       10    10       0   1.81e-4
+ 3 Fecal_water_content_%       value REF    PGS       10    10       5   7.62e-4
+ 4 Feed_conversion_efficiency  value REF    PGS       10    10      41.5 5.44e-1
+ 5 Final_body_weight_g         value REF    PGS       10    10       1   2.17e-5
+ 6 Food_consumption_g_rat      value REF    PGS       10    10      11   2.09e-3
+ 7 Glycemia_AUC                value REF    PGS       10    10      11   2.09e-3
+ 8 HDL_c                       value REF    PGS       10    10      14   5.2 e-3
+ 9 HOMA_R                      value REF    PGS       10    10      25   6.39e-2
+10 Insulin                     value REF    PGS       10    10      38.5 4.06e-1
+11 Irisin                      value REF    PGS       10    10       9   1.05e-3
+12 Kcal_consumed_rat           value REF    PGS       10    10       1   2.17e-5
+13 LDL_c                       value REF    PGS       10    10      19   1.85e-2
+14 Liver_weight_%              value REF    PGS       10    10      11   2.09e-3
+15 Plasma_TG                   value REF    PGS       10    10       9   1.05e-3
+16 Total_cholesterol           value REF    PGS       10    10      16   8.93e-3
+17 Visceral_adipose_tissue_we… value REF    PGS       10    10      22   3.75e-2
+18 Water_consumption_mL_rat    value REF    PGS       10    10       7   4.87e-4</code></pre>
+</div>
+</div>
+<p>Seguidament fem els data.frames de la significància. Hem d’afgefir una columna en els dos casos per a que sigui com a referència vs referència i li diem que ho ompli amb <code>NA</code>. Sinó no ens ho deixarà unir amb la de les dades!</p>
+<p>En el cas del Kruskal, com que tenim tots els grups contra tots els grups, i només ens interessen REF vs els altres, filtrem que el grup1 que ens comprar sigui només REF, així eliminem la resta.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#U-Mann Whitney</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>sig_umann <span class="ot">&lt;-</span> results_umw <span class="sc">%&gt;%</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(metabolite, group2, p) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">generation =</span> <span class="st">"CA"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">p.adj =</span> p)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>ref_rows_umann <span class="ot">&lt;-</span> sig_umann <span class="sc">%&gt;%</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(generation, metabolite) <span class="sc">%&gt;%</span>   <span class="co"># totes les combinacions</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group2 =</span> <span class="st">"REF"</span>, <span class="at">p.adj =</span> <span class="cn">NA</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co">#Kruskal-Wallis</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>sig_krus <span class="ot">&lt;-</span> posthoc_dunn <span class="sc">%&gt;%</span> </span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(generation, metabolite, group1, group2, p.adj) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(group1<span class="sc">==</span><span class="st">"REF"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>group1) </span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>ref_rows_krus <span class="ot">&lt;-</span> sig_krus <span class="sc">%&gt;%</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(generation, metabolite) <span class="sc">%&gt;%</span>   <span class="co"># totes les combinacions</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group2 =</span> <span class="st">"REF"</span>, <span class="at">p.adj =</span> <span class="cn">NA</span>)</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Combinar tots els datasets</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>sig <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(sig_umann, sig_krus, ref_rows_krus, ref_rows_umann) <span class="sc">%&gt;%</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(generation, metabolite, group2) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">group=</span>group2)</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sig)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+  metabolite             group     p.adj generation
+  &lt;chr&gt;                  &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;     
+1 Body_weight_increase_% PGS    0.00013  CA        
+2 Body_weight_increase_% REF   NA        CA        
+3 Fecal_pH               PGS    0.000181 CA        
+4 Fecal_pH               REF   NA        CA        
+5 Fecal_water_content_%  PGS    0.000762 CA        
+6 Fecal_water_content_%  REF   NA        CA        </code></pre>
+</div>
+</div>
+<p>Fem la matriu que apareixerà al heatmap, amb com apareixerà la significància i wide perquè el heatmap serà en format wide.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>mat_sig <span class="ot">&lt;-</span> sig <span class="sc">%&gt;%</span>  </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">p.adj =</span> <span class="fu">case_when</span>(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.na</span>(p.adj)  <span class="sc">~</span> <span class="st">""</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    p.adj <span class="sc">&lt;</span> <span class="fl">0.05</span> <span class="sc">~</span> <span class="st">"*"</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    p.adj <span class="sc">&gt;=</span> <span class="fl">0.05</span> <span class="sc">&amp;</span> p.adj <span class="sc">&lt;=</span> <span class="fl">0.1</span> <span class="sc">~</span> <span class="st">"·"</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    p.adj <span class="sc">&gt;</span> <span class="fl">0.1</span> <span class="sc">~</span> <span class="st">""</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from=</span><span class="st">"metabolite"</span>, <span class="at">values_from=</span><span class="st">"p.adj"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">paste</span>(generation, group, <span class="at">sep =</span> <span class="st">"_"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_to_rownames</span>(<span class="at">var =</span> <span class="st">"id"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>generation, <span class="sc">-</span>group) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">t</span>()<span class="sc">%&gt;%</span>                         </span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mat_sig)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                           CA_PGS CA_REF Cd1_G Cd1_P Cd1_PGS Cd1_REF Cd21_G
+Body_weight_increase_%     "*"    ""     ""    ""    "*"     ""      ""    
+Fecal_pH                   "*"    ""     "*"   "*"   "*"     ""      ""    
+Fecal_water_content_%      "*"    ""     ""    ""    "*"     ""      ""    
+Feed_conversion_efficiency ""     ""     ""    ""    "*"     ""      ""    
+Final_body_weight_g        "*"    ""     "*"   "·"   "*"     ""      ""    
+Food_consumption_g_rat     "*"    ""     ""    ""    ""      ""      ""    
+                           Cd21_P Cd21_PGS Cd21_REF Cd21_S M_G M_P M_PGS M_REF
+Body_weight_increase_%     ""     "*"      ""       "*"    ""  ""  ""    ""   
+Fecal_pH                   "*"    "*"      ""       "*"    ""  ""  "*"   ""   
+Fecal_water_content_%      ""     "*"      ""       "*"    ""  ""  ""    ""   
+Feed_conversion_efficiency "·"    "*"      ""       ""     ""  ""  ""    ""   
+Final_body_weight_g        ""     "*"      ""       "*"    ""  ""  "*"   ""   
+Food_consumption_g_rat     ""     "*"      ""       "*"    ""  ""  "*"   ""   
+                           M_S
+Body_weight_increase_%     "" 
+Fecal_pH                   "*"
+Fecal_water_content_%      "*"
+Feed_conversion_efficiency "" 
+Final_body_weight_g        "" 
+Food_consumption_g_rat     "" </code></pre>
+</div>
+</div>
+</section>
+<section id="dataset-dades" class="level3">
+<h3 class="anchored" data-anchor-id="dataset-dades">Dataset dades</h3>
+<p>Fem els data.frames de les dades convertides a log2(FC)</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mean_data <span class="ot">&lt;-</span> longdata <span class="sc">%&gt;%</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(generation, group, metabolite) <span class="sc">%&gt;%</span> <span class="co">#que ho faci tot dins de la mateixa </span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean =</span> <span class="fu">mean</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>mat_data <span class="ot">&lt;-</span> mean_data <span class="sc">%&gt;%</span>  </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from=</span><span class="st">"metabolite"</span>, <span class="at">values_from=</span><span class="st">"mean"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(generation) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span><span class="sc">:</span><span class="fu">last_col</span>(),</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> .x <span class="sc">/</span> .x [group <span class="sc">==</span> <span class="st">"REF"</span>]</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span>  <span class="co">#FC</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="dv">3</span><span class="sc">:</span><span class="fu">last_col</span>(), log2)) <span class="sc">%&gt;%</span>  <span class="co">#log2</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">paste</span>(generation, group, <span class="at">sep =</span> <span class="st">"_"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_to_rownames</span>(<span class="at">var =</span> <span class="st">"id"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>generation, <span class="sc">-</span>group) <span class="sc">%&gt;%</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">t</span>()<span class="sc">%&gt;%</span>                         <span class="co"># transposar</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mat_data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                           M_REF        M_P         M_G        M_S     M_PGS
+Body_weight_increase_%         0 0.17331962  0.04547463 0.46650211 0.5373825
+Fecal_pH                       0 0.16745675  0.15639279 0.25554543 0.3573438
+Fecal_water_content_%          0 0.11575899 -0.01535403 0.30380753 0.2592802
+Feed_conversion_efficiency     0 0.07566427  0.26303441 0.05444778 0.2537566
+Final_body_weight_g            0 0.19635245  0.15039066 0.16675315 0.3895851
+Food_consumption_g_rat         0 0.02331255  0.09002070 0.17309931 0.2832644
+                           Cd1_REF       Cd1_P      Cd1_G   Cd1_PGS Cd21_REF
+Body_weight_increase_%           0 -0.04574985 0.13489065 0.3547636        0
+Fecal_pH                         0  0.13269443 0.13773058 0.2966581        0
+Fecal_water_content_%            0  0.08152313 0.06341763 0.2007053        0
+Feed_conversion_efficiency       0  0.23735827 0.23288480 0.4944250        0
+Final_body_weight_g              0  0.16714825 0.18108164 0.2724225        0
+Food_consumption_g_rat           0  0.17778317 0.09940848 0.2113158        0
+                              Cd21_P     Cd21_G    Cd21_S  Cd21_PGS CA_REF
+Body_weight_increase_%     0.1351677 0.12526750 0.2353153 0.2941834      0
+Fecal_pH                   0.1202942 0.06781158 0.1553664 0.1884299      0
+Fecal_water_content_%      0.1007166 0.11262908 0.2151238 0.3005790      0
+Feed_conversion_efficiency 0.2357452 0.17654939 0.1108732 0.2856211      0
+Final_body_weight_g        0.1422203 0.09999936 0.2112930 0.2513152      0
+Food_consumption_g_rat     0.1449106 0.17449591 0.2008599 0.2983576      0
+                              CA_PGS
+Body_weight_increase_%     0.2349846
+Fecal_pH                   0.1974922
+Fecal_water_content_%      0.2126341
+Feed_conversion_efficiency 0.0672707
+Final_body_weight_g        0.1869733
+Food_consumption_g_rat     0.1316933</code></pre>
+</div>
+</div>
+<p>Creem les columnes d’anotació, en aquest cas grup i generació. També creem un <code>id</code>, que serà el nom de columna, on unim el grup i la generació.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>group_colour <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"REF"</span> <span class="ot">=</span> <span class="st">"#999999"</span>,   <span class="co"># Grey</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"PGS"</span> <span class="ot">=</span> <span class="st">"#1b9e77"</span>,   <span class="co"># Green 1</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"S"</span> <span class="ot">=</span> <span class="st">"#66a61e"</span>,   <span class="co"># Green 2</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"G"</span> <span class="ot">=</span> <span class="st">"#a6d854"</span>,   <span class="co"># Green 3</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"P"</span> <span class="ot">=</span> <span class="st">"#d9f0a3"</span>)   <span class="co"># Green 4</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>gen_colour <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"M"</span> <span class="ot">=</span> <span class="st">"#7B3FBF"</span>,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Cd1"</span> <span class="ot">=</span> <span class="st">"#87CEEB"</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Cd21"</span> <span class="ot">=</span> <span class="st">"#4169E1"</span>,</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">"CA"</span> <span class="ot">=</span> <span class="st">"#000080"</span>)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>annotation_colors <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">group =</span> group_colour, <span class="at">generation=</span>gen_colour)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>annotation_col <span class="ot">&lt;-</span> mean_data <span class="sc">%&gt;%</span>  </span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from=</span><span class="st">"metabolite"</span>, <span class="at">values_from=</span><span class="st">"mean"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">paste</span>(generation, group, <span class="at">sep =</span> <span class="st">"_"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id, group, generation) <span class="sc">%&gt;%</span>             </span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_to_rownames</span>(<span class="at">var =</span> <span class="st">"id"</span>)         </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="heatmap-1" class="level3">
+<h3 class="anchored" data-anchor-id="heatmap-1">Heatmap</h3>
+<p>Per a que el heatmap quedi be, la matriu de significància i de dades ha de ser de la mateixa mida i estar ordenada igual!!</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>mat_sig <span class="ot">&lt;-</span> mat_sig[, <span class="fu">colnames</span>(mat_data)] <span class="co">#mateix ordre</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>heatmap<span class="ot">&lt;-</span><span class="fu">pheatmap</span>(mat_data,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">color=</span><span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">'red'</span>,<span class="st">'white'</span>,<span class="st">'green'</span>))(<span class="dv">100</span>),</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fu">max</span>(<span class="fu">abs</span>(mat_data)),  <span class="fu">max</span>(<span class="fu">abs</span>(mat_data)), <span class="at">length.out =</span> <span class="dv">101</span>),</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fontsize_col=</span><span class="dv">6</span>,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fontsize_row =</span> <span class="dv">6</span>,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">show_rownames=</span>T,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cluster_cols =</span> F,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cluster_rows =</span> F,</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">angle_col =</span> <span class="dv">45</span>,</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fontsize_number =</span> <span class="dv">10</span>,</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">main =</span> <span class="st">"Heatmap log2(FC)"</span>,</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">annotation_col =</span> annotation_col,</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>                  <span class="at">annotation_colors =</span> annotation_colors,</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">display_numbers =</span> mat_sig,  <span class="co"># afegir sinificació</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">number_color =</span> <span class="st">"black"</span>,</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cellwidth =</span> <span class="dv">15</span>,     <span class="co"># Prova ajustar-ho segons la mida del gràfic</span></span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cellheight =</span> <span class="dv">10</span>,    <span class="co"># Ajust segons la llegibilitat</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>                  <span class="at">gaps_col =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">9</span>, <span class="dv">14</span>))</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>                  <span class="co">#gaps_row = c(37, 58))  # separació entre files</span></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>heatmap <span class="co">#guardar width 500, height 2000, no mantenir escala</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heatmap_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>En el cas que ens interessin els arbres i per tant no ens interessi el grup referència com a comparació:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>mat_data<span class="ot">&lt;-</span> mat_data[, <span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"_REF$"</span>, <span class="fu">colnames</span>(mat_data))]</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>mat_sig<span class="ot">&lt;-</span> mat_sig[, <span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"_REF$"</span>, <span class="fu">colnames</span>(mat_sig))]</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>heatmap<span class="ot">&lt;-</span><span class="fu">pheatmap</span>(mat_data,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">color=</span><span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">'red'</span>,<span class="st">'white'</span>,<span class="st">'green'</span>))(<span class="dv">100</span>),</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fu">max</span>(<span class="fu">abs</span>(mat_data)),  <span class="fu">max</span>(<span class="fu">abs</span>(mat_data)), <span class="at">length.out =</span> <span class="dv">101</span>),</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fontsize_col=</span><span class="dv">6</span>,</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fontsize_row =</span> <span class="dv">6</span>,</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>                  <span class="at">show_rownames=</span>T,</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cluster_cols =</span> T,</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cluster_rows =</span> F,</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">angle_col =</span> <span class="dv">45</span>,</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fontsize_number =</span> <span class="dv">10</span>,</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">main =</span> <span class="st">"Heatmap log2(FC)"</span>,</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>                  <span class="at">annotation_col =</span> annotation_col,</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">annotation_colors =</span> annotation_colors,</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">display_numbers =</span> mat_sig,  <span class="co"># afegir sinificació</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>                  <span class="at">number_color =</span> <span class="st">"black"</span>,</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cellwidth =</span> <span class="dv">15</span>,     <span class="co"># Prova ajustar-ho segons la mida del gràfic</span></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cellheight =</span> <span class="dv">10</span>)    <span class="co"># Ajust segons la llegibilitat</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heatmap_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>I fins aquí els dos tipus de heatmap per dades!</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

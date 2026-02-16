@@ -22,10 +22,6 @@ website:
           text: Gràfic de barres (ELISA)
         - href: heatmap.qmd
           text: Heatmap
-        - href: PCA.qmd
-          text: PCA
-        - href: volcano.qmd
-          text: Volcano plot
         - href: extra.qmd
           text: Dumpster
     - href: quarto.qmd
