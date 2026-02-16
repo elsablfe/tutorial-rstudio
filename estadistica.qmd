@@ -1,10 +1,5 @@
 ---
 title: "Estadística"
-format: html
-editor: visual
-project:
-  type: website
-  output-dir: docs
 ---
 
 # Estadística descriptiva

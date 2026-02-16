@@ -1,9 +1,5 @@
 ---
 title: "Inici"
-
-project:
-  type: website
-  output-dir: docs
 ---
 
 # Rstudio basics

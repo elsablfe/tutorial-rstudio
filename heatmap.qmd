@@ -1,0 +1,376 @@
+---
+title: "Heatmap"
+editor: visual
+---
+
+## Heatmap log~2~(FC) individus
+
+Per a fer un heatmap amb augment o disminució de concentracions respecte al grup REF amb la significància, la qual tenim en una altre taula d'excel.
+
+On ho vaig aprendre: <https://youtu.be/369PHkv1fPg?feature=shared>. S'utilitza la llibreria `pheatmap`.
+
+```{r, warning=FALSE, message=FALSE}
+
+#Carregar els paquets bàsics -------
+library(tidyverse)
+library(here)
+library(readxl)
+library(janitor)
+library(skimr)
+library(pheatmap) #HEATMAPS
+
+#Importar dades i preprarar-les-------
+raw_data <- read_excel(here("Basic", "data", "metab.xlsx")) 
+data <- raw_data %>% 
+  mutate(across(c(group, sex, rat, generation), as.factor)) %>% 
+  select(-sex, -generation)
+
+skim(data)
+```
+
+-   Com que en aquest cas no ens importa ni el sex ni la generació fem que no estiguin al dataset i no ens la liin les eliminem `select(-sex, -generation)`.
+
+S'ha de tenir en compte que a vegades al importar dades de l'excel, sobretot si s'han fet alguns càlculs, pot ser que importis valors `0` que realment son `NA`. Si és el cas es pot netejar amb `replace(. == 0, NA)` .
+
+### Transformem les dades a log2(FC)
+
+En el cas de que tinguem els valors per cada observació, primer haurem de calcular el log~2~(FC) de les dades. En aquest cas cada rata apareixerà al heatmap, però també es podria fer amb les mitjanes, en el meu cas les vaig importar directament a l'excel.
+
+També s'ha de tenir en compte que si volem fer arbres al heatmap no pot haver-hi cap valor buit, per tant quan no hi hagi observació, es posarà la mitjana del valor dins del grup (això s'ha de parlar i decidir en cada experiment, simplement modificar per que es substitueix).
+
+```{r}
+data_log2<- data %>% 
+  group_by(group) %>% 
+  mutate(across(
+    where(is.numeric),
+    ~ ifelse(is.na(.), mean(., na.rm = TRUE), .)
+  )) %>%  
+  ungroup() %>%  
+  mutate(across(
+      3:last_col(), #canviar depenent de les variables que tingueu
+      ~ .x / mean(.x [group == "REF"], na.rm = TRUE)
+    )) %>% 
+  mutate(across(3:last_col(), log2)) 
+
+head(data_log2)
+```
+
+-   Agrupem per grup, canviem els NA per la mitjana del metabolit dins del seu grup i desagrupem
+
+    `group_by(group) %>%  mutate(across( where(is.numeric), ~ ifelse(is.na(.), mean(., na.rm = TRUE), .) )) %>% ungroup() %>%`
+
+-   Fem el FoldChange (aquell valor dividit entre la mitjana de REF
+
+    `mutate(across( 3:last_col(), ~ .x / mean(.x [group == "REF"], na.rm = TRUE) )) %>%`
+
+-   Apliquem el logaritme amb base 2
+
+    `mutate(across(3:last_col(), log2))`
+
+En el nostre cas, les dades les hem importat amb les rates a les files i els metabolits a les columnes. En el nostre heatmap ho volem al revés per tant ho transposarem.
+
+```{r}
+data_HM <- data_log2 %>%
+  select(-group) %>%              # ️eliminar columna group
+  column_to_rownames("rat") %>%   # rat → rownames
+  t() %>%                         # transposar
+  as.matrix()
+
+head(data_HM)
+```
+
+Ja ho tenim preparat per a fer el heatmap.
+
+### Afegim files d'annotació
+
+Per a afegir files amb el codi de color del grup i del sexe, primer creem un dataset que contingui només aquestes files.
+
+```{r}
+annotation_col <- raw_data %>%
+  select(rat, group, sex) %>%             # només les columnes necessàries
+  column_to_rownames(var = "rat")         # rat → rownames
+```
+
+Determinem els colors dels grups
+
+```{r}
+group_colour <- c("REF" = "#999999",   # Grey
+            "PGS" = "#1b9e77",   # Green 1
+            "S" = "#66a61e")   # Green 2
+
+sex_colour <- c("M" = "lightblue",
+            "F" = "lightpink")
+
+annotation_colors <- list(group = group_colour, sex=sex_colour)
+```
+
+### Heatmap
+
+I finalment ja podem fer el heatmap, indicant totes les característiques:
+
+```{r}
+heatmap<-pheatmap(data_HM,
+                  color=colorRampPalette(c('red','white','green'))(100),
+                  breaks = seq(-max(abs(data_HM)),  max(abs(data_HM)), length.out = 101),
+                  fontsize_col=8,
+                  fontsize_row = 6,
+                  show_rownames=T,
+                  cluster_cols = T, #arbre rates
+                  cluster_rows = F, #arbre metabolits
+                  angle_col = 0,
+                  fontsize_number = 10,
+                  main = "Heatmap log2(FC)",
+                  annotation_col = annotation_col,
+                  annotation_colors = annotation_colors)
+heatmap
+```
+
+-   L'argument `breaks = seq(-max(abs(mat_data)), max(abs(mat_data)), length.out = 101)` automatitza que el rang de colors va del valor absolut més alt al més baix (sent el mateix ja que si no el 0 no seria blanc).
+
+    -   Abans calculava previament els valors i els colocava. `min(mat_data, na.rm = TRUE)`i `max(mat_data, na.rm = TRUE)`.
+
+## Heatmap log~2~(FC) mitjanes
+
+Un altre tipus de heatmap interessant (sobretot si tenim molts grups), és fer un heatmap però que ensenyi el valor mitjà de cada grup i el seu augment o disminució respecte al grup referència. D'aquesta manera també podem afegir la significància.
+
+```{r, warning=FALSE, message=FALSE}
+#Carregar els paquets bàsics -------
+library(tidyverse)
+library(here)
+library(readxl)
+library(janitor)
+library(skimr)
+library(broom)
+library(pheatmap) #HEATMAPS
+
+
+#Importar dades i preprarar-les-------
+raw_data <- read_excel(here("Basic", "data", "metab_all.xlsx")) 
+data <- raw_data %>% 
+  mutate(across(c(group, sex, rat, generation), as.factor))
+
+skim(data)
+
+#convertim a long
+longdata <- data %>% 
+  pivot_longer(cols="Glycemia_AUC":"Irisin", names_to="metabolite", values_to = "value" ) %>% 
+  mutate(
+    group = factor(group, 
+                   levels = c("REF", "P", "G", "S", "PGS")), 
+    generation = factor(generation, 
+                        levels = c( "M", "Cd1", "Cd21", "CA")))
+
+head(longdata) 
+```
+
+### Dataset estadística
+
+Comencem fent l'estadística. En aquest cas ja he comprovat que no son normals per tant fem U-Mann Whitney (CA = 2 grups) i Kruskal-Wallis (M, Cd1, Cd21 \> 2 grups).
+
+```{r}
+results_kruskal <- longdata %>%
+  filter(generation %in% c("M", "Cd1", "Cd21")) %>%
+  group_by(generation, metabolite) %>%
+  group_map(~ {
+    # Kruskal–Wallis test
+    model <- kruskal.test(value ~ group, data = .x)
+    # tidy del test
+    tidy_model <- tidy(model) %>%
+      mutate(
+        generation = .y$generation,
+        metabolite = .y$metabolite,
+        df = parameter 
+      ) %>%
+      select(generation, metabolite,df,statistic,p.value)
+  }) %>%
+  bind_rows() %>% 
+  mutate(
+    signif = case_when(
+      is.na(p.value)  ~ "ns",
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      p.value < 0.1  ~ "·",
+      TRUE            ~ "ns"))
+
+results_kruskal
+
+library(rstatix)
+posthoc_dunn <- longdata %>%
+  filter(generation %in% c("M", "Cd1", "Cd21")) %>%
+  group_by(generation, metabolite) %>%
+  dunn_test(
+    value ~ group,
+    p.adjust.method = "bonferroni")
+
+posthoc_dunn
+
+results_umw <- longdata %>%
+  filter(generation == "CA") %>%
+  group_by(metabolite) %>%
+  wilcox_test(value ~ group) #el que dona R per defecte
+
+results_umw
+```
+
+Seguidament fem els data.frames de la significància. Hem d'afgefir una columna en els dos casos per a que sigui com a referència vs referència i li diem que ho ompli amb `NA`. Sinó no ens ho deixarà unir amb la de les dades!
+
+En el cas del Kruskal, com que tenim tots els grups contra tots els grups, i només ens interessen REF vs els altres, filtrem que el grup1 que ens comprar sigui només REF, així eliminem la resta.
+
+```{r}
+#U-Mann Whitney
+sig_umann <- results_umw %>% 
+  select(metabolite, group2, p) %>% 
+  mutate(generation = "CA") %>% 
+  rename(p.adj = p)
+
+ref_rows_umann <- sig_umann %>%
+  distinct(generation, metabolite) %>%   # totes les combinacions
+  mutate(group2 = "REF", p.adj = NA)
+
+#Kruskal-Wallis
+sig_krus <- posthoc_dunn %>% 
+  select(generation, metabolite, group1, group2, p.adj) %>% 
+  filter(group1=="REF") %>% 
+  select(-group1) 
+
+ref_rows_krus <- sig_krus %>%
+  distinct(generation, metabolite) %>%   # totes les combinacions
+  mutate(group2 = "REF", p.adj = NA)
+
+# Combinar tots els datasets
+sig <- bind_rows(sig_umann, sig_krus, ref_rows_krus, ref_rows_umann) %>%
+  arrange(generation, metabolite, group2) %>% 
+  rename(group=group2)
+
+head(sig)
+```
+
+Fem la matriu que apareixerà al heatmap, amb com apareixerà la significància i wide perquè el heatmap serà en format wide.
+
+```{r}
+mat_sig <- sig %>%  
+  mutate(p.adj = case_when(
+    is.na(p.adj)  ~ "",
+    p.adj < 0.05 ~ "*",
+    p.adj >= 0.05 & p.adj <= 0.1 ~ "·",
+    p.adj > 0.1 ~ "")) %>% 
+  pivot_wider(names_from="metabolite", values_from="p.adj") %>% 
+  mutate(id = paste(generation, group, sep = "_")) %>% 
+  column_to_rownames(var = "id") %>% 
+  select(-generation, -group) %>% 
+  t()%>%                         # transposar
+  as.matrix()
+
+head(mat_sig)
+```
+
+### Dataset dades
+
+Fem els data.frames de les dades convertides a log2(FC)
+
+```{r}
+mean_data <- longdata %>% 
+  group_by(generation, group, metabolite) %>% #que ho faci tot dins de la mateixa 
+  summarise(mean = mean(value, na.rm = TRUE), .groups = "drop")
+
+mat_data <- mean_data %>%  
+  pivot_wider(names_from="metabolite", values_from="mean") %>%
+  group_by(generation) %>% 
+  mutate(across(
+    2:last_col(),
+    ~ .x / .x [group == "REF"]
+  )) %>%  #FC
+  ungroup() %>% 
+  mutate(across(3:last_col(), log2)) %>%  #log2
+  mutate(id = paste(generation, group, sep = "_")) %>% 
+  column_to_rownames(var = "id") %>% 
+  select(-generation, -group) %>%
+  t()%>%                         # transposar
+  as.matrix()
+
+head(mat_data)
+```
+
+Creem les columnes d'anotació, en aquest cas grup i generació. També creem un `id`, que serà el nom de columna, on unim el grup i la generació.
+
+```{r}
+group_colour <- c("REF" = "#999999",   # Grey
+                  "PGS" = "#1b9e77",   # Green 1
+                  "S" = "#66a61e",   # Green 2
+                  "G" = "#a6d854",   # Green 3
+                  "P" = "#d9f0a3")   # Green 4
+
+
+gen_colour <- c("M" = "#7B3FBF",
+                "Cd1" = "#87CEEB",
+                "Cd21" = "#4169E1",
+                "CA" = "#000080")
+
+annotation_colors <- list(group = group_colour, generation=gen_colour)
+
+
+annotation_col <- mean_data %>%  
+  pivot_wider(names_from="metabolite", values_from="mean") %>% 
+  mutate(id = paste(generation, group, sep = "_")) %>%
+  select(id, group, generation) %>%             
+  column_to_rownames(var = "id")         
+
+```
+
+### Heatmap
+
+Per a que el heatmap quedi be, la matriu de significància i de dades ha de ser de la mateixa mida i estar ordenada igual!!
+
+```{r}
+mat_sig <- mat_sig[, colnames(mat_data)] #mateix ordre
+
+heatmap<-pheatmap(mat_data,
+                  color=colorRampPalette(c('red','white','green'))(100),
+                  breaks = seq(-max(abs(mat_data)),  max(abs(mat_data)), length.out = 101),
+                  fontsize_col=6,
+                  fontsize_row = 6,
+                  show_rownames=T,
+                  cluster_cols = F,
+                  cluster_rows = F,
+                  angle_col = 45,
+                  fontsize_number = 10,
+                  main = "Heatmap log2(FC)",
+                  annotation_col = annotation_col,
+                  annotation_colors = annotation_colors,
+                  display_numbers = mat_sig,  # afegir sinificació
+                  number_color = "black",
+                  cellwidth = 15,     # Prova ajustar-ho segons la mida del gràfic
+                  cellheight = 10,    # Ajust segons la llegibilitat
+                  gaps_col = c(5, 9, 14))
+                  #gaps_row = c(37, 58))  # separació entre files
+heatmap #guardar width 500, height 2000, no mantenir escala
+
+```
+
+En el cas que ens interessin els arbres i per tant no ens interessi el grup referència com a comparació:
+
+```{r}
+mat_data<- mat_data[, !grepl("_REF$", colnames(mat_data))]
+mat_sig<- mat_sig[, !grepl("_REF$", colnames(mat_sig))]
+
+heatmap<-pheatmap(mat_data,
+                  color=colorRampPalette(c('red','white','green'))(100),
+                  breaks = seq(-max(abs(mat_data)),  max(abs(mat_data)), length.out = 101),
+                  fontsize_col=6,
+                  fontsize_row = 6,
+                  show_rownames=T,
+                  cluster_cols = T,
+                  cluster_rows = F,
+                  angle_col = 45,
+                  fontsize_number = 10,
+                  main = "Heatmap log2(FC)",
+                  annotation_col = annotation_col,
+                  annotation_colors = annotation_colors,
+                  display_numbers = mat_sig,  # afegir sinificació
+                  number_color = "black",
+                  cellwidth = 15,     # Prova ajustar-ho segons la mida del gràfic
+                  cellheight = 10)    # Ajust segons la llegibilitat
+```
+
+I fins aquí els dos tipus de heatmap per dades!

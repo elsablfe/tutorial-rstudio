@@ -1,10 +1,5 @@
 ---
 title: "Gràfics"
-format: html
-editor: visual
-project:
-  type: website
-  output-dir: docs
 ---
 
 # Gràfics
@@ -362,62 +357,3 @@ ggplot +
   bracket.nudge.y = -1,   # pujar/baixar tots els brackets
   hide.ns = TRUE)
 ```
-
-## Heatmap log~2~(FC)
-
-Per a fer un heatmap amb augment o disminució de concentracions respecte al grup REF amb la significància, la qual tenim en una altre taula d'excel.
-
-On ho vaig aprendre: <https://youtu.be/369PHkv1fPg?feature=shared>
-
-En el cas de que tinguem els valors per cada observació, primer haurem de calcular el log~2~(FC) de les dades.
-
-```{r, warning=FALSE, message=FALSE, eval=FALSE}
-
-#Carregar els paquets bàsics -------
-library(tidyverse)
-library(here)
-library(readxl)
-library(janitor)
-library(skimr)
-
-#paquet extra: 
-library(pheatmap)
-
-#Importar dades i preprarar-les-------
-raw_data <- read_excel(here("data", "PCR.xlsx")) 
-
-data <- raw_data %>% 
-  clean_names() %>%
-  mutate(across(c(group, sex, rat, generation), as.factor)) 
-
-skim(data)
-```
-
-Convertim les dades
-
-A partir d'aquí s'ha de revisar
-
-```{r, eval=FALSE}
-data_log2<- data %>% 
-  group_by(group) %>%
-  mutate(across(
-    where(is.numeric),
-    ~ ifelse(is.na(.), mean(., na.rm = TRUE), .)
-  )) %>% 
-  ungroup() %>% 
-  mutate(across(
-      3:last_col(),
-      ~ .x / mean(.x [group == "REF"], na.rm = TRUE)
-    )) %>% #canviem els NA per la mitjana d'aquell metabolit dins del grup
-  mutate(across(3:last_col(), log2)) #aplicar logaritme
-
-data_HM <- data_log2 %>%
-  select(-group) %>%              # 1️⃣ eliminar columna group
-  column_to_rownames("rat") %>%   # 2️⃣ rat → rownames
-  t() %>%                         # 3️⃣ transposar
-  as.data.frame()
-
-mat_data <- data.matrix(data_HM) #fem una matriu
-```
-
-Espero que us hagi servit!

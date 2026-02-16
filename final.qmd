@@ -1,6 +1,5 @@
 ---
 title: "Final"
-editor: visual
 ---
 
 I fins aquí el que sé de Rstudio!!

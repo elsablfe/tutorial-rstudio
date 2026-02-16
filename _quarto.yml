@@ -12,8 +12,12 @@ website:
       text: Basics
     - href: estadistica.qmd
       text: Estadística
-    - href: grafics.qmd
-      text: Gràfics
+    - text: Gràfics
+      menu:
+        - href: grafics.qmd
+          text: Introducció
+        - href: heatmap.qmd
+          text: Heatmap
     - href: quarto.qmd
       text: Quarto
     - href: final.qmd
