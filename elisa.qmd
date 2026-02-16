@@ -168,3 +168,136 @@ ggplot
 ### Afegir significància
 
 En el meu cas no hi havia diferències significatives entre grup, per tant no ho vaig fer. A més a més en el meu cas, com que tenim alguns grups amb menys de dos grups i altres amb més de dos, es complica a com ho he ensenyat. En el meu cas no ho ensenyaré, però si per vosaltres no és complicat i teniu el mateix nombre per cada "generació", podeu anar a l'apartat de "Gràfic de punts (PCR)" al final i ho copieu.
+
+# Gràfic separant generació
+
+En aquest cas vaig fer també un anàlisis per generació, ajuntant tots els valors independentment del grup. A diferència del de PCR aquest està fet per cada Ig, per tant els commandos canvien una mica, enlloc de `group_by()` es fa servir `filter`. En aquest cas si que vaig afegir la significància.
+
+```{r}
+theme_set(theme_classic()) 
+
+colors_generation <- c("M" = "#7B3FBF",   
+            "Cd1" = "#87CEEB",   
+            "Cd21" = "#4169E1",   
+            "CA" = "#000080")
+
+colors_group <- c("REF" = "#999999",   # Grey
+                  "PGS" = "#1b9e77",   # Green 1
+                  "S" = "#66a61e",   # Green 2
+                  "G" = "#a6d854",   # Green 3
+                  "P" = "#d9f0a3")   # Green 4
+generation_name <- c(
+  M   = "Dams",
+  Cd1 = "Day-1 offspring",
+  Cd21= "Day-21 offspring",
+  CA  = "Adult offspring")
+```
+
+Gràfic simple amb color per generació.
+
+```{r}
+ggplot <- longdata %>% 
+  filter(metabolite == "IgE") %>% 
+  na.omit() %>% 
+  ggplot(aes(x=generation, y=value, colour=generation))+ 
+  geom_jitter(alpha = 0.5)+ #gràfic punts
+  scale_x_discrete(limits = c("M", "Cd1","Cd21", "CA"), 
+                   expand = expansion(add = 1))+ #afegir espai entre grups
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, NA))+
+  stat_summary(fun = mean, geom = "col", width = 0.7, fill=NA, linewidth = 0.6) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.4, linewidth = 0.6) +
+  scale_colour_manual(values = colors_generation, labels=generation_name)+ #nomes canviem com apareixen a la llegenda
+  labs(title= "Gut wash", 
+       x= "Generation", 
+       y= "[IgE] (ng/mL)",
+       colour= "Generation")+  
+  theme(plot.title = element_text(hjust = 0.5), 
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12, hjust = 0.75),
+        strip.background = element_blank(),
+        panel.spacing = unit(0.5, "cm"),
+        aspect.ratio = 1.75)
+
+ggplot
+```
+
+Preparar i afegir significància
+
+```{r}
+posthoc_dunn <- longdata %>%
+  group_by(metabolite) %>%
+  dunn_test(
+    value ~ generation,
+    p.adjust.method = "bonferroni")
+
+gen_levels <- c("M", "Cd1", "Cd21", "CA")
+
+posthoc_graph <- posthoc_dunn %>% 
+  filter(metabolite == "IgE") %>% 
+  add_xy_position (x= "generation") %>% 
+  filter(p.adj < 0.05) %>%
+  mutate(
+    x1 = match(group1, gen_levels),
+    x2 = match(group2, gen_levels),
+    bracket_length = abs(x2 - x1)) %>% 
+  arrange(bracket_length) %>%
+  mutate(
+    y.min = max(longdata$value[longdata$metabolite == "IgE"], na.rm = TRUE),
+    y.position = y.min + 10 + seq(1, by = 20, length.out = n())) #by = 20 perque quedi mes separat
+
+library(ggpubr)
+ggplot + 
+  stat_pvalue_manual(
+    posthoc_graph,
+    tip.length = 0.025,
+    bracket.nudge.y = -1, 
+    hide.ns = TRUE)
+```
+
+-   `y.min = max(longdata$value[longdata$metabolite == "NGF"], na.rm = TRUE),` Aquesta línia de codi el que ens indica és que comencin els brackets al valor màxim.
+
+#### Gràfic diferents colors punts i barres
+
+Per a posar de diferent color els punts i les barres (en el meu cas totalment exploratori), el que s'ha de fer és eliminar l'estètica principal de color i posar-la a cada element que vulguis que tingui color, indicant d'on ha de treure els valors en cada cas.
+
+```{r}
+ggplot <- longdata %>% 
+  filter(metabolite == "IgE") %>% 
+  na.omit() %>% 
+  ggplot(aes(x=generation, y=value))+ 
+  geom_jitter(aes(colour=group),alpha = 0.5, width = 0.25)+ 
+  scale_x_discrete(limits = c("M", "Cd1","Cd21", "CA"), 
+                   expand = expansion(add = 1), 
+                   labels=generation_name)+ #aqui tambe hem canviat com apareixen al gràfic
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, NA))+
+  stat_summary(aes(colour = generation),fun = mean, geom = "col", width = 0.7, fill=NA, linewidth = 0.6) +
+  stat_summary(aes(colour = generation),fun.data = mean_se, geom = "errorbar", width = 0.4, linewidth = 0.6) +
+  scale_colour_manual(values=c(colors_group, colors_generation), 
+                      labels=generation_name)+ 
+  labs(title= "Gut wash", 
+       x= "Generation", 
+       y= "[IgE] (ng/mL)",
+       colour= "Legend")+  
+  theme(plot.title = element_text(hjust = 0.5), 
+        strip.text.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        strip.text.y = element_text(size = 12, hjust = 0.75),
+        strip.background = element_blank(),
+        panel.spacing = unit(0.5, "cm"),
+        aspect.ratio = 1.75)
+
+ggplot
+
+ggplot + 
+  stat_pvalue_manual(
+    posthoc_graph,
+    tip.length = 0.025,
+    bracket.nudge.y = -1,   
+    hide.ns = TRUE)
+```
+
+Recordar que per guardar les imatges
+
+```{r, eval=FALSE}
+ggsave(here("carpeta superior", "output", "carpeta interior","nom.png"), width = 6, height = 5, dpi = 300) 
+```
