@@ -2,3 +2,64 @@
 title: "Extra gràfics"
 editor: visual
 ---
+
+Benvinguts al "dumpster". Aquí afegiré totes aquelles fucnions que no siguin òptimes però que no vulgui oblidar. Per a vosaltres segurament no serà gaire útil.
+
+## PCR
+
+En el cas de la PCR, vam començar fent els gràfics posant la mitjana i el error amb un altre dataset calculat prèviament. És més còmode fer-ho tot directament del mateix, per tant no recomano aquesta opció.
+
+Abans de res hem de crear un dataset que contingui la mitjana i error estàndard de cada grup per cada gen dins de cada generació.
+
+```{r, eval=FALSE}
+# Compute summary stats per a afegir al gràfic-------
+summary_data <- longdata %>%
+  na.omit() %>%
+  group_by(generation, gene, group) %>% 
+  summarise(
+    mean = mean(value), #calculem mitjana
+    se = sd(value)/sqrt(n()), #calculem error estàndard
+    .groups = "drop" 
+  )
+
+summary_data$gene <- factor(summary_data$gene, levels = gene_order)
+```
+
+Ja podem fer el gràfic
+
+```{r, eval=FALSE}
+#GRÀFIC BO TOTALS------
+ggplot <- longdata %>% #dataset a graficar en format "long"
+  na.omit() %>% #no tenir en compte els NA
+  ggplot(aes(x=group, y=value, colour=group))+ 
+  geom_jitter()+ #gràfic punts
+  scale_x_discrete(limits = c("REF", "P", "G", "S","PGS"), 
+                   expand = expansion(add = 1))+ #afegir espai entre grups
+  facet_grid(generation~gene, 
+             labeller = labeller(gene = gene_order, generation = generation_name))+ #ordre 
+  geom_hline(yintercept = 100, color = "black",linetype = "dotted", linewidth = 0.5)+
+  geom_errorbar(data = summary_data, 
+                aes(x = group, y = mean, ymin = mean - se, ymax = mean + se, width = 0.25))+ #afegir barres d'error
+  geom_errorbar( #afegir línia mitjana
+    data = summary_data,
+    aes(x = group,
+        ymin = mean,
+        ymax = mean,
+        colour = group),
+    width = 0.8,
+    inherit.aes = FALSE,
+    linewidth = 1)+ 
+  scale_colour_manual(values=colors, 
+                      breaks = c("REF", "P", "G", "S", "PGS"))+ 
+  labs(title= "PCR small intestine", 
+       x= "Group", 
+       y= "Relative mRNA levels (%)",
+       colour= "Group")+  
+  theme(plot.title = element_text(hjust = 0.5), 
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12, hjust = 0.75),
+        strip.background = element_blank(),
+        panel.spacing = unit(0.5, "cm")) #espai entre els mini gràfics
+
+ggplot
+```

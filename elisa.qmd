@@ -2,3 +2,169 @@
 title: "Gràfic de barres (ELISA)"
 editor: visual
 ---
+
+En aquest cas les dades sintètiques son de nivells de Igs en rentat intestinal. Tots estan en mg/mL menys les IgE que estan en ng/mL.
+
+```{r, warning=FALSE, message=FALSE}
+#llibreries
+library(tidyverse) #conté 9 paquets d'edició i visualització 
+library(here) #al treballar en un projecte
+library(readxl) #per importar dades que estan en un fitxer d'excel
+library(janitor) #ajudar a netejar les dades
+library(skimr) #per obtenir un resum de les dades complert
+library(broom) #poder fer servir funcions com tidy
+library(rstatix) #funcions d'estadística
+
+##Importar i preparar dades-----
+
+raw_data <- read_excel(here("Basic", "data", "elisa.xlsx"))
+
+data <- raw_data %>% 
+  mutate(across(c(group, sex, rat, generation), as.factor)) 
+skim(data)
+
+longdata <- data %>% 
+  pivot_longer(cols="IgA":"IgD", names_to="metabolite", values_to = "value" ) %>% 
+  mutate(
+    group = factor(group, 
+                   levels = c("REF", "S", "PGS")), 
+    generation = factor(generation, 
+                        levels = c( "M", "Cd1", "Cd21", "CA")),
+    metabolite = factor(metabolite,
+                        levels = c("IgA", "IgG", "IgE", "IgM", "IgD")))
+
+```
+
+Entremig ja haurem fet tota l'estadística descriptiva, tret els otuliers, comprovat que no hi ha diferències per sex, i fet l'estadística correponent per grups.
+
+## Gràfic de barres amb punts comú
+
+Preparem tot el que vulguem personalitzar. En aquest cas el metabolite_name us ho mostro per que sapigueu que si voleu canviar el nom ho podeu fer sense canviar el dataset.
+
+```{r}
+theme_set(theme_classic()) 
+
+colors <- c("REF" = "#999999",   # Grey
+            "PGS" = "#1b9e77",   # Green 1
+            "S" = "#66a61e",   # Green 2
+            "G" = "#a6d854",   # Green 3
+            "P" = "#d9f0a3")   # Green 4
+
+generation_name <- c(
+  M   = "Dams",
+  Cd1 = "Day-1 offspring",
+  Cd21= "Day-21 offspring",
+  CA  = "Adult offspring")
+
+metabolite_name <- c(
+  IgA   = "Immonuglobulin type A",
+  IgG = "Immonuglobulin type G",
+  IgE= "Immonuglobulin type E",
+  IgM = "Immonuglobulin type M",
+  IgD= "Immonuglobulin type D")
+
+```
+
+Fem el gràfic
+
+```{r}
+ggplot <- longdata %>% 
+  na.omit() %>% 
+  ggplot(aes(x=group, y=value, colour=group))+ 
+  geom_jitter(alpha = 0.5)+ #gràfic punts
+  scale_x_discrete(limits = c("REF", "S","PGS"), 
+                   expand = expansion(add = 1))+ #afegir espai entre grups
+  facet_grid(generation~metabolite, 
+             labeller = labeller(metabolite = metabolite_name, generation = generation_name))+ #ordre 
+  stat_summary(fun = mean, geom = "col", width = 0.7, fill=NA, linewidth = 0.6) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5, linewidth = 0.6) +
+  scale_colour_manual(values=colors, 
+                      breaks = c("REF", "S", "PGS"))+ 
+  labs(title= "Gut wash", 
+       x= "Group", 
+       y= "Concentration",
+       colour= "Group")+  
+  theme(plot.title = element_text(hjust = 0.5), 
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12, hjust = 0.75),
+        strip.background = element_blank(),
+        panel.spacing = unit(0.5, "cm")) #espai entre els mini gràfics
+
+ggplot
+```
+
+## Gràfic de barres amb punts per metabolit
+
+En aquest cas no té tant sentit fer els gràfics conjunts per tots els metabolits ja que estan en diferents unitats, per tant us recomano fer-los per separat.
+
+```{r}
+ggplot <- longdata %>% 
+  na.omit() %>% 
+  filter(metabolite == "IgA") %>% 
+  ggplot(aes(x=group, y=value, colour=group))+ 
+  geom_jitter(alpha = 0.5)+ #gràfic punts
+  scale_x_discrete(limits = c("REF", "S","PGS"), 
+                   expand = expansion(add = 1))+ #afegir espai entre grups
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, NA))+
+  facet_grid(. ~ generation, 
+             labeller = labeller(generation = generation_name))+ #ordre 
+  stat_summary(fun = mean, geom = "col", width = 0.7, fill=NA, linewidth = 0.6) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.4, linewidth = 0.6) +
+  scale_colour_manual(values=colors, 
+                      breaks = c("REF", "S", "PGS"))+ 
+  labs(title= "Gut wash", 
+       x= "Group", 
+       y= "[IgA] (mg/mL)",
+       colour= "Group")+  
+  theme(plot.title = element_text(hjust = 0.5), 
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12, hjust = 0.75),
+        strip.background = element_blank(),
+        panel.spacing = unit(0.5, "cm"),
+        aspect.ratio = 1.75)
+
+ggplot
+```
+
+Podem treure els punts si eliminem `geom_jitter(alpha = 0.5)+`
+
+## Gràfic de barres amb punts separat per sexe
+
+També podem separar dins del gràfic per sexe, i fer una barra per cada.
+
+```{r}
+ggplot <- longdata %>% 
+  na.omit() %>% 
+  filter(metabolite == "IgA") %>% 
+  group_by(sex) %>% 
+  ggplot(aes(x=group, y=value, colour=sex))+ 
+  geom_jitter(alpha = 0.5, position = position_jitterdodge(
+      dodge.width = 0.75,   # separació entre sexes
+      jitter.width = 0.25   # dispersió horitzontal real
+  ))+ #gràfic punts
+  scale_x_discrete(limits = c("REF", "S","PGS"), 
+                   expand = expansion(add = 1))+ #afegir espai entre grups
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, NA))+
+  facet_grid(. ~ generation, 
+             labeller = labeller(generation = generation_name))+ #ordre 
+  stat_summary(fun = mean, geom = "col", width = 0.7, fill=NA, linewidth = 0.6, position = position_dodge(width = 0.75)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.4, linewidth = 0.6, position = position_dodge(width = 0.75)) +
+  scale_colour_manual(values= c("pink", "lightblue", "grey"))+
+  scale_fill_manual(values= c("pink", "lightblue", "grey"))+
+  labs(title= "Gut wash", 
+       x= "Group", 
+       y= "[IgA] (mg/mL)",
+       colour= "Sex")+  
+  theme(plot.title = element_text(hjust = 0.5), 
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12, hjust = 0.75),
+        strip.background = element_blank(),
+        panel.spacing = unit(0.5, "cm"),
+        aspect.ratio = 1.75)
+
+ggplot
+```
+
+### Afegir significància
+
+En el meu cas no hi havia diferències significatives entre grup, per tant no ho vaig fer. A més a més en el meu cas, com que tenim alguns grups amb menys de dos grups i altres amb més de dos, es complica a com ho he ensenyat. En el meu cas no ho ensenyaré, però si per vosaltres no és complicat i teniu el mateix nombre per cada "generació", podeu anar a l'apartat de "Gràfic de punts (PCR)" al final i ho copieu.
