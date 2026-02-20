@@ -64,7 +64,7 @@ Al tenir activat `na.rm=TRUE` s'eliminen els NA del que estàs calculant.
 Per a saber millor el perquè i què fa cada test, recomano consultar el llibre <https://learningstatisticswithr.com/book/>. Si ho voleu com algo rutinari, aquí teniu la taula del protocol que va fer la Mariona Camps al 2016 per al SPSS.
 
 | Nº grups | Factors fixos (variables independents) | Segueix la normalitat? | Segueix la homogeneitat de variàncies? | Son dades aparellades? | Test |
-|:--:|:--:|:--:|:--:|:--:|:--:|
+|:----------:|:----------:|:----------:|:----------:|:----------:|:----------:|
 | 2 | 1 | Si | Si/No | Si/No | T-test |
 |  |  | No | No | Si | Wilcoxon |
 |  |  |  |  | No | U Mann Whitney |
@@ -468,6 +468,117 @@ posthoc_dunn <- longdata %>%
 posthoc_dunn
 ```
 
+## Two-way ANOVA
+
+Quan tenim més de dos grups, i hi ha dues variables independents, per exemple sexe i grup. Les dades han de ser normals i homogènies. Es fa **Two-way ANOVA**. Aquest cas és molt interessant per veure si hi ha interacció entre el grup i sexe. Tots sabem que molts cops un efecte de grup es veu, però nomès en els mascles. Aquest seria el test adeqüat per comprovar-ho.
+
+```{r}
+results_tw_anova <- longdata %>%
+  filter(generation %in% c("Cd1", "Cd21", "CA")) %>%
+  group_by(gene, generation) %>%
+  group_map(~ {
+    
+    .x$group <- as.factor(.x$group)
+    .x$sex   <- as.factor(.x$sex)
+    
+    model <- aov(value ~ group * sex, data = .x)
+    
+    tidy_model <- tidy(model) %>%
+      mutate(
+        generation = .y$generation,
+        gene = .y$gene
+      )
+    
+    total_row <- tibble(
+      term = "Total",
+      df = sum(tidy_model$df, na.rm = TRUE),
+      sumsq = sum(tidy_model$sumsq, na.rm = TRUE),
+      meansq = NA_real_,
+      statistic = NA_real_,
+      p.value = NA_real_,
+      generation = .y$generation,
+      gene = .y$gene
+    )
+    
+    bind_rows(tidy_model, total_row)
+    
+  }) %>%
+  bind_rows() %>%
+  select(generation, gene, everything()) %>%
+  mutate(
+    signif = case_when(
+      is.na(p.value)  ~ "ns",
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      p.value < 0.1   ~ "·",
+      TRUE            ~ "ns"
+    )
+  )
+
+results_tw_anova
+```
+
+El model actual és `aov(value ~ group * sex, data = .x)` , el signe de multiplicació indica que també vols veure la interacció (justament el que volem). Si no vulguèssim veure la interacció seria `aov(value ~ group + sex, data = .x)` .
+
+Si el model ens indica que hi ha interacció, fem el post-hoc, ajustat per bonferroni.
+
+```{r}
+posthoc_tw_results <- longdata %>% 
+  filter(generation %in% c("CA", "Cd21", "Cd1")) %>%
+  group_by(generation, gene) %>%
+  nest() %>%
+  mutate(
+    aov_model = map(data, ~ aov(value ~ group * sex, data = .x)),
+    posthoc = map(
+      aov_model,
+      ~ emmeans(.x, ~ group | sex) %>% #girar sex | group si vols veure les diferències entre sexe dins de cada grup 
+        contrast("pairwise", adjust = "bonferroni") %>%
+        summary(level = 0.95,infer = c(TRUE, TRUE)) %>%   # IC + p-value
+        as.data.frame())) %>%
+  select(generation, gene, posthoc) %>%
+  unnest(posthoc) %>%
+  mutate(
+    signif = case_when(
+      is.na(p.value)  ~ "ns",
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      p.value < 0.1  ~ "·",
+      TRUE            ~ "ns"))   
+
+posthoc_tw_results
+```
+
+En aquest cas podem fer les comparacions múltiples dels diferents grups per cada sexe, com hem fet ara: `emmeans(.x, ~ group | sex)` . També ho podem fer al revés, dels diferents sexes a cada grup `emmeans(.x, ~ sex | group).`
+
+```{r}
+posthoc_tw_results <- longdata %>% 
+  filter(generation %in% c("CA", "Cd21", "Cd1")) %>%
+  group_by(generation, gene) %>%
+  nest() %>%
+  mutate(
+    aov_model = map(data, ~ aov(value ~ group * sex, data = .x)),
+    posthoc = map(
+      aov_model,
+      ~ emmeans(.x, ~ sex | group) %>% #canvi
+        contrast("pairwise", adjust = "bonferroni") %>%
+        summary(level = 0.95,infer = c(TRUE, TRUE)) %>%   # IC + p-value
+        as.data.frame())) %>%
+  select(generation, gene, posthoc) %>%
+  unnest(posthoc) %>%
+  mutate(
+    signif = case_when(
+      is.na(p.value)  ~ "ns",
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      p.value < 0.1  ~ "·",
+      TRUE            ~ "ns"))   
+
+posthoc_tw_results
+```
+
 ## Art ANOVA
 
 Quan tenim més de dos grups, les dades no són ni normals ni homogènies i hi ha dues variables independents, és fa **Art ANOVA**. És molt poc comú necessitar aquest test.
@@ -488,24 +599,26 @@ Aquest test l'ha fet amb R la Sofía, com que no s'acostuma a necessitar no l'he
 
 # Correlacions
 
-Per a correlacionar diferents variables. El default és Pearson, normalment es fa servir **Spearman**. Matriu de correlacions
+Per a correlacionar diferents variables. És important en aquest cas tenir les dades de manera que a cada fila hi hagi les dades de cada observació, i a les columnes les variables a correlacionar. Per exemple en el meu cas m'interessa no només correlacionar els valors dels gens, sinó correlacionar també els valors dels gens de la mare amb els valors del gen de la cria. Llavors he de modificar el dataset per a posar les dades de les cries seguides de les dades de les mares, a la mateixa fila, i les columnes anomenar-les gen_1_M i gen_1_cd21, per exemple. En el meu cas faré servir les mateixes dades que fins ara, però les hem de re-organitzar a l'excel abans. En el cas de cries que venen de la mateixa mare, es pot o duplicar la observació de la mare (jo em decantaria cap a aquí), o fer una mitjana dels valors de les cries.
+
+En el cas que veureu només he posat una cria per mare per simplificar-ho. En el meu cas algunes de les generacions de cries els falta un grup per ser igual al de les mares. No passa res, es deixa buit i com que a la correlació ja fa les comparacions per parelles, no ens eliminarà l'obervació completa si falta algun valor.
+
+Importem les dades i les convertim a matriu. en aquest cas NO ho convertim a format long.
 
 ```{r}
-cor_data <- data %>% 
-  select(where(is.numeric))
+raw_data_corr <- read_excel(here("Basic", "data", "PCR.xlsx"),  sheet = "for_correlation")
+head(raw_data_corr)
+
+cor_data <- raw_data_corr %>% 
+  select(where(is.numeric)) %>% 
+  as.matrix()
 skim(cor_data)
-cor(cor_data, method = "spearman", use="pairwise.complete.obs" )
+cor_matrix <- cor(cor_data, method = "spearman", use="pairwise.complete.obs" )
 ```
 
-`use="pairwise.complete.obs"` d'aquesta manera només elimina NA quan fa aquella comparació, no en la resta)
+El default és Pearson, normalment es fa servir **Spearman**. En aquest cas tant simple ja tindriem feta la matriu de correlacions. `use="pairwise.complete.obs"` d'aquesta manera només elimina NA quan fa aquella comparació, no en la resta.
 
-Per a correlacionar-ne dues del teu interés:
-
-```{r}
-cor(x=cor_data$gene_1, y=cor_data$gene_2, method = "spearman", use="pairwise.complete.obs")
-```
-
-Per fer la matriu de scatter-plots
+Altres observacions inicials interessants pot ser una matriu de scatter-plots
 
 ```{r}
 pairs( x = cor_data )
@@ -514,6 +627,98 @@ pairs( x = cor_data )
 Per triar quines vols observar
 
 ```{r}
-pairs( formula = ~ gene_1 + gene_2,
+pairs( formula = ~ gene_1_M + gene_1_Cd1 + gene_1_Cd21 + gene_1_CA,
        data = cor_data)
 ```
+
+O potser només vols correlacionar dues variables del teu interés, en aquest cas ha de ser en un dataframe:
+
+```{r}
+cor(x=raw_data_corr$gene_1_M, y=raw_data_corr$gene_1_Cd21, method = "spearman", use="pairwise.complete.obs")
+```
+
+Per a obtenir la matriu de correlació, la matriu amb els pvalors i la matriu amb el nombre d'observacions (el que ens donaria l'SPSS en una sola matriu), fem servir un paquet:
+
+```{r, warning=FALSE, message=FALSE}
+library(Hmisc)
+correlation <- rcorr(cor_data ,type = "spearman")
+
+#per treballar dins de R
+cor_matrix <- correlation$r
+head(cor_matrix)
+
+p_matrix <- correlation$P
+head(p_matrix)
+```
+
+I si les volem exportar:
+
+```{r, eval=FALSE}
+cor_matrix_exp <- correlation$r %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "Variable")
+
+p_matrix_exp <- correlation$P %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "Variable")
+
+n_matrix_exp <- correlation$n %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "Variable")
+
+write_xlsx(list(
+  Correlation = cor_matrix_exp,
+  P_values    = p_matrix_exp,
+  n_matrix = n_matrix_exp
+), here("Basic", "data", "correlation_results.xlsx"))
+
+```
+
+Per a fer els gràfics hi ha moltes maneres. Una molt fàcil, que a més ja t'ordena sol és amb el paquet `corrplot` .
+
+```{r}
+library(corrplot)
+corrplot(cor_matrix) #una altre manera d'observar
+```
+
+I sempre ho podem fer més maco:
+
+```{r}
+corrplot(
+cor_matrix,
+method = "circle",      # altres: "circle", "square", "ellipse", "shade", "number"
+type = "lower",        # només triangle superior
+order = "hclust",      # agrupa per clusters
+tl.col = "black",   # colors dels labels
+tl.srt = 45,           # angle labels
+col = colorRampPalette(c("#6D9EC1", "white", "#E46726"))(200),
+mar = c(0,0,1,0),
+addgrid.col = NA,# ← treu les línies de fons
+diag = FALSE,
+p.mat = p_matrix, sig.level = 0.05,
+insig = "label_sig",    # mostra '*'
+pch.cex = 1
+)
+```
+
+O mostrar només les significatives (en el nostre cas amb les dades reals no us ho recomano ja que et quedes amb 4 observacions):
+
+```{r}
+corrplot(
+cor_matrix,
+method = "circle",      # altres: "circle", "square", "ellipse", "shade", "number"
+type = "lower",        # només triangle superior
+order = "hclust",      # agrupa per clusters
+tl.col = "black",   # colors dels labels
+tl.srt = 45,           # angle labels
+col = colorRampPalette(c("#6D9EC1", "white", "#E46726"))(200),
+mar = c(0,0,1,0),
+addgrid.col = NA,# ← treu les línies de fons
+diag = FALSE,
+p.mat = p_matrix, sig.level = 0.05,
+insig = "blank",  
+pch.cex = 1
+)
+```
+
+Tot i així si ho volem controlar del tot amb ggplot, i que s'assembli a les que fem fins ara. Us ho explico a Gràfics - Heatmap correlacions.

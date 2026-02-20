@@ -22,6 +22,8 @@ website:
           text: Gràfic de barres (ELISA)
         - href: heatmap.qmd
           text: Heatmap
+        - href: correlation.qmd
+          text: Heatmap correlations
         - href: extra.qmd
           text: Dumpster
     - href: quarto.qmd

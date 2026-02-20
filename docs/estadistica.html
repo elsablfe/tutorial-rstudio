@@ -160,6 +160,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">Heatmap</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="./correlation.html">
+ <span class="dropdown-text">Heatmap correlations</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="./extra.html">
  <span class="dropdown-text">Dumpster</span></a>
   </li>  
@@ -205,6 +209,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#post-hoc-dunn-amb-correcció-de-bonferroni" id="toc-post-hoc-dunn-amb-correcció-de-bonferroni" class="nav-link" data-scroll-target="#post-hoc-dunn-amb-correcció-de-bonferroni">Post-hoc Dunn amb correcció de Bonferroni</a></li>
   </ul></li>
+  <li><a href="#two-way-anova" id="toc-two-way-anova" class="nav-link" data-scroll-target="#two-way-anova">Two-way ANOVA</a></li>
   <li><a href="#art-anova" id="toc-art-anova" class="nav-link" data-scroll-target="#art-anova">Art ANOVA</a></li>
   </ul></li>
   <li><a href="#correlacions" id="toc-correlacions" class="nav-link" data-scroll-target="#correlacions">Correlacions</a></li>
@@ -1010,6 +1015,163 @@ Kruskal-Wallis chi-squared = 18.413, df = 4, p-value = 0.001025</code></pre>
 </div>
 </section>
 </section>
+<section id="two-way-anova" class="level2">
+<h2 class="anchored" data-anchor-id="two-way-anova">Two-way ANOVA</h2>
+<p>Quan tenim més de dos grups, i hi ha dues variables independents, per exemple sexe i grup. Les dades han de ser normals i homogènies. Es fa <strong>Two-way ANOVA</strong>. Aquest cas és molt interessant per veure si hi ha interacció entre el grup i sexe. Tots sabem que molts cops un efecte de grup es veu, però nomès en els mascles. Aquest seria el test adeqüat per comprovar-ho.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>results_tw_anova <span class="ot">&lt;-</span> longdata <span class="sc">%&gt;%</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(generation <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Cd1"</span>, <span class="st">"Cd21"</span>, <span class="st">"CA"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(gene, generation) <span class="sc">%&gt;%</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_map</span>(<span class="sc">~</span> {</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    .x<span class="sc">$</span>group <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(.x<span class="sc">$</span>group)</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    .x<span class="sc">$</span>sex   <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(.x<span class="sc">$</span>sex)</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    model <span class="ot">&lt;-</span> <span class="fu">aov</span>(value <span class="sc">~</span> group <span class="sc">*</span> sex, <span class="at">data =</span> .x)</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    tidy_model <span class="ot">&lt;-</span> <span class="fu">tidy</span>(model) <span class="sc">%&gt;%</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">generation =</span> .y<span class="sc">$</span>generation,</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">gene =</span> .y<span class="sc">$</span>gene</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>    total_row <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">term =</span> <span class="st">"Total"</span>,</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">df =</span> <span class="fu">sum</span>(tidy_model<span class="sc">$</span>df, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">sumsq =</span> <span class="fu">sum</span>(tidy_model<span class="sc">$</span>sumsq, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">meansq =</span> <span class="cn">NA_real_</span>,</span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">statistic =</span> <span class="cn">NA_real_</span>,</span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">p.value =</span> <span class="cn">NA_real_</span>,</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">generation =</span> .y<span class="sc">$</span>generation,</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">gene =</span> .y<span class="sc">$</span>gene</span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(tidy_model, total_row)</span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a>  }) <span class="sc">%&gt;%</span></span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb40-32"><a href="#cb40-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(generation, gene, <span class="fu">everything</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb40-33"><a href="#cb40-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb40-34"><a href="#cb40-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">signif =</span> <span class="fu">case_when</span>(</span>
+<span id="cb40-35"><a href="#cb40-35" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(p.value)  <span class="sc">~</span> <span class="st">"ns"</span>,</span>
+<span id="cb40-36"><a href="#cb40-36" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.001</span> <span class="sc">~</span> <span class="st">"***"</span>,</span>
+<span id="cb40-37"><a href="#cb40-37" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.01</span>  <span class="sc">~</span> <span class="st">"**"</span>,</span>
+<span id="cb40-38"><a href="#cb40-38" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.05</span>  <span class="sc">~</span> <span class="st">"*"</span>,</span>
+<span id="cb40-39"><a href="#cb40-39" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.1</span>   <span class="sc">~</span> <span class="st">"·"</span>,</span>
+<span id="cb40-40"><a href="#cb40-40" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>            <span class="sc">~</span> <span class="st">"ns"</span></span>
+<span id="cb40-41"><a href="#cb40-41" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb40-42"><a href="#cb40-42" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-43"><a href="#cb40-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-44"><a href="#cb40-44" aria-hidden="true" tabindex="-1"></a>results_tw_anova</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 60 × 9
+   generation gene   term         df   sumsq meansq statistic   p.value signif
+   &lt;fct&gt;      &lt;fct&gt;  &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt; 
+ 1 Cd1        gene_1 group         3 26329.  8776.     71.5    1.65e-13 ***   
+ 2 Cd1        gene_1 sex           1    17.2   17.2     0.140  7.11e- 1 ns    
+ 3 Cd1        gene_1 group:sex     3   244.    81.3     0.662  5.82e- 1 ns    
+ 4 Cd1        gene_1 Residuals    29  3559.   123.     NA     NA        ns    
+ 5 Cd1        gene_1 Total        36 30149.    NA      NA     NA        ns    
+ 6 Cd21       gene_1 group         4 23691.  5923.     34.9    9.03e-12 ***   
+ 7 Cd21       gene_1 sex           1    95.5   95.5     0.563  4.58e- 1 ns    
+ 8 Cd21       gene_1 group:sex     4   750.   187.      1.11   3.69e- 1 ns    
+ 9 Cd21       gene_1 Residuals    35  5934.   170.     NA     NA        ns    
+10 Cd21       gene_1 Total        44 30470.    NA      NA     NA        ns    
+# ℹ 50 more rows</code></pre>
+</div>
+</div>
+<p>El model actual és <code>aov(value ~ group * sex, data = .x)</code> , el signe de multiplicació indica que també vols veure la interacció (justament el que volem). Si no vulguèssim veure la interacció seria <code>aov(value ~ group + sex, data = .x)</code> .</p>
+<p>Si el model ens indica que hi ha interacció, fem el post-hoc, ajustat per bonferroni.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>posthoc_tw_results <span class="ot">&lt;-</span> longdata <span class="sc">%&gt;%</span> </span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(generation <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"CA"</span>, <span class="st">"Cd21"</span>, <span class="st">"Cd1"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(generation, gene) <span class="sc">%&gt;%</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nest</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">aov_model =</span> <span class="fu">map</span>(data, <span class="sc">~</span> <span class="fu">aov</span>(value <span class="sc">~</span> group <span class="sc">*</span> sex, <span class="at">data =</span> .x)),</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">posthoc =</span> <span class="fu">map</span>(</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>      aov_model,</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>      <span class="sc">~</span> <span class="fu">emmeans</span>(.x, <span class="sc">~</span> group <span class="sc">|</span> sex) <span class="sc">%&gt;%</span> <span class="co">#girar sex | group si vols veure les diferències entre sexe dins de cada grup </span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">contrast</span>(<span class="st">"pairwise"</span>, <span class="at">adjust =</span> <span class="st">"bonferroni"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">summary</span>(<span class="at">level =</span> <span class="fl">0.95</span>,<span class="at">infer =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span>   <span class="co"># IC + p-value</span></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">as.data.frame</span>())) <span class="sc">%&gt;%</span></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(generation, gene, posthoc) <span class="sc">%&gt;%</span></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(posthoc) <span class="sc">%&gt;%</span></span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">signif =</span> <span class="fu">case_when</span>(</span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(p.value)  <span class="sc">~</span> <span class="st">"ns"</span>,</span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.001</span> <span class="sc">~</span> <span class="st">"***"</span>,</span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.01</span>  <span class="sc">~</span> <span class="st">"**"</span>,</span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.05</span>  <span class="sc">~</span> <span class="st">"*"</span>,</span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.1</span>  <span class="sc">~</span> <span class="st">"·"</span>,</span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>            <span class="sc">~</span> <span class="st">"ns"</span>))   </span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a>posthoc_tw_results</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 136 × 12
+# Groups:   generation, gene [12]
+   generation gene   contrast  sex   estimate    SE    df lower.CL upper.CL
+   &lt;fct&gt;      &lt;fct&gt;  &lt;fct&gt;     &lt;fct&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+ 1 Cd1        gene_1 REF - P   F       -40.2   7.43    29    -61.2   -19.2 
+ 2 Cd1        gene_1 REF - G   F         7.50  7.01    29    -12.3    27.3 
+ 3 Cd1        gene_1 REF - PGS F       -61.1   7.43    29    -82.1   -40.0 
+ 4 Cd1        gene_1 P - G     F        47.7   7.43    29     26.7    68.7 
+ 5 Cd1        gene_1 P - PGS   F       -20.9   7.83    29    -43.1     1.31
+ 6 Cd1        gene_1 G - PGS   F       -68.6   7.43    29    -89.6   -47.5 
+ 7 Cd1        gene_1 REF - P   M       -26.7   7.01    29    -46.5    -6.82
+ 8 Cd1        gene_1 REF - G   M         9.59  7.43    29    -11.5    30.6 
+ 9 Cd1        gene_1 REF - PGS M       -55.8   7.01    29    -75.6   -36.0 
+10 Cd1        gene_1 P - G     M        36.2   7.43    29     15.2    57.3 
+# ℹ 126 more rows
+# ℹ 3 more variables: t.ratio &lt;dbl&gt;, p.value &lt;dbl&gt;, signif &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>En aquest cas podem fer les comparacions múltiples dels diferents grups per cada sexe, com hem fet ara: <code>emmeans(.x, ~ group | sex)</code> . També ho podem fer al revés, dels diferents sexes a cada grup <code>emmeans(.x, ~ sex | group).</code></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>posthoc_tw_results <span class="ot">&lt;-</span> longdata <span class="sc">%&gt;%</span> </span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(generation <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"CA"</span>, <span class="st">"Cd21"</span>, <span class="st">"Cd1"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(generation, gene) <span class="sc">%&gt;%</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nest</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">aov_model =</span> <span class="fu">map</span>(data, <span class="sc">~</span> <span class="fu">aov</span>(value <span class="sc">~</span> group <span class="sc">*</span> sex, <span class="at">data =</span> .x)),</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">posthoc =</span> <span class="fu">map</span>(</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>      aov_model,</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>      <span class="sc">~</span> <span class="fu">emmeans</span>(.x, <span class="sc">~</span> sex <span class="sc">|</span> group) <span class="sc">%&gt;%</span> <span class="co">#canvi</span></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">contrast</span>(<span class="st">"pairwise"</span>, <span class="at">adjust =</span> <span class="st">"bonferroni"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">summary</span>(<span class="at">level =</span> <span class="fl">0.95</span>,<span class="at">infer =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span>   <span class="co"># IC + p-value</span></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">as.data.frame</span>())) <span class="sc">%&gt;%</span></span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(generation, gene, posthoc) <span class="sc">%&gt;%</span></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(posthoc) <span class="sc">%&gt;%</span></span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">signif =</span> <span class="fu">case_when</span>(</span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(p.value)  <span class="sc">~</span> <span class="st">"ns"</span>,</span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.001</span> <span class="sc">~</span> <span class="st">"***"</span>,</span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.01</span>  <span class="sc">~</span> <span class="st">"**"</span>,</span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.05</span>  <span class="sc">~</span> <span class="st">"*"</span>,</span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>      p.value <span class="sc">&lt;</span> <span class="fl">0.1</span>  <span class="sc">~</span> <span class="st">"·"</span>,</span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>            <span class="sc">~</span> <span class="st">"ns"</span>))   </span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a>posthoc_tw_results</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 44 × 12
+# Groups:   generation, gene [12]
+   generation gene   contrast group estimate    SE    df lower.CL upper.CL
+   &lt;fct&gt;      &lt;fct&gt;  &lt;fct&gt;    &lt;fct&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+ 1 Cd1        gene_1 F - M    REF     -6.44   7.01    29   -20.8      7.89
+ 2 Cd1        gene_1 F - M    P        7.11   7.43    29    -8.09    22.3 
+ 3 Cd1        gene_1 F - M    G       -4.35   7.43    29   -19.6     10.8 
+ 4 Cd1        gene_1 F - M    PGS     -1.16   7.43    29   -16.4     14.0 
+ 5 Cd1        gene_2 F - M    REF     -3.82  11.2     28   -26.8     19.1 
+ 6 Cd1        gene_2 F - M    P       -1.14  11.2     28   -24.1     21.8 
+ 7 Cd1        gene_2 F - M    G       -0.740 11.2     28   -23.7     22.2 
+ 8 Cd1        gene_2 F - M    PGS     11.8   11.2     28   -11.1     34.7 
+ 9 Cd1        gene_3 F - M    REF      3.54   6.52    30    -9.78    16.9 
+10 Cd1        gene_3 F - M    P       11.7    6.92    30    -2.41    25.8 
+# ℹ 34 more rows
+# ℹ 3 more variables: t.ratio &lt;dbl&gt;, p.value &lt;dbl&gt;, signif &lt;chr&gt;</code></pre>
+</div>
+</div>
+</section>
 <section id="art-anova" class="level2">
 <h2 class="anchored" data-anchor-id="art-anova">Art ANOVA</h2>
 <p>Quan tenim més de dos grups, les dades no són ni normals ni homogènies i hi ha dues variables independents, és fa <strong>Art ANOVA</strong>. És molt poc comú necessitar aquest test.</p>
@@ -1020,11 +1182,30 @@ Kruskal-Wallis chi-squared = 18.413, df = 4, p-value = 0.001025</code></pre>
 </section>
 <section id="correlacions" class="level1">
 <h1>Correlacions</h1>
-<p>Per a correlacionar diferents variables. El default és Pearson, normalment es fa servir <strong>Spearman</strong>. Matriu de correlacions</p>
+<p>Per a correlacionar diferents variables. És important en aquest cas tenir les dades de manera que a cada fila hi hagi les dades de cada observació, i a les columnes les variables a correlacionar. Per exemple en el meu cas m’interessa no només correlacionar els valors dels gens, sinó correlacionar també els valors dels gens de la mare amb els valors del gen de la cria. Llavors he de modificar el dataset per a posar les dades de les cries seguides de les dades de les mares, a la mateixa fila, i les columnes anomenar-les gen_1_M i gen_1_cd21, per exemple. En el meu cas faré servir les mateixes dades que fins ara, però les hem de re-organitzar a l’excel abans. En el cas de cries que venen de la mateixa mare, es pot o duplicar la observació de la mare (jo em decantaria cap a aquí), o fer una mitjana dels valors de les cries.</p>
+<p>En el cas que veureu només he posat una cria per mare per simplificar-ho. En el meu cas algunes de les generacions de cries els falta un grup per ser igual al de les mares. No passa res, es deixa buit i com que a la correlació ja fa les comparacions per parelles, no ens eliminarà l’obervació completa si falta algun valor.</p>
+<p>Importem les dades i les convertim a matriu. en aquest cas NO ho convertim a format long.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>cor_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(is.numeric))</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(cor_data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>raw_data_corr <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">here</span>(<span class="st">"Basic"</span>, <span class="st">"data"</span>, <span class="st">"PCR.xlsx"</span>),  <span class="at">sheet =</span> <span class="st">"for_correlation"</span>)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw_data_corr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 17
+  rat   gene_1_M gene_2_M gene_3_M gene_4_M gene_1_Cd1 gene_2_Cd1 gene_3_Cd1
+  &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+1 R1       105       94       95.2    101         84.5      106.        97.9
+2 R2        98.6    118.      98.1    110.       101.       111.        95.1
+3 R6       106.      99.9     88.9     NA         89.4       NA         94.1
+4 R8       115.      89.4     88       96.7      105.       106.       108. 
+5 R9        97.7    108.     108.      96.1       90.8       96.8      104. 
+6 R10       97.7     87.8     NA       85.4      122.        90.6       80.5
+# ℹ 9 more variables: gene_4_Cd1 &lt;dbl&gt;, gene_1_Cd21 &lt;dbl&gt;, gene_2_Cd21 &lt;dbl&gt;,
+#   gene_3_Cd21 &lt;dbl&gt;, gene_4_Cd21 &lt;dbl&gt;, gene_1_CA &lt;dbl&gt;, gene_2_CA &lt;dbl&gt;,
+#   gene_3_CA &lt;dbl&gt;, gene_4_CA &lt;dbl&gt;</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>cor_data <span class="ot">&lt;-</span> raw_data_corr <span class="sc">%&gt;%</span> </span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(is.numeric)) <span class="sc">%&gt;%</span> </span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(cor_data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <caption>Data summary</caption>
@@ -1035,11 +1216,11 @@ Kruskal-Wallis chi-squared = 18.413, df = 4, p-value = 0.001025</code></pre>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Number of rows</td>
-<td style="text-align: left;">140</td>
+<td style="text-align: left;">30</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Number of columns</td>
-<td style="text-align: left;">4</td>
+<td style="text-align: left;">16</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">_______________________</td>
@@ -1051,7 +1232,7 @@ Kruskal-Wallis chi-squared = 18.413, df = 4, p-value = 0.001025</code></pre>
 </tr>
 <tr class="even">
 <td style="text-align: left;">numeric</td>
-<td style="text-align: left;">4</td>
+<td style="text-align: left;">16</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">________________________</td>
@@ -1066,15 +1247,15 @@ Kruskal-Wallis chi-squared = 18.413, df = 4, p-value = 0.001025</code></pre>
 <p><strong>Variable type: numeric</strong></p>
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 16%">
+<col style="width: 15%">
 <col style="width: 11%">
-<col style="width: 16%">
-<col style="width: 8%">
-<col style="width: 6%">
-<col style="width: 5%">
+<col style="width: 15%">
+<col style="width: 7%">
 <col style="width: 6%">
 <col style="width: 6%">
-<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
 <col style="width: 6%">
 <col style="width: 6%">
 </colgroup>
@@ -1095,100 +1276,402 @@ Kruskal-Wallis chi-squared = 18.413, df = 4, p-value = 0.001025</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">gene_1</td>
-<td style="text-align: right;">13</td>
-<td style="text-align: right;">0.91</td>
-<td style="text-align: right;">115.60</td>
-<td style="text-align: right;">28.32</td>
+<td style="text-align: left;">gene_1_M</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.90</td>
+<td style="text-align: right;">110.77</td>
+<td style="text-align: right;">28.24</td>
 <td style="text-align: right;">61.3</td>
-<td style="text-align: right;">93.70</td>
-<td style="text-align: right;">106.7</td>
-<td style="text-align: right;">139.25</td>
-<td style="text-align: right;">170.7</td>
-<td style="text-align: left;">▂▇▃▃▃</td>
+<td style="text-align: right;">94.15</td>
+<td style="text-align: right;">105.00</td>
+<td style="text-align: right;">130.55</td>
+<td style="text-align: right;">161.7</td>
+<td style="text-align: left;">▃▇▂▅▅</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">gene_2</td>
-<td style="text-align: right;">13</td>
-<td style="text-align: right;">0.91</td>
-<td style="text-align: right;">119.72</td>
-<td style="text-align: right;">30.46</td>
-<td style="text-align: right;">67.2</td>
-<td style="text-align: right;">97.00</td>
-<td style="text-align: right;">111.4</td>
-<td style="text-align: right;">141.20</td>
-<td style="text-align: right;">192.4</td>
-<td style="text-align: left;">▅▇▅▃▂</td>
+<td style="text-align: left;">gene_2_M</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.90</td>
+<td style="text-align: right;">115.63</td>
+<td style="text-align: right;">32.90</td>
+<td style="text-align: right;">67.8</td>
+<td style="text-align: right;">89.60</td>
+<td style="text-align: right;">105.20</td>
+<td style="text-align: right;">137.10</td>
+<td style="text-align: right;">175.5</td>
+<td style="text-align: left;">▅▇▁▃▃</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">gene_3</td>
-<td style="text-align: right;">10</td>
+<td style="text-align: left;">gene_3_M</td>
+<td style="text-align: right;">2</td>
 <td style="text-align: right;">0.93</td>
-<td style="text-align: right;">119.48</td>
-<td style="text-align: right;">29.84</td>
+<td style="text-align: right;">118.07</td>
+<td style="text-align: right;">30.69</td>
 <td style="text-align: right;">50.7</td>
-<td style="text-align: right;">97.30</td>
-<td style="text-align: right;">109.0</td>
-<td style="text-align: right;">146.48</td>
-<td style="text-align: right;">182.1</td>
-<td style="text-align: left;">▁▇▅▅▃</td>
+<td style="text-align: right;">94.45</td>
+<td style="text-align: right;">110.80</td>
+<td style="text-align: right;">145.80</td>
+<td style="text-align: right;">173.7</td>
+<td style="text-align: left;">▁▇▆▅▅</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">gene_4</td>
-<td style="text-align: right;">13</td>
-<td style="text-align: right;">0.91</td>
-<td style="text-align: right;">119.15</td>
-<td style="text-align: right;">29.24</td>
+<td style="text-align: left;">gene_4_M</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.90</td>
+<td style="text-align: right;">116.40</td>
+<td style="text-align: right;">28.53</td>
+<td style="text-align: right;">71.2</td>
+<td style="text-align: right;">96.40</td>
+<td style="text-align: right;">108.80</td>
+<td style="text-align: right;">134.15</td>
+<td style="text-align: right;">177.1</td>
+<td style="text-align: left;">▃▇▅▂▃</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">gene_1_Cd1</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0.73</td>
+<td style="text-align: right;">117.75</td>
+<td style="text-align: right;">30.18</td>
+<td style="text-align: right;">76.7</td>
+<td style="text-align: right;">91.65</td>
+<td style="text-align: right;">113.30</td>
+<td style="text-align: right;">139.78</td>
+<td style="text-align: right;">170.7</td>
+<td style="text-align: left;">▇▃▁▆▃</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gene_2_Cd1</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0.73</td>
+<td style="text-align: right;">123.52</td>
+<td style="text-align: right;">31.71</td>
+<td style="text-align: right;">67.2</td>
+<td style="text-align: right;">105.55</td>
+<td style="text-align: right;">121.00</td>
+<td style="text-align: right;">144.30</td>
+<td style="text-align: right;">181.6</td>
+<td style="text-align: left;">▃▇▇▅▅</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">gene_3_Cd1</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0.77</td>
+<td style="text-align: right;">122.01</td>
+<td style="text-align: right;">35.49</td>
+<td style="text-align: right;">71.8</td>
+<td style="text-align: right;">92.60</td>
+<td style="text-align: right;">108.50</td>
+<td style="text-align: right;">153.60</td>
+<td style="text-align: right;">182.1</td>
+<td style="text-align: left;">▇▇▁▇▅</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gene_4_Cd1</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0.70</td>
+<td style="text-align: right;">119.50</td>
+<td style="text-align: right;">29.95</td>
 <td style="text-align: right;">67.0</td>
-<td style="text-align: right;">96.05</td>
-<td style="text-align: right;">110.2</td>
-<td style="text-align: right;">143.40</td>
+<td style="text-align: right;">100.20</td>
+<td style="text-align: right;">110.20</td>
+<td style="text-align: right;">137.40</td>
+<td style="text-align: right;">180.5</td>
+<td style="text-align: left;">▂▇▃▃▂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">gene_1_Cd21</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">111.10</td>
+<td style="text-align: right;">25.33</td>
+<td style="text-align: right;">68.7</td>
+<td style="text-align: right;">92.70</td>
+<td style="text-align: right;">105.00</td>
+<td style="text-align: right;">126.70</td>
+<td style="text-align: right;">169.6</td>
+<td style="text-align: left;">▂▇▃▂▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gene_2_Cd21</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">117.61</td>
+<td style="text-align: right;">26.15</td>
+<td style="text-align: right;">82.8</td>
+<td style="text-align: right;">98.10</td>
+<td style="text-align: right;">107.70</td>
+<td style="text-align: right;">134.68</td>
+<td style="text-align: right;">182.9</td>
+<td style="text-align: left;">▇▃▅▃▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">gene_3_Cd21</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.90</td>
+<td style="text-align: right;">114.85</td>
+<td style="text-align: right;">25.36</td>
+<td style="text-align: right;">73.8</td>
+<td style="text-align: right;">98.70</td>
+<td style="text-align: right;">107.40</td>
+<td style="text-align: right;">128.65</td>
+<td style="text-align: right;">175.4</td>
+<td style="text-align: left;">▂▇▃▁▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gene_4_Cd21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">114.92</td>
+<td style="text-align: right;">27.74</td>
+<td style="text-align: right;">70.8</td>
+<td style="text-align: right;">93.18</td>
+<td style="text-align: right;">108.35</td>
+<td style="text-align: right;">139.72</td>
+<td style="text-align: right;">181.8</td>
+<td style="text-align: left;">▆▇▃▇▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">gene_1_CA</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.37</td>
+<td style="text-align: right;">130.84</td>
+<td style="text-align: right;">29.63</td>
+<td style="text-align: right;">93.6</td>
+<td style="text-align: right;">103.15</td>
+<td style="text-align: right;">139.30</td>
+<td style="text-align: right;">156.85</td>
+<td style="text-align: right;">165.0</td>
+<td style="text-align: left;">▆▃▁▃▇</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gene_2_CA</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">137.41</td>
+<td style="text-align: right;">29.63</td>
+<td style="text-align: right;">105.1</td>
+<td style="text-align: right;">112.22</td>
+<td style="text-align: right;">129.05</td>
+<td style="text-align: right;">162.42</td>
+<td style="text-align: right;">183.7</td>
+<td style="text-align: left;">▇▁▂▃▃</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">gene_3_CA</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">123.18</td>
+<td style="text-align: right;">33.67</td>
+<td style="text-align: right;">78.0</td>
+<td style="text-align: right;">92.17</td>
+<td style="text-align: right;">127.95</td>
+<td style="text-align: right;">145.33</td>
+<td style="text-align: right;">181.7</td>
+<td style="text-align: left;">▇▃▂▇▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gene_4_CA</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">131.97</td>
+<td style="text-align: right;">33.30</td>
+<td style="text-align: right;">93.2</td>
+<td style="text-align: right;">103.07</td>
+<td style="text-align: right;">129.70</td>
+<td style="text-align: right;">154.68</td>
 <td style="text-align: right;">182.6</td>
-<td style="text-align: left;">▂▇▃▅▂</td>
+<td style="text-align: left;">▇▂▂▃▃</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(cor_data, <span class="at">method =</span> <span class="st">"spearman"</span>, <span class="at">use=</span><span class="st">"pairwise.complete.obs"</span> )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>          gene_1    gene_2    gene_3    gene_4
-gene_1 1.0000000 0.7369433 0.7620866 0.7416636
-gene_2 0.7369433 1.0000000 0.7440496 0.7148769
-gene_3 0.7620866 0.7440496 1.0000000 0.6952780
-gene_4 0.7416636 0.7148769 0.6952780 1.0000000</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>cor_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(cor_data, <span class="at">method =</span> <span class="st">"spearman"</span>, <span class="at">use=</span><span class="st">"pairwise.complete.obs"</span> )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</div>
-<p><code>use="pairwise.complete.obs"</code> d’aquesta manera només elimina NA quan fa aquella comparació, no en la resta)</p>
-<p>Per a correlacionar-ne dues del teu interés:</p>
+<p>El default és Pearson, normalment es fa servir <strong>Spearman</strong>. En aquest cas tant simple ja tindriem feta la matriu de correlacions. <code>use="pairwise.complete.obs"</code> d’aquesta manera només elimina NA quan fa aquella comparació, no en la resta.</p>
+<p>Altres observacions inicials interessants pot ser una matriu de scatter-plots</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="at">x=</span>cor_data<span class="sc">$</span>gene_1, <span class="at">y=</span>cor_data<span class="sc">$</span>gene_2, <span class="at">method =</span> <span class="st">"spearman"</span>, <span class="at">use=</span><span class="st">"pairwise.complete.obs"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.7369433</code></pre>
-</div>
-</div>
-<p>Per fer la matriu de scatter-plots</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>( <span class="at">x =</span> cor_data )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>( <span class="at">x =</span> cor_data )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="estadistica_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="estadistica_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Per triar quines vols observar</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>( <span class="at">formula =</span> <span class="sc">~</span> gene_1 <span class="sc">+</span> gene_2,</span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">data =</span> cor_data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>( <span class="at">formula =</span> <span class="sc">~</span> gene_1_M <span class="sc">+</span> gene_1_Cd1 <span class="sc">+</span> gene_1_Cd21 <span class="sc">+</span> gene_1_CA,</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">data =</span> cor_data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="estadistica_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="estadistica_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>O potser només vols correlacionar dues variables del teu interés, en aquest cas ha de ser en un dataframe:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="at">x=</span>raw_data_corr<span class="sc">$</span>gene_1_M, <span class="at">y=</span>raw_data_corr<span class="sc">$</span>gene_1_Cd21, <span class="at">method =</span> <span class="st">"spearman"</span>, <span class="at">use=</span><span class="st">"pairwise.complete.obs"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6494528</code></pre>
+</div>
+</div>
+<p>Per a obtenir la matriu de correlació, la matriu amb els pvalors i la matriu amb el nombre d’observacions (el que ens donaria l’SPSS en una sola matriu), fem servir un paquet:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Hmisc)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>correlation <span class="ot">&lt;-</span> <span class="fu">rcorr</span>(cor_data ,<span class="at">type =</span> <span class="st">"spearman"</span>)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="co">#per treballar dins de R</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>cor_matrix <span class="ot">&lt;-</span> correlation<span class="sc">$</span>r</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cor_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            gene_1_M  gene_2_M  gene_3_M  gene_4_M gene_1_Cd1 gene_2_Cd1
+gene_1_M   1.0000000 0.8086125 0.7299327 0.6911191  0.8753296  0.7692326
+gene_2_M   0.8086125 1.0000000 0.7776923 0.7527724  0.8077922  0.7558442
+gene_3_M   0.7299327 0.7776923 1.0000000 0.6929588  0.8194805  0.8100033
+gene_4_M   0.6911191 0.7527724 0.6929588 1.0000000  0.8214130  0.6761941
+gene_1_Cd1 0.8753296 0.8077922 0.8194805 0.8214130  1.0000000  0.8000000
+gene_2_Cd1 0.7692326 0.7558442 0.8100033 0.6761941  0.8000000  1.0000000
+           gene_3_Cd1 gene_4_Cd1 gene_1_Cd21 gene_2_Cd21 gene_3_Cd21
+gene_1_M    0.9404890  0.8533062   0.6494528   0.7830610   0.5177129
+gene_2_M    0.8285714  0.8157895   0.6977778   0.7430769   0.8567080
+gene_3_M    0.8161537  0.8406015   0.7045177   0.7180715   0.7516830
+gene_4_M    0.9108688  0.8161475   0.6435288   0.8378534   0.7851510
+gene_1_Cd1  0.8168831  0.7982456   0.7298701   0.7987013   0.6634489
+gene_2_Cd1  0.8233766  0.7654135   0.7376623   0.7831169   0.6035088
+           gene_4_Cd21 gene_1_CA gene_2_CA gene_3_CA gene_4_CA
+gene_1_M     0.7802049 0.6969697 0.8024353 0.7152638 0.7781191
+gene_2_M     0.7722833 0.7181818 0.7333333 0.8391608 0.6848485
+gene_3_M     0.7431230 0.8727273 0.7833333 0.9272727 0.6000000
+gene_4_M     0.6579148 0.7833333 0.5500000 0.7939394 0.7619048
+gene_1_Cd1   0.7786561 0.9272727 0.8666667 0.7272727 0.7666667
+gene_2_Cd1   0.7323546 0.6242424 0.5757576 0.7090909 0.6666667</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>p_matrix <span class="ot">&lt;-</span> correlation<span class="sc">$</span>P</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(p_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               gene_1_M     gene_2_M     gene_3_M     gene_4_M   gene_1_Cd1
+gene_1_M             NA 1.740865e-06 3.452803e-05 1.844191e-04 9.259095e-07
+gene_2_M   1.740865e-06           NA 4.765811e-06 2.193963e-05 9.502615e-06
+gene_3_M   3.452803e-05 4.765811e-06           NA 1.232033e-04 5.497437e-06
+gene_4_M   1.844191e-04 2.193963e-05 1.232033e-04           NA 1.619985e-05
+gene_1_Cd1 9.259095e-07 9.502615e-06 5.497437e-06 1.619985e-05           NA
+gene_2_Cd1 1.182419e-04 7.403635e-05 8.592476e-06 1.063390e-03 2.292887e-05
+             gene_2_Cd1   gene_3_Cd1   gene_4_Cd1  gene_1_Cd21  gene_2_Cd21
+gene_1_M   1.182419e-04 2.369525e-10 6.733430e-06 3.305113e-04 3.702273e-06
+gene_2_M   7.403635e-05 3.494265e-06 2.065885e-05 7.411091e-05 2.089446e-05
+gene_3_M   8.592476e-06 3.638081e-06 3.483776e-06 4.095419e-05 3.620325e-05
+gene_4_M   1.063390e-03 2.431110e-08 2.034645e-05 3.900804e-04 1.736181e-07
+gene_1_Cd1 2.292887e-05 6.228850e-06 4.199211e-05 1.729791e-04 1.418964e-05
+gene_2_Cd1           NA 4.541183e-06 8.403045e-05 1.354741e-04 2.698492e-05
+            gene_3_Cd21  gene_4_Cd21    gene_1_CA   gene_2_CA    gene_3_CA
+gene_1_M   8.033330e-03 1.594757e-06 0.0250966759 0.005211462 1.334449e-02
+gene_2_M   9.146096e-08 2.369386e-06 0.0127995981 0.015800596 6.428260e-04
+gene_3_M   1.479435e-05 5.903123e-06 0.0004546151 0.012519873 3.973774e-05
+gene_4_M   3.349251e-06 1.916700e-04 0.0125198730 0.124976784 6.099923e-03
+gene_1_Cd1 1.956217e-03 1.968757e-05 0.0001120345 0.002495398 1.120497e-02
+gene_2_Cd1 6.221861e-03 1.065334e-04 0.0537177672 0.081552815 1.455205e-02
+             gene_4_CA
+gene_1_M   0.008033138
+gene_2_M   0.028882798
+gene_3_M   0.087622829
+gene_4_M   0.028004939
+gene_1_Cd1 0.015944017
+gene_2_Cd1 0.049867231</code></pre>
+</div>
+</div>
+<p>I si les volem exportar:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>cor_matrix_exp <span class="ot">&lt;-</span> correlation<span class="sc">$</span>r <span class="sc">%&gt;%</span> </span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"Variable"</span>)</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>p_matrix_exp <span class="ot">&lt;-</span> correlation<span class="sc">$</span>P <span class="sc">%&gt;%</span> </span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"Variable"</span>)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>n_matrix_exp <span class="ot">&lt;-</span> correlation<span class="sc">$</span>n <span class="sc">%&gt;%</span> </span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"Variable"</span>)</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a><span class="fu">write_xlsx</span>(<span class="fu">list</span>(</span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Correlation =</span> cor_matrix_exp,</span>
+<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">P_values    =</span> p_matrix_exp,</span>
+<span id="cb58-16"><a href="#cb58-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_matrix =</span> n_matrix_exp</span>
+<span id="cb58-17"><a href="#cb58-17" aria-hidden="true" tabindex="-1"></a>), <span class="fu">here</span>(<span class="st">"Basic"</span>, <span class="st">"data"</span>, <span class="st">"correlation_results.xlsx"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Per a fer els gràfics hi ha moltes maneres. Una molt fàcil, que a més ja t’ordena sol és amb el paquet <code>corrplot</code> .</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(corrplot)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: el paquet 'corrplot' es va construir amb la versió d'R 4.5.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>corrplot 0.95 loaded</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(cor_matrix) <span class="co">#una altre manera d'observar</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estadistica_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>I sempre ho podem fer més maco:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>cor_matrix,</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="at">method =</span> <span class="st">"circle"</span>,      <span class="co"># altres: "circle", "square", "ellipse", "shade", "number"</span></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="at">type =</span> <span class="st">"lower"</span>,        <span class="co"># només triangle superior</span></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a><span class="at">order =</span> <span class="st">"hclust"</span>,      <span class="co"># agrupa per clusters</span></span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a><span class="at">tl.col =</span> <span class="st">"black"</span>,   <span class="co"># colors dels labels</span></span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a><span class="at">tl.srt =</span> <span class="dv">45</span>,           <span class="co"># angle labels</span></span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a><span class="at">col =</span> <span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">"#6D9EC1"</span>, <span class="st">"white"</span>, <span class="st">"#E46726"</span>))(<span class="dv">200</span>),</span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a><span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a><span class="at">addgrid.col =</span> <span class="cn">NA</span>,<span class="co"># ← treu les línies de fons</span></span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a><span class="at">diag =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a><span class="at">p.mat =</span> p_matrix, <span class="at">sig.level =</span> <span class="fl">0.05</span>,</span>
+<span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a><span class="at">insig =</span> <span class="st">"label_sig"</span>,    <span class="co"># mostra '*'</span></span>
+<span id="cb63-14"><a href="#cb63-14" aria-hidden="true" tabindex="-1"></a><span class="at">pch.cex =</span> <span class="dv">1</span></span>
+<span id="cb63-15"><a href="#cb63-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estadistica_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>O mostrar només les significatives (en el nostre cas amb les dades reals no us ho recomano ja que et quedes amb 4 observacions):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>cor_matrix,</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="at">method =</span> <span class="st">"circle"</span>,      <span class="co"># altres: "circle", "square", "ellipse", "shade", "number"</span></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a><span class="at">type =</span> <span class="st">"lower"</span>,        <span class="co"># només triangle superior</span></span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a><span class="at">order =</span> <span class="st">"hclust"</span>,      <span class="co"># agrupa per clusters</span></span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a><span class="at">tl.col =</span> <span class="st">"black"</span>,   <span class="co"># colors dels labels</span></span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a><span class="at">tl.srt =</span> <span class="dv">45</span>,           <span class="co"># angle labels</span></span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a><span class="at">col =</span> <span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">"#6D9EC1"</span>, <span class="st">"white"</span>, <span class="st">"#E46726"</span>))(<span class="dv">200</span>),</span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a><span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a><span class="at">addgrid.col =</span> <span class="cn">NA</span>,<span class="co"># ← treu les línies de fons</span></span>
+<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a><span class="at">diag =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a><span class="at">p.mat =</span> p_matrix, <span class="at">sig.level =</span> <span class="fl">0.05</span>,</span>
+<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a><span class="at">insig =</span> <span class="st">"blank"</span>,  </span>
+<span id="cb64-14"><a href="#cb64-14" aria-hidden="true" tabindex="-1"></a><span class="at">pch.cex =</span> <span class="dv">1</span></span>
+<span id="cb64-15"><a href="#cb64-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estadistica_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Tot i així si ho volem controlar del tot amb ggplot, i que s’assembli a les que fem fins ara. Us ho explico a Gràfics - Heatmap correlacions.</p>
 
 
 </section>
