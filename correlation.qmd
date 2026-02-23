@@ -1,5 +1,5 @@
 ---
-title: "Heatmap correlations"
+title: "Heatmap correlacions"
 format: html
 ---
 

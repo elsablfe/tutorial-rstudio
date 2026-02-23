@@ -28,7 +28,9 @@ longdata <- data %>%
       generation = factor(generation, 
                           levels = c( "M", "Cd1", "Cd21", "CA")),
       gene = factor(gene,
-                    levels = c("gene_1", "gene_2", "gene_3", "gene_4"))
+                    levels = c("gene_1", "gene_2", "gene_3", "gene_4")), 
+      sex = factor(sex,
+                    levels = c("F", "M"))
                     )
 ```
 
@@ -99,7 +101,7 @@ View(copy)
 A vegades no funciona, potser és més còmode crear un excel amb el nom "copy" i enganxar-ho directament.
 
 ```{r, eval=FALSE}
-library(writexlitexl)
+library(writexl)
 write_xlsx(results, here("pre-carpeta", "data", "copy.xlsx"))
 ```
 
@@ -533,7 +535,7 @@ posthoc_tw_results <- longdata %>%
     posthoc = map(
       aov_model,
       ~ emmeans(.x, ~ group | sex) %>% #girar sex | group si vols veure les diferències entre sexe dins de cada grup 
-        contrast("pairwise", adjust = "bonferroni") %>%
+        contrast("pairwise", adjust = "tukey") %>%
         summary(level = 0.95,infer = c(TRUE, TRUE)) %>%   # IC + p-value
         as.data.frame())) %>%
   select(generation, gene, posthoc) %>%
@@ -581,20 +583,303 @@ posthoc_tw_results
 
 ## Art ANOVA
 
-Quan tenim més de dos grups, les dades no són ni normals ni homogènies i hi ha dues variables independents, és fa **Art ANOVA**. És molt poc comú necessitar aquest test.
+Quan tenim més de dos grups, les dades no són ni normals ni homogènies i hi ha dues variables independents, és fa **Art ANOVA**.
 
-Aquest test l'ha fet amb R la Sofía, com que no s'acostuma a necessitar no l'he generalitzat, però us adjunto l'script per si us interessa.
+Aquest test l'ha fet amb R la Sofía, i l'he generalitzat per a fer totes les comprovacions alhora.
 
-2 factors
+### 2 factors
 
-```{r, eval=FALSE}
+Quan volem mirar si hi ha interacció entre dos factors, per exemple sexe i generació, fariem el següent:
 
+```{r}
+library(ARTool)
+
+results_art_anova <- longdata %>%
+  drop_na() %>% 
+  filter(generation %in% c("Cd1", "Cd21", "CA")) %>%
+  group_by(generation, gene) %>%
+  nest() %>%
+  mutate(
+    model = map(data, ~ art(value ~ sex * group, data = .x)),
+    anova_table = map(model, ~ anova(.x) %>% broom::tidy())
+  ) %>%
+  select(-data, -model) %>%
+  unnest(anova_table) %>%
+  mutate(
+    signif = case_when(
+      is.na(p.value)  ~ "ns",
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      p.value < 0.1   ~ "·",
+      TRUE            ~ "ns"
+    )
+  ) %>%
+  select(generation, gene, everything())
+
+head(results_art_anova)
 ```
 
-3 factors
+Un cop comprovat si hi ha interacció, en el cas que sí que n'hi hagi passem al post-hoc
+
+#### Post-hoc ArtANOVA
+
+El post-hoc el podem abarcar de diferents maneres. La primera, a lo bestia, seria que ens els faci tots, tan si és significatiu el ArtAnova com si no. Aquesta no seria la més correcte, però pot ser orientatiu.
+
+```{r}
+results_posthoc_art_anova <- longdata %>%
+  drop_na() %>% 
+  filter(generation %in% c("Cd1", "Cd21", "CA")) %>%
+  group_by(generation, gene) %>%
+  nest() %>%
+  # Ajust ART
+  mutate(model = map(data, ~ art(value ~ sex * group, data = .x))) %>%
+mutate(
+  posthoc = map(model, function(m) {
+    res_list <- list()
+    
+    # 1️⃣ Sempre interacció
+    m_emm <- artlm(m, "sex:group")
+    res <- pairs(emmeans(m_emm, ~ group | sex), adjust = "tukey")
+    res_list <- c(res_list, list(as.data.frame(res)))
+    
+    # 2️⃣ Sempre sex
+    m_emm <- artlm(m, "sex")
+    res <- pairs(emmeans(m_emm, ~ sex), adjust = "tukey")
+    res_list <- c(res_list, list(as.data.frame(res)))
+    
+    # 3️⃣ Sempre group
+    m_emm <- artlm(m, "group")
+    res <- pairs(emmeans(m_emm, ~ group), adjust = "tukey")
+    res_list <- c(res_list, list(as.data.frame(res)))
+    
+    # Combinar tots els resultats
+    do.call(rbind, res_list)
+  })
+) %>%
+  select(generation, gene, posthoc) %>%
+  unnest(posthoc, keep_empty = TRUE)%>%
+  mutate(
+    signif = case_when(
+      is.na(p.value)  ~ "ns",
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      p.value < 0.1   ~ "·",
+      TRUE            ~ "ns")) 
+
+head(results_posthoc_art_anova)
+```
+
+En el cas que vulguis que t'apareguin només aquelles que l'ArtANOVA sigui significatiu:
+
+```{r, message=FALSE, warning=FALSE}
+results_posthoc_art_anova <- longdata %>%
+  drop_na() %>% 
+  filter(generation %in% c("Cd1", "Cd21", "CA")) %>%
+  group_by(generation, gene) %>%
+  nest() %>%
+  # Ajust ART
+  mutate(model = map(data, ~ art(value ~ sex * group, data = .x))) %>%
+  # Extreure p-values directament de l'anova
+  mutate(
+    p_group = map_dbl(model, ~ anova(.x)["group", "Pr(>F)"]),
+    p_sex   = map_dbl(model, ~ anova(.x)["sex", "Pr(>F)"]),
+    p_int   = map_dbl(model, ~ anova(.x)["sex:group", "Pr(>F)"])
+  ) %>%
+  mutate(
+    posthoc = pmap(
+      list(model, p_int, p_sex, p_group),
+      function(m, p_i, p_s, p_g) {
+        res_list <- list()  # aquí anirem afegint els resultats
+        
+        # 1️⃣ Interacció significativa → simple effects
+        if (p_i < 0.05) {
+          m_emm <- artlm(m, "sex:group")
+          res <- pairs(emmeans(m_emm, ~ group | sex), adjust = "tukey")
+          res_list <- c(res_list, list(as.data.frame(res)))
+        }
+        
+        # 2️⃣ Sex significativa
+        if (p_s < 0.05) {
+          m_emm <- artlm(m, "sex")
+          res <- pairs(emmeans(m_emm, ~ sex), adjust = "tukey")
+          res_list <- c(res_list, list(as.data.frame(res)))
+        }
+        # 3️⃣ Group significativa
+        if (p_g < 0.05) {
+          m_emm <- artlm(m, "group")
+          res <- pairs(emmeans(m_emm, ~ group), adjust = "tukey")
+          res_list <- c(res_list, list(as.data.frame(res)))
+        }
+        
+        # Si no hi ha res, NULL
+        if (length(res_list) == 0) return(NULL)
+        
+        # Unim tots els resultats en un sol data.frame
+        do.call(rbind, res_list)
+      }
+    )
+  ) %>%
+  select(generation, gene, posthoc) %>%
+  unnest(posthoc, keep_empty = TRUE)%>%
+  mutate(
+    signif = case_when(
+      is.na(p.value)  ~ "ns",
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      p.value < 0.1   ~ "·",
+      TRUE            ~ "ns"
+    )
+  ) 
+
+results_posthoc_art_anova
+```
+
+I ja per últim si volguèssis que sigui escalat, per tant que si la interacció és significativa només miri aquell post-hoc (el que realment és correcte) i en el cas que no que comprovi la resta:
+
+```{r, message=FALSE, warning=FALSE}
+results_posthoc_art_anova <- longdata %>%
+  drop_na() %>% 
+  filter(generation %in% c("Cd1", "Cd21", "CA")) %>%
+  group_by(generation, gene) %>%
+  nest() %>%
+  # Ajust ART
+  mutate(model = map(data, ~ art(value ~ sex * group, data = .x))) %>%
+  # Extreure p-values directament de l'anova
+  mutate(
+    p_group = map_dbl(model, ~ anova(.x)["group", "Pr(>F)"]),
+    p_sex   = map_dbl(model, ~ anova(.x)["sex", "Pr(>F)"]),
+    p_int   = map_dbl(model, ~ anova(.x)["sex:group", "Pr(>F)"])
+  ) %>%
+  # Posthoc depenent de significació
+  mutate(
+    posthoc = pmap(
+      list(model, p_group, p_sex, p_int),
+      function(m, p_g, p_s, p_i) {
+        if (p_i < 0.05) {
+          m_emm <- artlm(m, "sex:group")
+          res <- pairs(emmeans(m_emm, ~ group | sex), adjust = "tukey")
+        } else if (p_g < 0.05) {
+          m_emm <- artlm(m, "group")
+          res <- pairs(emmeans(m_emm, ~ group), adjust = "tukey")
+        } else if (p_s < 0.05) {
+          m_emm <- artlm(m, "sex")
+          res <- pairs(emmeans(m_emm, ~ sex), adjust = "tukey")
+        } else {
+          res <- NULL
+        }
+        if (!is.null(res)) as.data.frame(res) else NULL
+      }
+    )
+  ) %>%
+  select(generation, gene, posthoc) %>%
+  unnest(posthoc, keep_empty = TRUE)%>%
+  mutate(
+    signif = case_when(
+      is.na(p.value)  ~ "ns",
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      p.value < 0.1   ~ "·",
+      TRUE            ~ "ns"
+    )
+  ) 
+
+results_posthoc_art_anova
+```
+
+### 3 factors
+
+En aquest cas només adjunto el que va fer la Sofia, ja que em dona errors al intentar-ho fer tant general i en el meu cas no ho necessito.
 
 ```{r, eval=FALSE}
+# 3️⃣ Revisar NAs y resumen de la variable----
+summary(df$NFkB)
+sum(is.na(df$NFkB))  # cuántos valores faltan
 
+## Eliminar la fila con NA en la variable donde falta el valor----
+df_clean <- df[!is.na(df$NFkB), ]
+
+# 4️⃣ Convertir las variables categóricas en factores----
+# Esto siempre después de limpiar NA, para no tener filas fantasma
+df_clean$diet <- factor(df_clean$diet, levels = c("REF", "HFD", "SW"))
+df_clean$sex  <- factor(df_clean$sex)
+df_clean$stimulation  <- factor(df_clean$stimulation)
+
+## Comprobacion del dataset----
+str(df_clean) #comprueba como es tu dataframe, por qué variables está compuesto y así, para ver que tus datos han sido procesados como lo que deberian ser, factores, números etc.
+
+
+# 5️⃣ Ejecutar ART ANOVA----
+m <- art(NFkB ~ diet * sex * stimulation, data = df_clean)
+
+## Revisar resultados del artanova----
+anova(m) #ANOVA no parametrico multifactorial basado en Aligned Rank Transform (ART) con tests tipo III
+        #no asume normalidad, permite interacciones, equivalente conceptualmente a un ANOVA factorial clásico
+        #Si la interacción de orden superior es significativa, no interpretar los efectos de orden inferior de forma aislada
+
+# 6️⃣ Post-hoc----
+library(emmeans)
+
+##Con bucle----
+aov_res <- anova(m)
+
+p_3way <- aov_res["diet:sex:stimulation", "Pr(>F)"]
+p_ds   <- aov_res["diet:sex", "Pr(>F)"]
+p_dst  <- aov_res["diet:stimulation", "Pr(>F)"]
+p_sst  <- aov_res["sex:stimulation", "Pr(>F)"]
+p_diet <- aov_res["diet", "Pr(>F)"]
+
+if (p_3way < 0.05) {
+  
+  # Interacción triple significativa
+  m_emm <- artlm(m, "diet:sex:stimulation")
+  posthoc <- pairs(
+    emmeans(m_emm, ~ diet | sex * stimulation),
+    adjust = "tukey"
+  )
+  
+} else if (p_dst < 0.05) {
+  
+  # No hay triple, pero sí interacción doble relevante
+  m_emm <- artlm(m, "diet:stimulation")
+  posthoc <- pairs(
+    emmeans(m_emm, ~ diet | stimulation),
+    adjust = "tukey"
+  )
+} else if (p_ds < 0.05) {
+  
+  # No hay triple, pero sí interacción doble relevante
+  m_emm <- artlm(m, "diet:sex")
+  posthoc <- pairs(
+    emmeans(m_emm, ~ diet | sex),
+    adjust = "tukey"
+  )
+}  else if (p_diet < 0.1) {
+    
+    m_emm <- artlm(m, "diet")
+    
+    posthoc <- pairs(
+      emmeans(m_emm, ~ diet),
+      adjust = "tukey"
+    )
+} else {
+    posthoc <- NULL
+}
+
+# Si hay post-hoc, extraer y guardar
+if (!is.null(posthoc)) {
+  
+  posthoc_df <- as.data.frame(posthoc)
+  
+  write.csv(
+    posthoc_df,
+    here("output", "Posthoc_results.csv"),
+    row.names = FALSE
+  )
+}
 ```
 
 # Correlacions
