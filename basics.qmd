@@ -456,6 +456,6 @@ cleanbeaches_new <- cleanbeaches %>%
 
 -   `mutate(buggier_all = beachbugs > mean(beachbugs, na.rm=T)) %>%` afegeix una columna on indiqui si aquella observació és major a la mitjana (i al fer la mitjana no tinguis en compte els NA: `na.rm=T`)
 
--   `group_by(site)%>% mutate(buggier_site = beachbugs > mean(beachbugs, na.rm=T))` per començar el que facis ara agrupa-ho per site i llavors afegeix una columna que em digui si la observació és major a la mitjana només del site.
+`group_by(site)%>% mutate(buggier_site = beachbugs > mean(beachbugs, na.rm=T))` per començar el que facis ara agrupa-ho per site i llavors afegeix una columna que em digui si la observació és major a la mitjana només del site.
 
-    -   Al haver fet `group_by()` el que es calculi a partir d'ara es calculara en els diferents sites, no a tot el dataset. Per evitar-ho despres s'ha de fer `ungroup()`
+-   Al haver fet `group_by()` el que es calculi a partir d'ara es calculara en els diferents sites, no a tot el dataset. Per evitar-ho despres s'ha de fer `ungroup()`

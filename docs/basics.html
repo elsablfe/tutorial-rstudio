@@ -114,9 +114,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="index.html" class="navbar-brand navbar-brand-logo">
+    <a href="docs/index.html" class="navbar-brand navbar-brand-logo">
     </a>
-    <a class="navbar-brand" href="index.html">
+    <a class="navbar-brand" href="docs/index.html">
     <span class="navbar-title">Rstudio Scripts</span>
     </a>
   </div>
@@ -127,7 +127,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="index.html"> 
+    <a class="nav-link" href="docs/index.html"> 
 <span class="menu-text">Inici</span></a>
   </li>  
   <li class="nav-item">
@@ -152,7 +152,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">Gràfic de punts (PCR)</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="docs/elisa.html">
+    <a class="dropdown-item" href="elisa.html">
  <span class="dropdown-text">Gràfic de barres (ELISA)</span></a>
   </li>  
         <li>
@@ -1307,10 +1307,10 @@ L'objecte següent està emmascarat per 'package:stats':
 <li><p><code>mutate(logbeachbugs = log(beachbugs)) %&gt;%</code> afegeix una columna nova que es digui <code>logbeachbugs</code> i contingui les dades de la columna que ja existeix i es diu <code>beachbugs</code> però aplica la funció <code>log(x)</code> als seus valors.</p></li>
 <li><p><code>mutate(beachbugsdiff = beachbugs - lag(beachbugs)) %&gt;%</code> afegeix una columna nova fent la operació <code>x-lag(x)</code> de les dades de la columna beachbugs</p></li>
 <li><p><code>mutate(buggier_all = beachbugs &gt; mean(beachbugs, na.rm=T)) %&gt;%</code> afegeix una columna on indiqui si aquella observació és major a la mitjana (i al fer la mitjana no tinguis en compte els NA: <code>na.rm=T</code>)</p></li>
-<li><p><code>group_by(site)%&gt;% mutate(buggier_site = beachbugs &gt; mean(beachbugs, na.rm=T))</code> per començar el que facis ara agrupa-ho per site i llavors afegeix una columna que em digui si la observació és major a la mitjana només del site.</p>
+</ul>
+<p><code>group_by(site)%&gt;% mutate(buggier_site = beachbugs &gt; mean(beachbugs, na.rm=T))</code> per començar el que facis ara agrupa-ho per site i llavors afegeix una columna que em digui si la observació és major a la mitjana només del site.</p>
 <ul>
 <li>Al haver fet <code>group_by()</code> el que es calculi a partir d’ara es calculara en els diferents sites, no a tot el dataset. Per evitar-ho despres s’ha de fer <code>ungroup()</code></li>
-</ul></li>
 </ul>
 
 
