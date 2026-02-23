@@ -23,7 +23,7 @@ website:
         - href: heatmap.qmd
           text: Heatmap
         - href: correlation.qmd
-          text: Heatmap correlations
+          text: Heatmap correlacions
         - href: extra.qmd
           text: Dumpster
     - href: quarto.qmd

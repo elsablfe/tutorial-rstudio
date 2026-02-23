@@ -1,6 +1,6 @@
 ---
 title: "Heatmap correlacions"
-format: html
+editor: visual
 ---
 
 Com ja he comentat a l'apartat de correlacions, el primer que farem és importar les dades i fer la matriu de correlacions i de significància de la correlació.

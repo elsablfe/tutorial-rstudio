@@ -1,5 +1,6 @@
 ---
 title: "Basics"
+editor: visual
 ---
 
 ## Instal·lació
