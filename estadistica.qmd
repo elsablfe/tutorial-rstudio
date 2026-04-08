@@ -66,7 +66,7 @@ Al tenir activat `na.rm=TRUE` s'eliminen els NA del que estàs calculant.
 Per a saber millor el perquè i què fa cada test, recomano consultar el llibre <https://learningstatisticswithr.com/book/>. Si ho voleu com algo rutinari, aquí teniu la taula del protocol que va fer la Mariona Camps al 2016 per al SPSS.
 
 | Nº grups | Factors fixos (variables independents) | Segueix la normalitat? | Segueix la homogeneitat de variàncies? | Son dades aparellades? | Test |
-|:--:|:--:|:--:|:--:|:--:|:--:|
+|:----------:|:----------:|:----------:|:----------:|:----------:|:----------:|
 | 2 | 1 | Si | Si/No | Si/No | T-test |
 |  |  | No | No | Si | Wilcoxon |
 |  |  |  |  | No | U Mann Whitney |
@@ -579,6 +579,84 @@ posthoc_tw_results <- longdata %>%
       TRUE            ~ "ns"))   
 
 posthoc_tw_results
+```
+
+Si volem fer un post-hoc on hi siguin absolutament totes les comparacions
+
+```{r}
+results_posthoc_tw_anova <- longdata %>%
+  drop_na() %>% 
+  filter(generation %in% c("Cd21")) %>%
+  group_by(generation, gene) %>%
+  nest() %>%
+  
+  # Ajust model clàssic
+  mutate(model = map(data, ~ aov(value ~ sex * group, data = .x))) %>%
+  
+  mutate(
+    posthoc = map(model, function(m) {
+      
+      res_list <- list()
+      
+      # Funció auxiliar (mateixa que ART)
+      get_posthoc <- function(model, formula_emm, effect_name) {
+        emm <- emmeans(model, formula_emm)
+        
+        raw <- pairs(emm, adjust = "none")  %>% as.data.frame()
+        adj <- pairs(emm, adjust = "bonferroni") %>% as.data.frame()
+        
+        raw$p.raw  <- raw$p.value
+        raw$p.adj  <- adj$p.value
+        raw$effect <- effect_name
+        
+        raw
+      }
+      
+      # 1️⃣ Interacció → simple effects
+      df_int1 <- get_posthoc(m, ~  group | sex, "sex:group")
+      res_list <- c(res_list, list(df_int1))
+      
+      # 1️⃣ Interacció → simple effects
+      df_int2 <- get_posthoc(m, ~  sex | group, "group:sex")
+      res_list <- c(res_list, list(df_int2))
+      
+      # 2️⃣ Sex (main effect)
+      df_sex <- get_posthoc(m, ~ sex, "sex")
+      res_list <- c(res_list, list(df_sex))
+      
+      # 3️⃣ Group (main effect)
+      df_group <- get_posthoc(m, ~ group, "group")
+      res_list <- c(res_list, list(df_group))
+      
+      do.call(rbind, res_list)
+    })
+  ) %>%
+  
+  select(generation, gene, posthoc) %>%
+  unnest(posthoc, keep_empty = TRUE) %>%
+  
+  mutate(
+    sig.raw = case_when(
+      is.na(p.raw) ~ "ns",
+      p.raw < 0.01 ~ "**",
+      p.raw < 0.05 ~ "*",
+      p.raw < 0.1  ~ "·",
+      TRUE         ~ "ns"
+    ),
+    sig.adj = case_when(
+      is.na(p.adj) ~ "ns",
+      p.adj < 0.01 ~ "**",
+      p.adj < 0.05 ~ "*",
+      p.adj < 0.1  ~ "·",
+      TRUE         ~ "ns"
+    )
+  ) %>%
+  select(-p.value) %>%
+  relocate(generation, gene, effect, contrast,
+           group, sex, estimate, SE, df, t.ratio,
+           p.raw, p.adj, sig.raw, sig.adj)
+
+results_posthoc_tw_anova
 ```
 
 ## Art ANOVA

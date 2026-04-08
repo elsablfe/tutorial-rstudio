@@ -1,0 +1,73 @@
+---
+title: "Luminex"
+editor: visual
+---
+
+Aquí tenim tots els gràfics que acostumem a fer quan es fa un assaig de luminex, dels diferents Ig amb el kit Procartaplex, però que realment podeu fer servir amb molts altres.
+
+## Modificar les dades
+
+Abans de res, en aquest kit s'obtenen els valors de concentració de IgA, IgM, IgG1, IgG2a, IgG2b, IGg2c. Tot i així, nosaltres calculem altres variables com IgG totals, percentatges, resposta Th1 i Th2... Per tant primer de tot ho calcularem amb R.
+
+Carreguem els paquets i les dades:
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse) #conté 9 paquets d'edició i visualització 
+library(here) #al treballar en un projecte
+library(readxl) #per importar dades que estan en un fitxer d'excel
+library(janitor) #ajudar a netejar les dades
+library(skimr) #per obtenir un resum de les dades complert
+library(broom) #poder fer servir funcions com tidy
+library(rstatix) #funcions d'estadística
+library(writexl) #descarregar excels
+library(ARTool) #ArcANOVA
+library(emmeans) #post-hocs
+library(Hmisc) #Correlacions
+
+#Importar dades
+raw_data <- read_excel(here("Basic", "data", "luminex.xlsx"))
+data <- raw_data %>% 
+  mutate(across(c(group, sex, rat, tissue), as.factor)) 
+skim(data)
+```
+
+En aquest cas com podeu veure els grups son diferents, i no tenim diferents generacions. Tenim dos grups diferents: REF i DIET; tres teixits diferents: HCC, HMLN, RI; dos sexes: M i F; i 20 rates diferents, repetides pels diferents teixits.
+
+Modifiquem les dades abans de passar a long, per a que ens faci els càlculs de manera simple i ens crea columnes noves. Important que com a noms de columna no s'utilitzin caràcters que R utilitza per programar, com %.
+
+```{r}
+data <- data %>% 
+  mutate(IgG = IgG1 + IgG2a + IgG2b + IgG2c) %>%
+  mutate(Ig_total = IgG + IgA + IgM) %>%
+  mutate(perc_IgG1 = (IgG1/IgG)*100) %>%  #Millor no utilitzar el % ja s'utilitza per fer operacions
+  mutate(perc_IgG2a = (IgG2a/IgG)*100) %>% 
+  mutate(perc_IgG2b = (IgG2b/IgG)*100) %>% 
+  mutate(perc_IgG2c = (IgG2c/IgG)*100) %>%
+  mutate(perc_IgG = (IgG/Ig_total)*100) %>% 
+  mutate(perc_IgM = (IgM/Ig_total)*100) %>% 
+  mutate(perc_IgA = (IgA/Ig_total)*100) %>% 
+  mutate(Th1 = IgG2b + IgG2c) %>% 
+  mutate(Th2 = IgG1 + IgG2a) %>% 
+  mutate(Th1vsTh2 = Th1/Th2) %>%
+  mutate(perc_Th1 = Th1/(Th1+Th2)*100) %>%
+  mutate(perc_Th2 = Th2/(Th1+Th2)*100)
+
+skim(data)
+```
+
+Per validar que tots els càlculs s'han fet correctament, li demanarem que ens imprimeixi a la consola la suma dels percentatges calculats i Th. No ens ho guarda, simplement ens ho ensenya.
+
+```{r}
+data %>% 
+  mutate(perc_IgG_val = perc_IgG1 + perc_IgG2a + perc_IgG2b + perc_IgG2c) %>% 
+  mutate(perc_total_val = perc_IgG + perc_IgM + perc_IgA) %>% 
+  mutate(Th_val = Th1 + Th2) %>% #Ha de ser igual al valor de IgG
+  mutate(perc_total_Th = perc_Th1 + perc_Th2) %>% 
+  select(rat, perc_IgG_val, perc_total_val, IgG, Th_val, perc_total_Th)
+```
+
+Si tot està bé ets pots descarregar les dades per si vols canviar d'script al fer els gràfics i no haver de tornar-ho a calcular tot cada vegada.
+
+```{r}
+write_xlsx(data, here( "Basic", "data", "luminex_complete.xlsx"))
+```

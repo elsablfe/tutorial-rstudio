@@ -12,6 +12,10 @@ website:
       text: Basics
     - href: estadistica.qmd
       text: Estadística
+    - text: Càlculs
+      menu:
+        - href: luminex.qmd
+          text: Luminex
     - text: Gràfics
       menu:
         - href: grafics.qmd
