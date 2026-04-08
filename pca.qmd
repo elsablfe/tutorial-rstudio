@@ -2,3 +2,440 @@
 title: "PCA"
 editor: visual
 ---
+
+**PCA = Principal Components Analysis**
+
+El primer cop que vaig fer un PCA, el vaig aprendre a fer amb els següents links, potser us son útils:
+
+-   <https://medium.com/>@heyamit10/principal-component-analysis-for-dummies-95f198ff0f16
+-   <https://www.youtube.com/watch?v=3QwZ2GgHSLE>
+-   <https://www.datacamp.com/tutorial/pca-analysis-r>
+
+En aquest cas us ho ensenyaré amb les dades de *luminex* que ja us he ensenyat a l'apartat [Càlculs](#0). Tot i així, utilitzarem les originals i crearem uns altres percentatger per tal de el pes que els hi dona cada variable depengui del mateix en els diferents teixits, ja que estaven en unitats diferents. Aquest pas NO es necessita en tots els casos, dependrà de les vostres dades!
+
+Començarem carregant les llibreries necessàries i les dades:
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse) #conté 9 paquets d'edició i visualització 
+library(here) #al treballar en un projecte
+library(readxl) #per importar dades que estan en un fitxer d'excel
+library(janitor) #ajudar a netejar les dades
+library(skimr) #per obtenir un resum de les dades complert
+library(broom) #poder fer servir funcions com tidy
+library(factoextra) #Visualització de resultats de PCA i altres anàlisis multivariants
+
+raw_data <- read_excel(here("Basic", "data", "luminex.xlsx"))
+```
+
+En aquest cas també crearem unes noves columnes anomenades `tissue_group` i `rat_tissue`, on tindrem la informació combinada. Això ho creem per després poder colorejar el nostre PCA com més ens interessi.
+
+```{r}
+data <- raw_data %>% 
+  mutate(across(c(group, sex, rat, tissue), as.factor)) %>% 
+  mutate(tissue_group = paste0(tissue, "_", group)) %>% 
+  mutate(across(c(tissue_group), as.factor)) %>% 
+  mutate(rat_tissue = paste0(rat, "_", tissue)) %>%
+  column_to_rownames("rat_tissue") %>% 
+  na.omit()
+
+data_PCA <- data %>% 
+  mutate(Ig_total = IgG1 + IgG2a + IgG2b + IgG2c + IgA + IgM) %>%
+  mutate(perc_IgG1 = (IgG1/Ig_total)*100) %>%  #Millor no utilitzar el % ja s'utilitza per fer operacions
+  mutate(perc_IgG2a = (IgG2a/Ig_total)*100) %>% 
+  mutate(perc_IgG2b = (IgG2b/Ig_total)*100) %>% 
+  mutate(perc_IgG2c = (IgG2c/Ig_total)*100) %>%
+  mutate(perc_IgM = (IgM/Ig_total)*100) %>% 
+  mutate(perc_IgA = (IgA/Ig_total)*100) 
+
+skim(data_PCA)
+```
+
+## PCA
+
+El PCA realment és la ordenació dimensional, trobar els components principals. N'hi haurà tants com variables utilitzis.
+
+### Definicions
+
+Jo no recomano canviar mai el nom de les variables, grups, etc dins del dataframe. Per tant a mi em funciona molt bé definir-ho tot amb vectors. Ho recomano fer a l'inici per tant ho podeu cridar en qualsevol moment.
+
+```{r}
+theme_set(theme_classic()) 
+
+group_order <- c("REF", "DIET")
+tissue_group_order <- c("HCC_REF", "HCC_DIET", "RI_REF", "RI_DIET", "HMLN_REF", "HMLN_DIET")
+group_color <- c("REF" = "#5c5c5c",   
+                 "DIET" = "salmon")  
+
+tissue_color <- c(  HCC   = "#8C5A3C",
+                    RI = "#E76F8A",
+                    HMLN= "#E9D8A6")
+
+tissue_group_color <- c(HCC_REF = "#8C5A3C",
+                        HCC_DIET = "#CDA690",
+                        RI_REF = "#E76F8A",
+                        RI_DIET = "#F4B6BF",
+                        HMLN_REF = "#E9D8A6",
+                        HMLN_DIET = "#F5EAD0")
+
+tissue_group_name <- c( HCC_RD = "RD (Cecal Content)",
+                        HCC_AD = "AD (Cecal Content)",
+                        RI_RD = "RD (Gut Wash)",
+                        RI_AD = "AD (Gut Wash)",
+                        HMLN_RD = "RD (Mesenteric Lymph Nodes)",
+                        HMLN_AD = "AD (Mesenteric Lymph Nodes)")
+
+tissue_name <- c(
+  HCC   = "Cecal Content",
+  RI = "Gut Wash",
+  HMLN= "Mesenteric Lymph Nodes")
+
+variable_name <- c(
+  IgA = "IgA",
+  IgG = "IgG",
+  IgM = "IgM",
+  IgG1 = "IgG1",
+  IgG2a = "IgG2a",
+  IgG2b = "IgG2b",
+  IgG2c = "IgG2c",
+  Ig_total = "Total Ig",
+  perc_IgA = "%IgA",
+  perc_IgG = "%IgG",
+  perc_IgG1 = "%IgG1",
+  perc_IgG2a = "%IgG2a",
+  perc_IgG2b = "%IgG2b",
+  perc_IgG2c = "%IgG2c",
+  perc_IgM = "%IgM",
+  perc_Th1 = "%Th1",
+  perc_Th2 = "%Th2",
+  Th1 = "Th1",
+  Th2 = "Th2",
+  Th1vsTh2 = "Th1/Th2")
+```
+
+### Comprovacions prèvies
+
+Per a poder-lo fer, no poden tenir cap `NA` ni que una columna no tingui variabilitat. Per tant senpre s'haurà de fer na.omit() en el primer cas, i com que s'ha de treballar amb dades wide es perdran rates.
+
+-   Una alternativa seria omplir els forats amb la mitjana del grup, d'aquesta manera no perdries la resta de valors.
+
+```{r, eval=FALSE}
+data_analize<- data_PCA %>% 
+  group_by(group, tissue) %>% #i totes les variables que formin els grupets de dades
+  mutate(across(
+    where(is.numeric),
+    ~ ifelse(is.na(.), mean(., na.rm = TRUE), .)
+  )) %>% #canviem els NA per la mitjana d'aquell metabolit dins del grup
+  ungroup() %>% 
+  select(5:ncol(.)) #dades que han de servir per la ordenació (de la columna 2 al final)
+```
+
+Per a la variabilitat dins de les columnes ho mirem de la següent manera:
+
+```{r}
+zero_var_cols <- apply(data_PCA, 2, function(x) var(x, na.rm = TRUE) == 0) # Identify columns with zero variance 
+sum(zero_var_cols) # Check how many columns were removed
+```
+
+Si no n'hi ha cap problema, endavant. Si n'hi haguès s'haurien d'eliminar aquestes variables per a poder fer el PCA.
+
+### Components principals
+
+```{r}
+pca <- data_PCA %>% 
+  select(perc_IgG1, perc_IgG2a, perc_IgG2b, perc_IgG2c, perc_IgM, perc_IgA) %>%   
+  prcomp(center = T, scale. = T)#pca 
+print(pca)
+summary(pca)
+```
+
+Aquí ja podeu veure els diferents components principals en cada variable i el % que explica cada un. Com més % expliquin els dos primers components millor. Per a poder-ho observar de manera més fàcil, hem de crear un dataframe que contingui la informació que ens interessa, com la posició dels individus:
+
+```{r}
+pca_data_graph <- as.data.frame(pca$x) %>% #pca$x = posició dels punts
+  mutate(
+    group = data$group,
+    rat = data$rat,
+    tissue = data$tissue,
+    sex = data$sex,
+    tissue_group = data$tissue_group,
+    cos2 = get_pca_ind(pca)$cos2[, 1] + get_pca_ind(pca)$cos2[, 2] #cos2 = mida dels punts
+  )
+
+head(pca_data_graph)
+```
+
+Un altre gràfic combinat molt interessant és el PCA-Biplot, en el qual també ens indica la importancia de les variables i per a quins individus és més important. Podem obtenir-ho amb els loadings.
+
+```{r}
+loadings <- as.data.frame(pca$rotation) %>% #la fletxa de les variables
+  rownames_to_column("IgX") %>%
+  mutate(
+    PC1 = PC1 * 5,
+    PC2 = PC2 * 5,
+    name = variable_name[IgX])
+
+head(loadings)
+```
+
+I d'aquesta manera ja hauriem extret tota la informació necessària per a poder fer-ho al ggplot.
+
+# Gràfics
+
+## Bàsics
+
+Amb la lliberia `factoextra` podem aconseguir molts gràfics, tot i que son una mica cutres. Tot i així són molt informatius així que com a primer pas per entendre com es comporten les nostres dades són útils:
+
+-   Qualitat del PCA (scree plot): quin % aporta cada component
+
+```{r}
+fviz_eig(pca,addlabels = T,ylim=c(0,50)) 
+```
+
+-   Com de ben representada està cada IgX en el pla 2D
+
+```{r}
+fviz_cos2(pca, choice = "var")
+```
+
+-   Quines IgX contribueixen mes a construir cada component (Aquest codi t'ho dona de manera que et diu quines contribueixen als dos primers components alhora, només al primer component i només al segon).
+
+```{r, message=FALSE}
+a<- fviz_contrib(pca,choice="var",axes=1:2, top=10)
+#Contributions of variable to PC1
+b <- fviz_contrib(pca, choice = "var", axes = 1, top=10)
+#Contributions of variable to PC2
+c <- fviz_contrib(pca, choice = "var", axes = 2, top=10)
+library(gridExtra)
+grid.arrange(a,b,c,ncol=3,top='Contribution of the top 10 variables to the first two PCs')
+
+#si afegeixes top= et dona les que mes contribueixen
+```
+
+-   Contribució dels individus (també ho podries mirar per cada PC, però realment ens interessa en general). En aquest cas es podrien veure *outliers*, tot i que normalment un o dos individus són més forts que els altres. Tot i així si és descaradament diferent, podriem dir que és *outlier*.
+
+```{r}
+fviz_contrib(pca,choice="ind",axes=1:2)
+```
+
+-   Cercle de correlacions: com correlacionen les IgX entre elles i amb cada PC. Variables properes al cercle exterior → ben representades.
+
+```{r}
+fviz_pca_var(pca, col.var = "cos2")
+```
+
+-   PCA
+
+```{r}
+fviz_pca_ind(pca, habillage = data$tissue)
+```
+
+-   Biplot
+
+```{r}
+fviz_pca_biplot(pca, habillage = data$tissue)
+```
+
+Com podeu veure els gràfics finals de PCA i Biplot són cutríssims, per tant els farem macos i com nosaltres vulguem amb ggplot.
+
+## ggplot
+
+Tots els gràfics surten a partir de la informació que tens a `pca_data_graph`, si no està allà, no apareixerà. Si us hi fixeu tots són iguals, simplement canvia com es veuen i les elipses.
+
+Recordeu que per a guardar els gràfics podeu fer servir:
+
+```{r, eval=FALSE}
+ggsave(here("output","PCA.png"), width = 8, height = 5, dpi = 300) 
+```
+
+### PCA - Color i forma per grup
+
+```{r}
+PCA <- ggplot(pca_data_graph, aes(x = PC1, y = PC2, color = group, shape = group)) +
+  geom_point(size = 2, alpha = 0.8) +  # Afegir els punts amb les formes i colors
+  stat_ellipse(aes(color = group, fill = group), alpha = 0.2, geom = "polygon") +  # Afegir les elípses amb el mateix color i omplert
+  scale_color_manual(values = group_color,
+                     name = "Group",
+                     breaks = group_order) +  # Custom colors per als punts i les elípses
+  scale_fill_manual(values = group_color, name = "Group", 
+                    breaks = group_order) +  # Colors per a l'ompliment de les elípses
+  scale_shape_manual(name = "Group",
+                     values = c(16, 17), 
+                     breaks = group_order) +  # Definir formes per als punts
+  labs(title = "PCA",
+       x = paste0("PC1 (", round(summary(pca)$importance[2, 1] * 100, 1), "%)"),
+       y = paste0("PC2 (", round(summary(pca)$importance[2, 2] * 100, 1), "%)"),
+       color = "Group",
+       shape = "Group") +  # Titols de la llegenda
+  theme_minimal() +
+  theme(legend.position = "right", 
+        legend.title = element_text(size = 10), 
+        legend.text = element_text(size = 8),
+        plot.title = element_text(hjust = 0.5, size = 14),
+        panel.background = element_blank(),  # Treu el color de fons
+        panel.grid.major = element_blank(),  # Treu la quadrícula gran
+        panel.grid.minor = element_blank(),  # Treu la quadrícula petita
+        axis.line = element_line(color = "black"))
+
+PCA
+```
+
+### PCA - Color per teixit i forma per grup
+
+```{r}
+PCA_2 <- ggplot(pca_data_graph, aes(x = PC1, y = PC2, shape = group, color = tissue,  fill= tissue)) +
+  geom_point(size = 2, alpha = 0.8) +  # Afegir els punts amb les formes i colors
+  stat_ellipse(aes(group = tissue, color = tissue, fill = tissue), alpha = 0.2, geom = "polygon") +  # Afegir les elípses amb el mateix color i omplert
+  scale_color_manual(values = tissue_color,
+                     name = "Tissue",
+                     labels = tissue_name) +  # Custom colors per als punts i les elípses
+  scale_fill_manual(values = tissue_color,
+                    name = "Tissue",
+                    labels = tissue_name) +  # Colors per a l'ompliment de les elípses
+  scale_shape_manual(name = "Group",
+                     values = c(16, 17), 
+                     breaks = group_order) +  # Definir formes per als punts
+  labs(title = "PCA",
+       x = paste0("PC1 (", round(summary(pca)$importance[2, 1] * 100, 1), "%)"),
+       y = paste0("PC2 (", round(summary(pca)$importance[2, 2] * 100, 1), "%)"),
+       color = "Tissue",
+       shape = "Group") +  # Titols de la llegenda
+  theme_minimal() +
+  theme(legend.position = "right", 
+        legend.title = element_text(size = 10), 
+        legend.text = element_text(size = 8),
+        plot.title = element_text(hjust = 0.5, size = 14),
+        panel.background = element_blank(),  # Treu el color de fons
+        panel.grid.major = element_blank(),  # Treu la quadrícula gran
+        panel.grid.minor = element_blank(),  # Treu la quadrícula petita
+        axis.line = element_line(color = "black"),
+        legend.box = "vertical")
+
+PCA_2
+```
+
+### PCA - Color per teixit i grup i forma per grup
+
+```{r}
+PCA_3 <- ggplot(pca_data_graph, aes(x = PC1, y = PC2, shape = tissue_group, color = tissue_group,  fill= tissue_group)) +
+  geom_point(size = 2, alpha = 0.8) +  # Afegir els punts amb les formes i colors
+  stat_ellipse(aes(color = tissue_group, fill = tissue_group), alpha = 0.2, geom = "polygon") +  # Afegir les elípses amb el mateix color i omplert
+  scale_color_manual(values = tissue_group_color,
+                     name = "Group & Tissue",
+                     labels = tissue_group_name,
+                     breaks = tissue_group_order) +  # Custom colors per als punts i les elípses
+  scale_fill_manual(values = tissue_group_color,
+                    name = "Group & Tissue",
+                    labels = tissue_group_name,
+                    breaks = tissue_group_order) +  # Colors per a l'ompliment de les elípses
+  scale_shape_manual(name = "Group & Tissue",
+                     values = c(16, 17, 16, 17, 16, 17), 
+                     labels = tissue_group_name,
+                     breaks = tissue_group_order) +  # Definir formes per als punts
+  labs(title = "PCA",
+       x = paste0("PC1 (", round(summary(pca)$importance[2, 1] * 100, 1), "%)"),
+       y = paste0("PC2 (", round(summary(pca)$importance[2, 2] * 100, 1), "%)"),
+       color = "Group & Tissue") +  # Titols de la llegenda
+  theme_minimal() +
+  theme(legend.position = "right", 
+        legend.title = element_text(size = 10), 
+        legend.text = element_text(size = 8),
+        plot.title = element_text(hjust = 0.5, size = 14),
+        panel.background = element_blank(),  # Treu el color de fons
+        panel.grid.major = element_blank(),  # Treu la quadrícula gran
+        panel.grid.minor = element_blank(),  # Treu la quadrícula petita
+        axis.line = element_line(color = "black"),
+        legend.box = "vertical")
+
+PCA_3
+```
+
+### PCA - Afegir etiquetes
+
+En el cas que es vulgui saber quina rata és quina, es poden afegir com a etiqueta. ho recomano només com a control intern, ja que carrega molt la imatge.
+
+```{r}
+PCA_4 <- ggplot(pca_data_graph, aes(x = PC1, y = PC2, color = group, shape = group)) +
+  geom_point(size = 2, alpha = 0.8) +  # Afegir els punts amb les formes i colors
+  stat_ellipse(aes(color = group, fill = group), alpha = 0.2, geom = "polygon") +  # Afegir les elípses amb el mateix color i omplert
+  geom_text(aes(label = rat), hjust = -0.5, vjust = 0.5, size = 3) +  # Afegir etiqueta al costat del punt
+  scale_color_manual(values = group_color,
+                     name = "Group",
+                     breaks = group_order) +  # Custom colors per als punts i les elípses
+  scale_fill_manual(values = group_color, name = "Group", 
+                    breaks = group_order) +  # Colors per a l'ompliment de les elípses
+  scale_shape_manual(name = "Group",
+                     values = c(16, 17), 
+                     breaks = group_order) +  # Definir formes per als punts
+  labs(title = "PCA",
+       x = paste0("PC1 (", round(summary(pca)$importance[2, 1] * 100, 1), "%)"),
+       y = paste0("PC2 (", round(summary(pca)$importance[2, 2] * 100, 1), "%)"),
+       color = "Group",
+       shape = "Group") +  # Titols de la llegenda
+  theme_minimal() +
+  theme(legend.position = "right", 
+        legend.title = element_text(size = 10), 
+        legend.text = element_text(size = 8),
+        plot.title = element_text(hjust = 0.5, size = 14),
+        panel.background = element_blank(),  # Treu el color de fons
+        panel.grid.major = element_blank(),  # Treu la quadrícula gran
+        panel.grid.minor = element_blank(),  # Treu la quadrícula petita
+        axis.line = element_line(color = "black"))
+
+PCA_4
+```
+
+### Biplot - Color per teixit i grup i forma per grup
+
+En aquest cas la mida dels punts depèn del cos2, ens indica com de ben representats estan. Les fletxes intiquen quina variable té mes pes en aquella direcció, i la relació entre elles.
+
+```{r}
+Biplot <- ggplot(pca_data_graph, aes(x = PC1, y = PC2, shape = tissue_group, 
+                                    color = tissue_group, fill = tissue_group)) +
+  geom_point(aes(size = cos2), alpha = 0.8) +
+  stat_ellipse(aes(color = tissue_group, fill = tissue_group), 
+               alpha = 0.2, geom = "polygon") +
+  # Fletxes dels loadings
+  geom_segment(data = loadings,
+               aes(x = 0, y = 0, xend = PC1, yend = PC2),
+               inherit.aes = FALSE,
+               arrow = arrow(length = unit(0.2, "cm")),
+               color = "grey50", linewidth = 0.4) +
+  # Etiquetes de les IgX
+  geom_text(data = loadings,
+            aes(x = PC1, y = PC2, label = name),
+            inherit.aes = FALSE,
+            color = "grey30", size = 2.5,
+            hjust = -0.2,    # desplaça lleugerament a la dreta de la punta
+            vjust = 0.5,
+            alpha = 0.7) +   # centrat verticalment
+  scale_color_manual(values = tissue_group_color,
+                     name = "Group & Tissue",
+                     labels = tissue_group_name,
+                     breaks = tissue_group_order) +
+  scale_fill_manual(values = tissue_group_color,
+                    name = "Group & Tissue",
+                    labels = tissue_group_name,
+                    breaks = tissue_group_order) +
+  scale_shape_manual(name = "Group & Tissue",
+                     values = c(16, 17, 16, 17, 16, 17),
+                     labels = tissue_group_name,
+                     breaks = tissue_group_order) +
+  scale_size_continuous(name = "cos2", range = c(0.5, 3)) +
+  labs(title = "Biplot-PCA",
+       x = paste0("PC1 (", round(summary(pca)$importance[2, 1] * 100, 1), "%)"),
+       y = paste0("PC2 (", round(summary(pca)$importance[2, 2] * 100, 1), "%)")) +
+  theme_minimal() +
+  theme(legend.position = "right",
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 8),
+        plot.title = element_text(hjust = 0.5, size = 14),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.line = element_line(color = "black"),
+        legend.box = "vertical")
+
+Biplot
+```
+
+I fins aquí el PCA!

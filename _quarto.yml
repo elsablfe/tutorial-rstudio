@@ -21,15 +21,21 @@ website:
         - href: grafics.qmd
           text: Introducció
         - href: pcr.qmd
-          text: Gràfic de punts (PCR)
+          text: Gràfic de punts
         - href: elisa.qmd
-          text: Gràfic de barres (ELISA)
+          text: Gràfic de barres
         - href: heatmap.qmd
           text: Heatmap
         - href: correlation.qmd
           text: Heatmap correlacions
         - href: extra.qmd
-          text: Dumpster
+          text: Extra
+    - text: Orenació dimensional
+      menu:
+        - href: orddim.qmd
+          text: Introducció
+        - href: pca.qmd
+          text: PCA
     - href: quarto.qmd
       text: Quarto
     - href: final.qmd

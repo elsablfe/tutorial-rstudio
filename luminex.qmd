@@ -71,3 +71,31 @@ Si tot està bé ets pots descarregar les dades per si vols canviar d'script al 
 ```{r}
 write_xlsx(data, here( "Basic", "data", "luminex_complete.xlsx"))
 ```
+
+També es poden modificar a long i guardar-les:
+
+```{r}
+longdata <- data %>% 
+  pivot_longer(cols="IgA":"perc_Th2", names_to="variable", values_to = "value" ) %>% 
+  mutate(
+    tissue = factor(tissue, levels = c("HCC", "RI", "HMLN")),
+    group = factor(group, levels = c("REF", "DIET")), 
+    sex = factor(sex, levels = c("F", "M")),
+    variable = factor(variable))
+
+head(longdata)
+
+write_xlsx(longdata, here("Basic", "data", "luminex_long.xlsx"))
+```
+
+# Gràfics
+
+Els gràfics que acostumem a fer són:
+
+-   **Barres** per a les concentracions, es poden fer amb punts o no.
+
+-   **Barres apilades** per als percentatges.
+
+-   **PCA** i **PCA-biplot** per a ordenació dimensional.
+
+Els podeu trobar a l'apartat de gràfics.

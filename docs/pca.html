@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -125,11 +160,11 @@ ul.task-list li input[type="checkbox"] {
   </li>  
         <li>
     <a class="dropdown-item" href="./pcr.html">
- <span class="dropdown-text">Gràfic de punts (PCR)</span></a>
+ <span class="dropdown-text">Gràfic de punts</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./elisa.html">
- <span class="dropdown-text">Gràfic de barres (ELISA)</span></a>
+ <span class="dropdown-text">Gràfic de barres</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./heatmap.html">
@@ -141,7 +176,22 @@ ul.task-list li input[type="checkbox"] {
   </li>  
         <li>
     <a class="dropdown-item" href="./extra.html">
- <span class="dropdown-text">Dumpster</span></a>
+ <span class="dropdown-text">Extra</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-orenació-dimensional" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Orenació dimensional</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-orenació-dimensional">    
+        <li>
+    <a class="dropdown-item" href="./orddim.html">
+ <span class="dropdown-text">Introducció</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./pca.html">
+ <span class="dropdown-text">PCA</span></a>
   </li>  
     </ul>
   </li>
@@ -164,8 +214,31 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#pca" id="toc-pca" class="nav-link active" data-scroll-target="#pca">PCA</a>
+  <ul class="collapse">
+  <li><a href="#definicions" id="toc-definicions" class="nav-link" data-scroll-target="#definicions">Definicions</a></li>
+  <li><a href="#comprovacions-prèvies" id="toc-comprovacions-prèvies" class="nav-link" data-scroll-target="#comprovacions-prèvies">Comprovacions prèvies</a></li>
+  <li><a href="#components-principals" id="toc-components-principals" class="nav-link" data-scroll-target="#components-principals">Components principals</a></li>
+  </ul></li>
+  <li><a href="#gràfics" id="toc-gràfics" class="nav-link" data-scroll-target="#gràfics">Gràfics</a>
+  <ul class="collapse">
+  <li><a href="#bàsics" id="toc-bàsics" class="nav-link" data-scroll-target="#bàsics">Bàsics</a></li>
+  <li><a href="#ggplot" id="toc-ggplot" class="nav-link" data-scroll-target="#ggplot">ggplot</a>
+  <ul class="collapse">
+  <li><a href="#pca---color-i-forma-per-grup" id="toc-pca---color-i-forma-per-grup" class="nav-link" data-scroll-target="#pca---color-i-forma-per-grup">PCA - Color i forma per grup</a></li>
+  <li><a href="#pca---color-per-teixit-i-forma-per-grup" id="toc-pca---color-per-teixit-i-forma-per-grup" class="nav-link" data-scroll-target="#pca---color-per-teixit-i-forma-per-grup">PCA - Color per teixit i forma per grup</a></li>
+  <li><a href="#pca---color-per-teixit-i-grup-i-forma-per-grup" id="toc-pca---color-per-teixit-i-grup-i-forma-per-grup" class="nav-link" data-scroll-target="#pca---color-per-teixit-i-grup-i-forma-per-grup">PCA - Color per teixit i grup i forma per grup</a></li>
+  <li><a href="#pca---afegir-etiquetes" id="toc-pca---afegir-etiquetes" class="nav-link" data-scroll-target="#pca---afegir-etiquetes">PCA - Afegir etiquetes</a></li>
+  <li><a href="#biplot---color-per-teixit-i-grup-i-forma-per-grup" id="toc-biplot---color-per-teixit-i-grup-i-forma-per-grup" class="nav-link" data-scroll-target="#biplot---color-per-teixit-i-grup-i-forma-per-grup">Biplot - Color per teixit i grup i forma per grup</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -189,8 +262,903 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p><strong>PCA = Principal Components Analysis</strong></p>
+<p>El primer cop que vaig fer un PCA, el vaig aprendre a fer amb els següents links, potser us son útils:</p>
+<ul>
+<li><a href="https://medium.com/" class="uri">https://medium.com/</a><span class="citation" data-cites="heyamit10/principal-component-analysis-for-dummies-95f198ff0f16">@heyamit10/principal-component-analysis-for-dummies-95f198ff0f16</span></li>
+<li><a href="https://www.youtube.com/watch?v=3QwZ2GgHSLE" class="uri">https://www.youtube.com/watch?v=3QwZ2GgHSLE</a></li>
+<li><a href="https://www.datacamp.com/tutorial/pca-analysis-r" class="uri">https://www.datacamp.com/tutorial/pca-analysis-r</a></li>
+</ul>
+<p>En aquest cas us ho ensenyaré amb les dades de <em>luminex</em> que ja us he ensenyat a l’apartat <a href="#0">Càlculs</a>. Tot i així, utilitzarem les originals i crearem uns altres percentatger per tal de el pes que els hi dona cada variable depengui del mateix en els diferents teixits, ja que estaven en unitats diferents. Aquest pas NO es necessita en tots els casos, dependrà de les vostres dades!</p>
+<p>Començarem carregant les llibreries necessàries i les dades:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co">#conté 9 paquets d'edició i visualització </span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here) <span class="co">#al treballar en un projecte</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl) <span class="co">#per importar dades que estan en un fitxer d'excel</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor) <span class="co">#ajudar a netejar les dades</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(skimr) <span class="co">#per obtenir un resum de les dades complert</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom) <span class="co">#poder fer servir funcions com tidy</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(factoextra) <span class="co">#Visualització de resultats de PCA i altres anàlisis multivariants</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>raw_data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">here</span>(<span class="st">"Basic"</span>, <span class="st">"data"</span>, <span class="st">"luminex.xlsx"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>En aquest cas també crearem unes noves columnes anomenades <code>tissue_group</code> i <code>rat_tissue</code>, on tindrem la informació combinada. Això ho creem per després poder colorejar el nostre PCA com més ens interessi.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(group, sex, rat, tissue), as.factor)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tissue_group =</span> <span class="fu">paste0</span>(tissue, <span class="st">"_"</span>, group)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(tissue_group), as.factor)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rat_tissue =</span> <span class="fu">paste0</span>(rat, <span class="st">"_"</span>, tissue)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_to_rownames</span>(<span class="st">"rat_tissue"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>()</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>data_PCA <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Ig_total =</span> IgG1 <span class="sc">+</span> IgG2a <span class="sc">+</span> IgG2b <span class="sc">+</span> IgG2c <span class="sc">+</span> IgA <span class="sc">+</span> IgM) <span class="sc">%&gt;%</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">perc_IgG1 =</span> (IgG1<span class="sc">/</span>Ig_total)<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span>  <span class="co">#Millor no utilitzar el % ja s'utilitza per fer operacions</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">perc_IgG2a =</span> (IgG2a<span class="sc">/</span>Ig_total)<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">perc_IgG2b =</span> (IgG2b<span class="sc">/</span>Ig_total)<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">perc_IgG2c =</span> (IgG2c<span class="sc">/</span>Ig_total)<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">perc_IgM =</span> (IgM<span class="sc">/</span>Ig_total)<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">perc_IgA =</span> (IgA<span class="sc">/</span>Ig_total)<span class="sc">*</span><span class="dv">100</span>) </span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(data_PCA)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">data_PCA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">60</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">18</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">factor</td>
+<td style="text-align: left;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">13</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 11%">
+<col style="width: 15%">
+<col style="width: 8%">
+<col style="width: 10%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: left;">ordered</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: left;">top_counts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">rat</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: left;">D1: 3, D10: 3, D2: 3, D3: 3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">group</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">DIE: 30, REF: 30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tissue</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">HCC: 20, HML: 20, RI: 20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sex</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">F: 30, M: 30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tissue_group</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">HCC: 10, HCC: 10, HML: 10, HML: 10</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 10%">
+<col style="width: 14%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 8%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+<th style="text-align: left;">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">IgA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">126.52</td>
+<td style="text-align: right;">22.89</td>
+<td style="text-align: right;">88.00</td>
+<td style="text-align: right;">108.75</td>
+<td style="text-align: right;">128.00</td>
+<td style="text-align: right;">143.50</td>
+<td style="text-align: right;">175.00</td>
+<td style="text-align: left;">▆▇▇▆▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">IgM</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">91.92</td>
+<td style="text-align: right;">12.41</td>
+<td style="text-align: right;">68.00</td>
+<td style="text-align: right;">82.00</td>
+<td style="text-align: right;">92.00</td>
+<td style="text-align: right;">100.00</td>
+<td style="text-align: right;">120.00</td>
+<td style="text-align: left;">▃▇▇▅▂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">IgG1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">210.40</td>
+<td style="text-align: right;">29.00</td>
+<td style="text-align: right;">158.00</td>
+<td style="text-align: right;">189.50</td>
+<td style="text-align: right;">214.00</td>
+<td style="text-align: right;">232.00</td>
+<td style="text-align: right;">265.00</td>
+<td style="text-align: left;">▆▇▇▇▃</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">IgG2a</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">159.13</td>
+<td style="text-align: right;">22.68</td>
+<td style="text-align: right;">118.00</td>
+<td style="text-align: right;">144.25</td>
+<td style="text-align: right;">157.00</td>
+<td style="text-align: right;">175.75</td>
+<td style="text-align: right;">205.00</td>
+<td style="text-align: left;">▅▇▇▅▃</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">IgG2b</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">149.10</td>
+<td style="text-align: right;">22.70</td>
+<td style="text-align: right;">108.00</td>
+<td style="text-align: right;">134.25</td>
+<td style="text-align: right;">147.50</td>
+<td style="text-align: right;">165.75</td>
+<td style="text-align: right;">195.00</td>
+<td style="text-align: left;">▅▇▇▅▃</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">IgG2c</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">139.10</td>
+<td style="text-align: right;">22.70</td>
+<td style="text-align: right;">98.00</td>
+<td style="text-align: right;">124.25</td>
+<td style="text-align: right;">137.50</td>
+<td style="text-align: right;">155.75</td>
+<td style="text-align: right;">185.00</td>
+<td style="text-align: left;">▅▇▇▅▃</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ig_total</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">876.17</td>
+<td style="text-align: right;">131.43</td>
+<td style="text-align: right;">646.00</td>
+<td style="text-align: right;">791.00</td>
+<td style="text-align: right;">873.00</td>
+<td style="text-align: right;">961.75</td>
+<td style="text-align: right;">1145.00</td>
+<td style="text-align: left;">▅▇▇▅▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">perc_IgG1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">24.06</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">23.14</td>
+<td style="text-align: right;">23.79</td>
+<td style="text-align: right;">24.01</td>
+<td style="text-align: right;">24.38</td>
+<td style="text-align: right;">25.61</td>
+<td style="text-align: left;">▃▇▆▂▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">perc_IgG2a</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">18.18</td>
+<td style="text-align: right;">0.28</td>
+<td style="text-align: right;">17.55</td>
+<td style="text-align: right;">18.01</td>
+<td style="text-align: right;">18.14</td>
+<td style="text-align: right;">18.38</td>
+<td style="text-align: right;">18.73</td>
+<td style="text-align: left;">▂▅▇▇▃</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">perc_IgG2b</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">17.01</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">16.46</td>
+<td style="text-align: right;">16.90</td>
+<td style="text-align: right;">17.04</td>
+<td style="text-align: right;">17.17</td>
+<td style="text-align: right;">17.41</td>
+<td style="text-align: left;">▁▅▆▇▃</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">perc_IgG2c</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">15.85</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">15.17</td>
+<td style="text-align: right;">15.58</td>
+<td style="text-align: right;">15.95</td>
+<td style="text-align: right;">16.10</td>
+<td style="text-align: right;">16.26</td>
+<td style="text-align: left;">▃▃▁▇▆</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">perc_IgM</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">10.52</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">9.92</td>
+<td style="text-align: right;">10.29</td>
+<td style="text-align: right;">10.48</td>
+<td style="text-align: right;">10.77</td>
+<td style="text-align: right;">11.15</td>
+<td style="text-align: left;">▃▇▇▇▃</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">perc_IgA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">14.38</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">12.93</td>
+<td style="text-align: right;">14.03</td>
+<td style="text-align: right;">14.33</td>
+<td style="text-align: right;">14.98</td>
+<td style="text-align: right;">15.28</td>
+<td style="text-align: left;">▁▃▇▅▇</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<section id="pca" class="level2">
+<h2 class="anchored" data-anchor-id="pca">PCA</h2>
+<p>El PCA realment és la ordenació dimensional, trobar els components principals. N’hi haurà tants com variables utilitzis.</p>
+<section id="definicions" class="level3">
+<h3 class="anchored" data-anchor-id="definicions">Definicions</h3>
+<p>Jo no recomano canviar mai el nom de les variables, grups, etc dins del dataframe. Per tant a mi em funciona molt bé definir-ho tot amb vectors. Ho recomano fer a l’inici per tant ho podeu cridar en qualsevol moment.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_classic</span>()) </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>group_order <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"REF"</span>, <span class="st">"DIET"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>tissue_group_order <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"HCC_REF"</span>, <span class="st">"HCC_DIET"</span>, <span class="st">"RI_REF"</span>, <span class="st">"RI_DIET"</span>, <span class="st">"HMLN_REF"</span>, <span class="st">"HMLN_DIET"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>group_color <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"REF"</span> <span class="ot">=</span> <span class="st">"#5c5c5c"</span>,   </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"DIET"</span> <span class="ot">=</span> <span class="st">"salmon"</span>)  </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>tissue_color <span class="ot">&lt;-</span> <span class="fu">c</span>(  <span class="at">HCC   =</span> <span class="st">"#8C5A3C"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">RI =</span> <span class="st">"#E76F8A"</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                    <span class="at">HMLN=</span> <span class="st">"#E9D8A6"</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>tissue_group_color <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">HCC_REF =</span> <span class="st">"#8C5A3C"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                        <span class="at">HCC_DIET =</span> <span class="st">"#CDA690"</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>                        <span class="at">RI_REF =</span> <span class="st">"#E76F8A"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                        <span class="at">RI_DIET =</span> <span class="st">"#F4B6BF"</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                        <span class="at">HMLN_REF =</span> <span class="st">"#E9D8A6"</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                        <span class="at">HMLN_DIET =</span> <span class="st">"#F5EAD0"</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>tissue_group_name <span class="ot">&lt;-</span> <span class="fu">c</span>( <span class="at">HCC_RD =</span> <span class="st">"RD (Cecal Content)"</span>,</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>                        <span class="at">HCC_AD =</span> <span class="st">"AD (Cecal Content)"</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>                        <span class="at">RI_RD =</span> <span class="st">"RD (Gut Wash)"</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                        <span class="at">RI_AD =</span> <span class="st">"AD (Gut Wash)"</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>                        <span class="at">HMLN_RD =</span> <span class="st">"RD (Mesenteric Lymph Nodes)"</span>,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>                        <span class="at">HMLN_AD =</span> <span class="st">"AD (Mesenteric Lymph Nodes)"</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>tissue_name <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">HCC   =</span> <span class="st">"Cecal Content"</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">RI =</span> <span class="st">"Gut Wash"</span>,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">HMLN=</span> <span class="st">"Mesenteric Lymph Nodes"</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>variable_name <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">IgA =</span> <span class="st">"IgA"</span>,</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">IgG =</span> <span class="st">"IgG"</span>,</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">IgM =</span> <span class="st">"IgM"</span>,</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">IgG1 =</span> <span class="st">"IgG1"</span>,</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">IgG2a =</span> <span class="st">"IgG2a"</span>,</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">IgG2b =</span> <span class="st">"IgG2b"</span>,</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">IgG2c =</span> <span class="st">"IgG2c"</span>,</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">Ig_total =</span> <span class="st">"Total Ig"</span>,</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">perc_IgA =</span> <span class="st">"%IgA"</span>,</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">perc_IgG =</span> <span class="st">"%IgG"</span>,</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">perc_IgG1 =</span> <span class="st">"%IgG1"</span>,</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">perc_IgG2a =</span> <span class="st">"%IgG2a"</span>,</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">perc_IgG2b =</span> <span class="st">"%IgG2b"</span>,</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">perc_IgG2c =</span> <span class="st">"%IgG2c"</span>,</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">perc_IgM =</span> <span class="st">"%IgM"</span>,</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">perc_Th1 =</span> <span class="st">"%Th1"</span>,</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">perc_Th2 =</span> <span class="st">"%Th2"</span>,</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">Th1 =</span> <span class="st">"Th1"</span>,</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>  <span class="at">Th2 =</span> <span class="st">"Th2"</span>,</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">Th1vsTh2 =</span> <span class="st">"Th1/Th2"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="comprovacions-prèvies" class="level3">
+<h3 class="anchored" data-anchor-id="comprovacions-prèvies">Comprovacions prèvies</h3>
+<p>Per a poder-lo fer, no poden tenir cap <code>NA</code> ni que una columna no tingui variabilitat. Per tant senpre s’haurà de fer na.omit() en el primer cas, i com que s’ha de treballar amb dades wide es perdran rates.</p>
+<ul>
+<li>Una alternativa seria omplir els forats amb la mitjana del grup, d’aquesta manera no perdries la resta de valors.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data_analize<span class="ot">&lt;-</span> data_PCA <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group, tissue) <span class="sc">%&gt;%</span> <span class="co">#i totes les variables que formin els grupets de dades</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">where</span>(is.numeric),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(.), <span class="fu">mean</span>(., <span class="at">na.rm =</span> <span class="cn">TRUE</span>), .)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> <span class="co">#canviem els NA per la mitjana d'aquell metabolit dins del grup</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="dv">5</span><span class="sc">:</span><span class="fu">ncol</span>(.)) <span class="co">#dades que han de servir per la ordenació (de la columna 2 al final)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Per a la variabilitat dins de les columnes ho mirem de la següent manera:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>zero_var_cols <span class="ot">&lt;-</span> <span class="fu">apply</span>(data_PCA, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="fu">var</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">==</span> <span class="dv">0</span>) <span class="co"># Identify columns with zero variance </span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in var(x, na.rm = TRUE): NAs introduced by coercion
+Warning in var(x, na.rm = TRUE): NAs introduced by coercion
+Warning in var(x, na.rm = TRUE): NAs introduced by coercion
+Warning in var(x, na.rm = TRUE): NAs introduced by coercion
+Warning in var(x, na.rm = TRUE): NAs introduced by coercion</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(zero_var_cols) <span class="co"># Check how many columns were removed</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] NA</code></pre>
+</div>
+</div>
+<p>Si no n’hi ha cap problema, endavant. Si n’hi haguès s’haurien d’eliminar aquestes variables per a poder fer el PCA.</p>
+</section>
+<section id="components-principals" class="level3">
+<h3 class="anchored" data-anchor-id="components-principals">Components principals</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pca <span class="ot">&lt;-</span> data_PCA <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(perc_IgG1, perc_IgG2a, perc_IgG2b, perc_IgG2c, perc_IgM, perc_IgA) <span class="sc">%&gt;%</span>   </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prcomp</span>(<span class="at">center =</span> T, <span class="at">scale. =</span> T)<span class="co">#pca </span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(pca)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Standard deviations (1, .., p=6):
+[1] 1.727996e+00 1.449058e+00 8.403768e-01 4.493208e-01 7.836007e-02
+[6] 3.827947e-15
+
+Rotation (n x k) = (6 x 6):
+                  PC1        PC2         PC3        PC4          PC5       PC6
+perc_IgG1  -0.3279081 -0.4191769 -0.65158192  0.2241481 -0.035155907 0.4906421
+perc_IgG2a  0.3720874 -0.4858332  0.10472522 -0.6391883  0.349351627 0.2897267
+perc_IgG2b  0.5688243 -0.1110887  0.04897727  0.1141342 -0.767826888 0.2431352
+perc_IgG2c  0.5155479  0.2650386 -0.02885384  0.5294103  0.524423173 0.3283861
+perc_IgM   -0.3293576 -0.3528894  0.74414353  0.3413942  0.003731276 0.3109327
+perc_IgA   -0.2370657  0.6173652  0.08656050 -0.3624142 -0.110117145 0.6416366</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pca)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Importance of components:
+                          PC1    PC2    PC3     PC4     PC5       PC6
+Standard deviation     1.7280 1.4491 0.8404 0.44932 0.07836 3.828e-15
+Proportion of Variance 0.4977 0.3500 0.1177 0.03365 0.00102 0.000e+00
+Cumulative Proportion  0.4977 0.8476 0.9653 0.99898 1.00000 1.000e+00</code></pre>
+</div>
+</div>
+<p>Aquí ja podeu veure els diferents components principals en cada variable i el % que explica cada un. Com més % expliquin els dos primers components millor. Per a poder-ho observar de manera més fàcil, hem de crear un dataframe que contingui la informació que ens interessa, com la posició dels individus:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pca_data_graph <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(pca<span class="sc">$</span>x) <span class="sc">%&gt;%</span> <span class="co">#pca$x = posició dels punts</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> data<span class="sc">$</span>group,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">rat =</span> data<span class="sc">$</span>rat,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">tissue =</span> data<span class="sc">$</span>tissue,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex =</span> data<span class="sc">$</span>sex,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">tissue_group =</span> data<span class="sc">$</span>tissue_group,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">cos2 =</span> <span class="fu">get_pca_ind</span>(pca)<span class="sc">$</span>cos2[, <span class="dv">1</span>] <span class="sc">+</span> <span class="fu">get_pca_ind</span>(pca)<span class="sc">$</span>cos2[, <span class="dv">2</span>] <span class="co">#cos2 = mida dels punts</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pca_data_graph)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               PC1        PC2        PC3         PC4          PC5           PC6
+R1_HMLN -0.2077906  0.2062296 -0.7753717 -0.41952644 -0.053632093  6.661338e-16
+R2_HMLN -4.4761258 -1.6621705 -1.3146779  1.35726912  0.131670836  7.216450e-16
+R3_HMLN -1.5516212  0.9608107 -0.3927785 -1.52167423  0.406485238 -4.551914e-15
+R4_HMLN -2.8072882  0.5843651  1.6325081  0.07440371  0.010227242 -2.442491e-15
+R5_HMLN -0.1517235 -0.5860105 -0.4575781 -0.23471322  0.162572384  8.049117e-16
+R6_HMLN -2.4288676  0.8688226 -0.5569274  0.14351111  0.006961442 -5.884182e-15
+        group rat tissue sex tissue_group       cos2
+R1_HMLN   REF  R1   HMLN   F     HMLN_REF 0.09899379
+R2_HMLN   REF  R2   HMLN   F     HMLN_REF 0.86402489
+R3_HMLN   REF  R3   HMLN   F     HMLN_REF 0.55830749
+R4_HMLN   REF  R4   HMLN   F     HMLN_REF 0.75482370
+R5_HMLN   REF  R5   HMLN   F     HMLN_REF 0.55745292
+R6_HMLN   REF  R6   HMLN   M     HMLN_REF 0.95264008</code></pre>
+</div>
+</div>
+<p>Un altre gràfic combinat molt interessant és el PCA-Biplot, en el qual també ens indica la importancia de les variables i per a quins individus és més important. Podem obtenir-ho amb els loadings.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>loadings <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(pca<span class="sc">$</span>rotation) <span class="sc">%&gt;%</span> <span class="co">#la fletxa de les variables</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="st">"IgX"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">PC1 =</span> PC1 <span class="sc">*</span> <span class="dv">5</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">PC2 =</span> PC2 <span class="sc">*</span> <span class="dv">5</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> variable_name[IgX])</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(loadings)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         IgX       PC1        PC2         PC3        PC4          PC5       PC6
+1  perc_IgG1 -1.639541 -2.0958846 -0.65158192  0.2241481 -0.035155907 0.4906421
+2 perc_IgG2a  1.860437 -2.4291658  0.10472522 -0.6391883  0.349351627 0.2897267
+3 perc_IgG2b  2.844121 -0.5554435  0.04897727  0.1141342 -0.767826888 0.2431352
+4 perc_IgG2c  2.577739  1.3251930 -0.02885384  0.5294103  0.524423173 0.3283861
+5   perc_IgM -1.646788 -1.7644470  0.74414353  0.3413942  0.003731276 0.3109327
+6   perc_IgA -1.185328  3.0868259  0.08656050 -0.3624142 -0.110117145 0.6416366
+    name
+1  %IgG1
+2 %IgG2a
+3 %IgG2b
+4 %IgG2c
+5   %IgM
+6   %IgA</code></pre>
+</div>
+</div>
+<p>I d’aquesta manera ja hauriem extret tota la informació necessària per a poder fer-ho al ggplot.</p>
+</section>
+</section>
+<section id="gràfics" class="level1">
+<h1>Gràfics</h1>
+<section id="bàsics" class="level2">
+<h2 class="anchored" data-anchor-id="bàsics">Bàsics</h2>
+<p>Amb la lliberia <code>factoextra</code> podem aconseguir molts gràfics, tot i que son una mica cutres. Tot i així són molt informatius així que com a primer pas per entendre com es comporten les nostres dades són útils:</p>
+<ul>
+<li>Qualitat del PCA (scree plot): quin % aporta cada component</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_eig</span>(pca,<span class="at">addlabels =</span> T,<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">50</span>)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+Ignoring empty aesthetic: `width`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Com de ben representada està cada IgX en el pla 2D</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_cos2</span>(pca, <span class="at">choice =</span> <span class="st">"var"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Quines IgX contribueixen mes a construir cada component (Aquest codi t’ho dona de manera que et diu quines contribueixen als dos primers components alhora, només al primer component i només al segon).</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>a<span class="ot">&lt;-</span> <span class="fu">fviz_contrib</span>(pca,<span class="at">choice=</span><span class="st">"var"</span>,<span class="at">axes=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">top=</span><span class="dv">10</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Contributions of variable to PC1</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">fviz_contrib</span>(pca, <span class="at">choice =</span> <span class="st">"var"</span>, <span class="at">axes =</span> <span class="dv">1</span>, <span class="at">top=</span><span class="dv">10</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Contributions of variable to PC2</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> <span class="fu">fviz_contrib</span>(pca, <span class="at">choice =</span> <span class="st">"var"</span>, <span class="at">axes =</span> <span class="dv">2</span>, <span class="at">top=</span><span class="dv">10</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(a,b,c,<span class="at">ncol=</span><span class="dv">3</span>,<span class="at">top=</span><span class="st">'Contribution of the top 10 variables to the first two PCs'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#si afegeixes top= et dona les que mes contribueixen</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li>Contribució dels individus (també ho podries mirar per cada PC, però realment ens interessa en general). En aquest cas es podrien veure <em>outliers</em>, tot i que normalment un o dos individus són més forts que els altres. Tot i així si és descaradament diferent, podriem dir que és <em>outlier</em>.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(pca,<span class="at">choice=</span><span class="st">"ind"</span>,<span class="at">axes=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Cercle de correlacions: com correlacionen les IgX entre elles i amb cada PC. Variables properes al cercle exterior → ben representades.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_var</span>(pca, <span class="at">col.var =</span> <span class="st">"cos2"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.
+ℹ The deprecated feature was likely used in the ggpubr package.
+  Please report the issue at &lt;https://github.com/kassambara/ggpubr/issues&gt;.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `aes_string()` was deprecated in ggplot2 3.0.0.
+ℹ Please use tidy evaluation idioms with `aes()`.
+ℹ See also `vignette("ggplot2-in-packages")` for more information.
+ℹ The deprecated feature was likely used in the factoextra package.
+  Please report the issue at &lt;https://github.com/kassambara/factoextra/issues&gt;.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>PCA</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_ind</span>(pca, <span class="at">habillage =</span> data<span class="sc">$</span>tissue)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Biplot</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_biplot</span>(pca, <span class="at">habillage =</span> data<span class="sc">$</span>tissue)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Com podeu veure els gràfics finals de PCA i Biplot són cutríssims, per tant els farem macos i com nosaltres vulguem amb ggplot.</p>
+</section>
+<section id="ggplot" class="level2">
+<h2 class="anchored" data-anchor-id="ggplot">ggplot</h2>
+<p>Tots els gràfics surten a partir de la informació que tens a <code>pca_data_graph</code>, si no està allà, no apareixerà. Si us hi fixeu tots són iguals, simplement canvia com es veuen i les elipses.</p>
+<p>Recordeu que per a guardar els gràfics podeu fer servir:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="fu">here</span>(<span class="st">"output"</span>,<span class="st">"PCA.png"</span>), <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">dpi =</span> <span class="dv">300</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="pca---color-i-forma-per-grup" class="level3">
+<h3 class="anchored" data-anchor-id="pca---color-i-forma-per-grup">PCA - Color i forma per grup</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>PCA <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(pca_data_graph, <span class="fu">aes</span>(<span class="at">x =</span> PC1, <span class="at">y =</span> PC2, <span class="at">color =</span> group, <span class="at">shape =</span> group)) <span class="sc">+</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span>  <span class="co"># Afegir els punts amb les formes i colors</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="fu">aes</span>(<span class="at">color =</span> group, <span class="at">fill =</span> group), <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">geom =</span> <span class="st">"polygon"</span>) <span class="sc">+</span>  <span class="co"># Afegir les elípses amb el mateix color i omplert</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> group_color,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">name =</span> <span class="st">"Group"</span>,</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> group_order) <span class="sc">+</span>  <span class="co"># Custom colors per als punts i les elípses</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> group_color, <span class="at">name =</span> <span class="st">"Group"</span>, </span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">breaks =</span> group_order) <span class="sc">+</span>  <span class="co"># Colors per a l'ompliment de les elípses</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">name =</span> <span class="st">"Group"</span>,</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">17</span>), </span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> group_order) <span class="sc">+</span>  <span class="co"># Definir formes per als punts</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"PCA"</span>,</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="fu">paste0</span>(<span class="st">"PC1 ("</span>, <span class="fu">round</span>(<span class="fu">summary</span>(pca)<span class="sc">$</span>importance[<span class="dv">2</span>, <span class="dv">1</span>] <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%)"</span>),</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="fu">paste0</span>(<span class="st">"PC2 ("</span>, <span class="fu">round</span>(<span class="fu">summary</span>(pca)<span class="sc">$</span>importance[<span class="dv">2</span>, <span class="dv">2</span>] <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%)"</span>),</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Group"</span>,</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">shape =</span> <span class="st">"Group"</span>) <span class="sc">+</span>  <span class="co"># Titols de la llegenda</span></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>, </span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>), </span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),  <span class="co"># Treu el color de fons</span></span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),  <span class="co"># Treu la quadrícula gran</span></span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),  <span class="co"># Treu la quadrícula petita</span></span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>))</span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>PCA</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="pca---color-per-teixit-i-forma-per-grup" class="level3">
+<h3 class="anchored" data-anchor-id="pca---color-per-teixit-i-forma-per-grup">PCA - Color per teixit i forma per grup</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>PCA_2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(pca_data_graph, <span class="fu">aes</span>(<span class="at">x =</span> PC1, <span class="at">y =</span> PC2, <span class="at">shape =</span> group, <span class="at">color =</span> tissue,  <span class="at">fill=</span> tissue)) <span class="sc">+</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span>  <span class="co"># Afegir els punts amb les formes i colors</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="fu">aes</span>(<span class="at">group =</span> tissue, <span class="at">color =</span> tissue, <span class="at">fill =</span> tissue), <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">geom =</span> <span class="st">"polygon"</span>) <span class="sc">+</span>  <span class="co"># Afegir les elípses amb el mateix color i omplert</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> tissue_color,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">name =</span> <span class="st">"Tissue"</span>,</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> tissue_name) <span class="sc">+</span>  <span class="co"># Custom colors per als punts i les elípses</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> tissue_color,</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">name =</span> <span class="st">"Tissue"</span>,</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> tissue_name) <span class="sc">+</span>  <span class="co"># Colors per a l'ompliment de les elípses</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">name =</span> <span class="st">"Group"</span>,</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">17</span>), </span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> group_order) <span class="sc">+</span>  <span class="co"># Definir formes per als punts</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"PCA"</span>,</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="fu">paste0</span>(<span class="st">"PC1 ("</span>, <span class="fu">round</span>(<span class="fu">summary</span>(pca)<span class="sc">$</span>importance[<span class="dv">2</span>, <span class="dv">1</span>] <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%)"</span>),</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="fu">paste0</span>(<span class="st">"PC2 ("</span>, <span class="fu">round</span>(<span class="fu">summary</span>(pca)<span class="sc">$</span>importance[<span class="dv">2</span>, <span class="dv">2</span>] <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%)"</span>),</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Tissue"</span>,</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">shape =</span> <span class="st">"Group"</span>) <span class="sc">+</span>  <span class="co"># Titols de la llegenda</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>, </span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>), </span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),  <span class="co"># Treu el color de fons</span></span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),  <span class="co"># Treu la quadrícula gran</span></span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),  <span class="co"># Treu la quadrícula petita</span></span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box =</span> <span class="st">"vertical"</span>)</span>
+<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a>PCA_2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The following aesthetics were dropped during statistical transformation: shape.
+ℹ This can happen when ggplot fails to infer the correct grouping structure in
+  the data.
+ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+  variable into a factor?</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="pca---color-per-teixit-i-grup-i-forma-per-grup" class="level3">
+<h3 class="anchored" data-anchor-id="pca---color-per-teixit-i-grup-i-forma-per-grup">PCA - Color per teixit i grup i forma per grup</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>PCA_3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(pca_data_graph, <span class="fu">aes</span>(<span class="at">x =</span> PC1, <span class="at">y =</span> PC2, <span class="at">shape =</span> tissue_group, <span class="at">color =</span> tissue_group,  <span class="at">fill=</span> tissue_group)) <span class="sc">+</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span>  <span class="co"># Afegir els punts amb les formes i colors</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="fu">aes</span>(<span class="at">color =</span> tissue_group, <span class="at">fill =</span> tissue_group), <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">geom =</span> <span class="st">"polygon"</span>) <span class="sc">+</span>  <span class="co"># Afegir les elípses amb el mateix color i omplert</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> tissue_group_color,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">name =</span> <span class="st">"Group &amp; Tissue"</span>,</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> tissue_group_name,</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> tissue_group_order) <span class="sc">+</span>  <span class="co"># Custom colors per als punts i les elípses</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> tissue_group_color,</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">name =</span> <span class="st">"Group &amp; Tissue"</span>,</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> tissue_group_name,</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>                    <span class="at">breaks =</span> tissue_group_order) <span class="sc">+</span>  <span class="co"># Colors per a l'ompliment de les elípses</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">name =</span> <span class="st">"Group &amp; Tissue"</span>,</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">17</span>, <span class="dv">16</span>, <span class="dv">17</span>, <span class="dv">16</span>, <span class="dv">17</span>), </span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> tissue_group_name,</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> tissue_group_order) <span class="sc">+</span>  <span class="co"># Definir formes per als punts</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"PCA"</span>,</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="fu">paste0</span>(<span class="st">"PC1 ("</span>, <span class="fu">round</span>(<span class="fu">summary</span>(pca)<span class="sc">$</span>importance[<span class="dv">2</span>, <span class="dv">1</span>] <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%)"</span>),</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="fu">paste0</span>(<span class="st">"PC2 ("</span>, <span class="fu">round</span>(<span class="fu">summary</span>(pca)<span class="sc">$</span>importance[<span class="dv">2</span>, <span class="dv">2</span>] <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%)"</span>),</span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Group &amp; Tissue"</span>) <span class="sc">+</span>  <span class="co"># Titols de la llegenda</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>, </span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>), </span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),  <span class="co"># Treu el color de fons</span></span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),  <span class="co"># Treu la quadrícula gran</span></span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),  <span class="co"># Treu la quadrícula petita</span></span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box =</span> <span class="st">"vertical"</span>)</span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a>PCA_3</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="pca---afegir-etiquetes" class="level3">
+<h3 class="anchored" data-anchor-id="pca---afegir-etiquetes">PCA - Afegir etiquetes</h3>
+<p>En el cas que es vulgui saber quina rata és quina, es poden afegir com a etiqueta. ho recomano només com a control intern, ja que carrega molt la imatge.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>PCA_4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(pca_data_graph, <span class="fu">aes</span>(<span class="at">x =</span> PC1, <span class="at">y =</span> PC2, <span class="at">color =</span> group, <span class="at">shape =</span> group)) <span class="sc">+</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span>  <span class="co"># Afegir els punts amb les formes i colors</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="fu">aes</span>(<span class="at">color =</span> group, <span class="at">fill =</span> group), <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">geom =</span> <span class="st">"polygon"</span>) <span class="sc">+</span>  <span class="co"># Afegir les elípses amb el mateix color i omplert</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> rat), <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">vjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span>  <span class="co"># Afegir etiqueta al costat del punt</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> group_color,</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">name =</span> <span class="st">"Group"</span>,</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> group_order) <span class="sc">+</span>  <span class="co"># Custom colors per als punts i les elípses</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> group_color, <span class="at">name =</span> <span class="st">"Group"</span>, </span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">breaks =</span> group_order) <span class="sc">+</span>  <span class="co"># Colors per a l'ompliment de les elípses</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">name =</span> <span class="st">"Group"</span>,</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">17</span>), </span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> group_order) <span class="sc">+</span>  <span class="co"># Definir formes per als punts</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"PCA"</span>,</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="fu">paste0</span>(<span class="st">"PC1 ("</span>, <span class="fu">round</span>(<span class="fu">summary</span>(pca)<span class="sc">$</span>importance[<span class="dv">2</span>, <span class="dv">1</span>] <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%)"</span>),</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="fu">paste0</span>(<span class="st">"PC2 ("</span>, <span class="fu">round</span>(<span class="fu">summary</span>(pca)<span class="sc">$</span>importance[<span class="dv">2</span>, <span class="dv">2</span>] <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%)"</span>),</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Group"</span>,</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">shape =</span> <span class="st">"Group"</span>) <span class="sc">+</span>  <span class="co"># Titols de la llegenda</span></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>, </span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>), </span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),  <span class="co"># Treu el color de fons</span></span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),  <span class="co"># Treu la quadrícula gran</span></span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),  <span class="co"># Treu la quadrícula petita</span></span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>))</span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>PCA_4</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="biplot---color-per-teixit-i-grup-i-forma-per-grup" class="level3">
+<h3 class="anchored" data-anchor-id="biplot---color-per-teixit-i-grup-i-forma-per-grup">Biplot - Color per teixit i grup i forma per grup</h3>
+<p>En aquest cas la mida dels punts depèn del cos2, ens indica com de ben representats estan. Les fletxes intiquen quina variable té mes pes en aquella direcció, i la relació entre elles.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>Biplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(pca_data_graph, <span class="fu">aes</span>(<span class="at">x =</span> PC1, <span class="at">y =</span> PC2, <span class="at">shape =</span> tissue_group, </span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">color =</span> tissue_group, <span class="at">fill =</span> tissue_group)) <span class="sc">+</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">size =</span> cos2), <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="fu">aes</span>(<span class="at">color =</span> tissue_group, <span class="at">fill =</span> tissue_group), </span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">geom =</span> <span class="st">"polygon"</span>) <span class="sc">+</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Fletxes dels loadings</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data =</span> loadings,</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>               <span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">0</span>, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">xend =</span> PC1, <span class="at">yend =</span> PC2),</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.2</span>, <span class="st">"cm"</span>)),</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">color =</span> <span class="st">"grey50"</span>, <span class="at">linewidth =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Etiquetes de les IgX</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> loadings,</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> PC1, <span class="at">y =</span> PC2, <span class="at">label =</span> name),</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">"grey30"</span>, <span class="at">size =</span> <span class="fl">2.5</span>,</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.2</span>,    <span class="co"># desplaça lleugerament a la dreta de la punta</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="fl">0.5</span>,</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span>   <span class="co"># centrat verticalment</span></span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> tissue_group_color,</span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>                     <span class="at">name =</span> <span class="st">"Group &amp; Tissue"</span>,</span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> tissue_group_name,</span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> tissue_group_order) <span class="sc">+</span></span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> tissue_group_color,</span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a>                    <span class="at">name =</span> <span class="st">"Group &amp; Tissue"</span>,</span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> tissue_group_name,</span>
+<span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a>                    <span class="at">breaks =</span> tissue_group_order) <span class="sc">+</span></span>
+<span id="cb34-28"><a href="#cb34-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">name =</span> <span class="st">"Group &amp; Tissue"</span>,</span>
+<span id="cb34-29"><a href="#cb34-29" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">17</span>, <span class="dv">16</span>, <span class="dv">17</span>, <span class="dv">16</span>, <span class="dv">17</span>),</span>
+<span id="cb34-30"><a href="#cb34-30" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> tissue_group_name,</span>
+<span id="cb34-31"><a href="#cb34-31" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> tissue_group_order) <span class="sc">+</span></span>
+<span id="cb34-32"><a href="#cb34-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_size_continuous</span>(<span class="at">name =</span> <span class="st">"cos2"</span>, <span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb34-33"><a href="#cb34-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Biplot-PCA"</span>,</span>
+<span id="cb34-34"><a href="#cb34-34" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="fu">paste0</span>(<span class="st">"PC1 ("</span>, <span class="fu">round</span>(<span class="fu">summary</span>(pca)<span class="sc">$</span>importance[<span class="dv">2</span>, <span class="dv">1</span>] <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%)"</span>),</span>
+<span id="cb34-35"><a href="#cb34-35" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="fu">paste0</span>(<span class="st">"PC2 ("</span>, <span class="fu">round</span>(<span class="fu">summary</span>(pca)<span class="sc">$</span>importance[<span class="dv">2</span>, <span class="dv">2</span>] <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%)"</span>)) <span class="sc">+</span></span>
+<span id="cb34-36"><a href="#cb34-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb34-37"><a href="#cb34-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>,</span>
+<span id="cb34-38"><a href="#cb34-38" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb34-39"><a href="#cb34-39" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb34-40"><a href="#cb34-40" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb34-41"><a href="#cb34-41" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb34-42"><a href="#cb34-42" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb34-43"><a href="#cb34-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb34-44"><a href="#cb34-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb34-45"><a href="#cb34-45" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box =</span> <span class="st">"vertical"</span>)</span>
+<span id="cb34-46"><a href="#cb34-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-47"><a href="#cb34-47" aria-hidden="true" tabindex="-1"></a>Biplot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>I fins aquí el PCA!</p>
 
 
+</section>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
