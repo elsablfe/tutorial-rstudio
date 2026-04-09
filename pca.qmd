@@ -11,7 +11,7 @@ El primer cop que vaig fer un PCA, el vaig aprendre a fer amb els següents link
 -   <https://www.youtube.com/watch?v=3QwZ2GgHSLE>
 -   <https://www.datacamp.com/tutorial/pca-analysis-r>
 
-En aquest cas us ho ensenyaré amb les dades de *luminex* que ja us he ensenyat a l'apartat [Càlculs](#0). Tot i així, utilitzarem les originals i crearem uns altres percentatger per tal de el pes que els hi dona cada variable depengui del mateix en els diferents teixits, ja que estaven en unitats diferents. Aquest pas NO es necessita en tots els casos, dependrà de les vostres dades!
+En aquest cas us ho ensenyaré amb les dades de *luminex* que ja us he ensenyat a l'apartat Càlculs. Tot i així, utilitzarem les originals i crearem uns altres percentatger per tal de el pes que els hi dona cada variable depengui del mateix en els diferents teixits, ja que estaven en unitats diferents. Aquest pas NO es necessita en tots els casos, dependrà de les vostres dades!
 
 Començarem carregant les llibreries necessàries i les dades:
 

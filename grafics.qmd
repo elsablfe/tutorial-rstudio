@@ -13,3 +13,5 @@ Per a fer gràfics R ja et dona opcions per defecte, però per a triar i persona
 ```{r}
 library(tidyverse)
 ```
+
+Per altre banda, també hi ha una web on t'ensenya molts tipus de gràfics i com fer-los: <https://r-graph-gallery.com/> 

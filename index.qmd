@@ -24,7 +24,9 @@ Us deixo algunes webs que a mi em van anar bé quan vaig tornar aprendre de veri
 
 -   Estadística: <https://learningstatisticswithr.com/book/>
 
-I alguns que encara no he mirat però poden ser interessants
+-   Web del professor de la UB Francesc Carmona, amb moltíssima informació: <https://www.ub.edu/cursosR/>
+
+Alguns que encara no he mirat però poden ser interessants
 
 -   R for data science: <https://r4ds.hadley.nz/>
 -   Ggplot: <https://ggplot2-book.org/>

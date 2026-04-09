@@ -25,12 +25,14 @@ website:
         - href: elisa.qmd
           text: Gràfic de barres
         - href: heatmap.qmd
-          text: Heatmap
+          text: Heatmap        
+        - href: patchwork.qmd
+          text: Patckwork i funcions
         - href: correlation.qmd
           text: Heatmap correlacions
         - href: extra.qmd
           text: Extra
-    - text: Orenació dimensional
+    - text: Ordenació dimensional
       menu:
         - href: orddim.qmd
           text: Introducció
