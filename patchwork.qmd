@@ -467,4 +467,44 @@ Recordeu que per **guardar**, just després de que quedi com us agradi:
 ggsave(here("Basic","output","nom.png"), width = 15, height = 9, dpi = 300) 
 ```
 
+## Funció per barres apilades
+
+També ho podeu fer amb dades totalment diferents com les de percentatges i barres apilades:
+
+```{r}
+perc_color <- c("perc_IgG" = "#7FAED9",   
+                "perc_IgA" = "#B7E4C7",
+                "perc_IgM" = "#F3C89B")
+
+plot_perc <- function(vars) {
+  longdata %>%
+  filter(variable %in% vars) %>% 
+  mutate(variable = factor(variable, levels = vars)) %>% 
+  group_by(tissue, group, variable) %>% 
+  na.omit() %>% 
+  summarise(value = mean(value), .groups = "drop") %>%
+  ggplot(aes(y=group, x= value, fill=variable))+
+  geom_col(position = position_stack(reverse = F), width = 0.8)+
+  scale_fill_manual(values = perc_color, 
+                    breaks = vars,
+                    labels = variable_name [vars])+
+  facet_grid(tissue ~ . , labeller = labeller(tissue = tissue_name))+
+  scale_x_continuous(expand = c(0,0), limits = c(0,NA))+
+  labs(
+    x = "%Ig",
+    y = NULL ,
+    fill = NULL)+
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    strip.background = element_blank(),
+  aspect.ratio = 0.3)}
+
+perc_Ig_tot <-plot_perc(vars=c("perc_IgM", "perc_IgA", "perc_IgG"))
+perc_Ig_tot
+```
+
+En aquest cas ja fem dins del gràfic que ens separi per teixit, no li indiquem quin ha d'agafar. Només li indiquem les variables.
+
+Per altre banda no vaig aconseguir que em posés la estadística maca a dins, millor posar-la a mà.
+
 I a jugar!

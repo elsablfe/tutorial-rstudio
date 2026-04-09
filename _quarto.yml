@@ -24,10 +24,12 @@ website:
           text: Gràfic de punts
         - href: elisa.qmd
           text: Gràfic de barres
-        - href: heatmap.qmd
-          text: Heatmap        
+        - href: barap.qmd
+          text: Gràfic de barres apilades
         - href: patchwork.qmd
           text: Patckwork i funcions
+        - href: heatmap.qmd
+          text: Heatmap        
         - href: correlation.qmd
           text: Heatmap correlacions
         - href: extra.qmd

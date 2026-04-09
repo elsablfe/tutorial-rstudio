@@ -167,12 +167,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">Gràfic de barres</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./heatmap.html">
- <span class="dropdown-text">Heatmap</span></a>
+    <a class="dropdown-item" href="./barap.html">
+ <span class="dropdown-text">Gràfic de barres apilades</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./patchwork.html">
  <span class="dropdown-text">Patckwork i funcions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./heatmap.html">
+ <span class="dropdown-text">Heatmap</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./correlation.html">
@@ -236,6 +240,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#funció-per-grup-percentatges" id="toc-funció-per-grup-percentatges" class="nav-link" data-scroll-target="#funció-per-grup-percentatges">Funció per grup (percentatges)</a></li>
   <li><a href="#funció-per-grup-amb-estadística" id="toc-funció-per-grup-amb-estadística" class="nav-link" data-scroll-target="#funció-per-grup-amb-estadística">Funció per grup amb estadística</a></li>
   <li><a href="#funció-per-grup-i-sexe" id="toc-funció-per-grup-i-sexe" class="nav-link" data-scroll-target="#funció-per-grup-i-sexe">Funció per grup i sexe</a></li>
+  <li><a href="#funció-per-barres-apilades" id="toc-funció-per-barres-apilades" class="nav-link" data-scroll-target="#funció-per-barres-apilades">Funció per barres apilades</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -910,6 +915,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="fu">here</span>(<span class="st">"Basic"</span>,<span class="st">"output"</span>,<span class="st">"nom.png"</span>), <span class="at">width =</span> <span class="dv">15</span>, <span class="at">height =</span> <span class="dv">9</span>, <span class="at">dpi =</span> <span class="dv">300</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</section>
+<section id="funció-per-barres-apilades" class="level2">
+<h2 class="anchored" data-anchor-id="funció-per-barres-apilades">Funció per barres apilades</h2>
+<p>També ho podeu fer amb dades totalment diferents com les de percentatges i barres apilades:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>perc_color <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"perc_IgG"</span> <span class="ot">=</span> <span class="st">"#7FAED9"</span>,   </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                <span class="st">"perc_IgA"</span> <span class="ot">=</span> <span class="st">"#B7E4C7"</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                <span class="st">"perc_IgM"</span> <span class="ot">=</span> <span class="st">"#F3C89B"</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>plot_perc <span class="ot">&lt;-</span> <span class="cf">function</span>(vars) {</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  longdata <span class="sc">%&gt;%</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(variable <span class="sc">%in%</span> vars) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">variable =</span> <span class="fu">factor</span>(variable, <span class="at">levels =</span> vars)) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(tissue, group, variable) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">value =</span> <span class="fu">mean</span>(value), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y=</span>group, <span class="at">x=</span> value, <span class="at">fill=</span>variable))<span class="sc">+</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">reverse =</span> F), <span class="at">width =</span> <span class="fl">0.8</span>)<span class="sc">+</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> perc_color, </span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>                    <span class="at">breaks =</span> vars,</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> variable_name [vars])<span class="sc">+</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(tissue <span class="sc">~</span> . , <span class="at">labeller =</span> <span class="fu">labeller</span>(<span class="at">tissue =</span> tissue_name))<span class="sc">+</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="cn">NA</span>))<span class="sc">+</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"%Ig"</span>,</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="cn">NULL</span> ,</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="cn">NULL</span>)<span class="sc">+</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">aspect.ratio =</span> <span class="fl">0.3</span>)}</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>perc_Ig_tot <span class="ot">&lt;-</span><span class="fu">plot_perc</span>(<span class="at">vars=</span><span class="fu">c</span>(<span class="st">"perc_IgM"</span>, <span class="st">"perc_IgA"</span>, <span class="st">"perc_IgG"</span>))</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>perc_Ig_tot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="patchwork_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>En aquest cas ja fem dins del gràfic que ens separi per teixit, no li indiquem quin ha d’agafar. Només li indiquem les variables.</p>
+<p>Per altre banda no vaig aconseguir que em posés la estadística maca a dins, millor posar-la a mà.</p>
 <p>I a jugar!</p>
 
 

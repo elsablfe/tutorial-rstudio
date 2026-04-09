@@ -1,0 +1,126 @@
+---
+title: "Gràfic de barres apilades"
+editor: visual
+---
+
+El gràfic de barres apilades és el típic per ensenyar percentatges. En aquest cas el vaig fer amb les dades de luminex de l'apartat càlculs, les de percentatges.
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse) #conté 9 paquets d'edició i visualització 
+library(here) #al treballar en un projecte
+library(readxl) #per importar dades que estan en un fitxer d'excel
+library(janitor) #ajudar a netejar les dades
+library(skimr) #per obtenir un resum de les dades complert
+library(broom) #poder fer servir funcions com tidy
+library(rstatix) #funcions d'estadística
+library(writexl) #descarregar excels
+library(ARTool) #ArcANOVA
+library(emmeans) #post-hocs
+library(Hmisc) #Correlacions
+library(patchwork) #Unir gràfics
+library(ggpubr) #Significància al gràfic
+
+raw_data <- read_excel(here("Basic", "data", "luminex_long.xlsx"))
+
+longdata <- raw_data %>% 
+  mutate(across(c(group, sex, rat, tissue), as.factor)) 
+skim(longdata)
+```
+
+Fem els vectors amb les característiques:
+
+```{r}
+theme_set(theme_classic()) 
+
+group_order <- c("REF", "DIET")
+
+tissue_name <- c(
+  HCC   = "Cecal Content",
+  RI = "Gut Wash",
+  HMLN= "Mesenteric Lymph Nodes")
+
+variable_name <- c(
+  IgA = "IgA",
+  IgG = "IgG",
+  IgM = "IgM",
+  IgG1 = "IgG1",
+  IgG2a = "IgG2a",
+  IgG2b = "IgG2b",
+  IgG2c = "IgG2c",
+  Ig_total = "Total Ig",
+  perc_IgA = "%IgA",
+  perc_IgG = "%IgG",
+  perc_IgG1 = "%IgG1",
+  perc_IgG2a = "%IgG2a",
+  perc_IgG2b = "%IgG2b",
+  perc_IgG2c = "%IgG2bc",
+  perc_IgM = "%IgM",
+  perc_Th1 = "%Th1",
+  perc_Th2 = "%Th2",
+  Th1 = "Th1",
+  Th2 = "Th2",
+  Th1vsTh2 = "Th1/Th2")
+
+perc_color <- c("perc_IgG" = "#7FAED9",   
+                "perc_IgA" = "#B7E4C7",
+                "perc_IgM" = "#F3C89B",   
+                "perc_IgG1" = "#F2A6B3",
+                "perc_IgG2a"= "#CBA4D5",
+                "perc_IgG2b"= "#A3D9B1" ,
+                "perc_IgG2c"= "#A7C7E7",
+                "perc_Th1"= "#F6E2A0",
+                "perc_Th2"= "#5BB8A7")
+```
+
+I ja podem fer el ggplot
+
+```{r}
+longdata %>%
+  filter(variable %in% c("perc_IgG", "perc_IgA", "perc_IgM")) %>% 
+  filter(tissue == "HCC") %>%    
+  mutate(variable = factor(variable, levels = c("perc_IgG", "perc_IgA", "perc_IgM"))) %>% #triar l'ordre
+  group_by(group, variable) %>% 
+  na.omit() %>% 
+  summarise(value = mean(value), .groups = "drop") %>%
+  ggplot(aes(y=group, x= value, fill=variable))+
+  geom_col(position = position_stack(reverse = F), width = 0.8)+
+  scale_fill_manual(values = perc_color,
+                    labels = variable_name [c("perc_IgG", "perc_IgA", "perc_IgM")])+
+  scale_x_continuous(expand = c(0,0), limits = c(0,NA))+
+  labs(
+    title = "Percentage of Ig in Cecal content",
+    x = "%Ig",
+    y = NULL ,
+    fill = NULL)+
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    strip.background = element_blank(),
+  aspect.ratio = 0.3)
+```
+
+També podem fer-ho de tots els teixits alhora:
+
+```{r}
+longdata %>%
+  filter(variable %in% c("perc_IgG1", "perc_IgG2a", "perc_IgG2b", "perc_IgG2c")) %>% 
+  mutate(variable = factor(variable, levels = c("perc_IgG1", "perc_IgG2a", "perc_IgG2b", "perc_IgG2c"))) %>% #triar l'ordre
+  group_by(tissue, group, variable) %>% 
+  na.omit() %>% 
+  summarise(value = mean(value), .groups = "drop") %>%
+  ggplot(aes(y=group, x= value, fill=variable))+
+  geom_col(position = position_stack(reverse = F), width = 0.8)+
+  scale_fill_manual(values = perc_color,
+                    labels = variable_name [c("perc_IgG1", "perc_IgG2a", "perc_IgG2b", "perc_IgG2c")])+
+  facet_grid(tissue ~ . , labeller = labeller(tissue = tissue_name))+
+  scale_x_continuous(expand = c(0,0), limits = c(0,NA))+
+  labs(
+    x = "%Ig",
+    y = NULL ,
+    fill = NULL)+
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    strip.background = element_blank(),
+  aspect.ratio = 0.3)
+```
+
+I ja estaria.
